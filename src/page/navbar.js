@@ -4,7 +4,7 @@ import { Box, Flex, Select, Image, Text, Wrap } from '@chakra-ui/react'
 const Navbar = () => {
   return (
     <>
-    <Flex bgColor={'white'} p={10} boxShadow={'lg'} blur={4} width={'100%'} justify={'flex-start'} alignItems={'center'} flexDir={'row'} alignContent={'center'} pl={42} py={10} pr={30} background={'white'}> 
+    <Flex  bgColor={'white'} p={10} boxShadow={'lg'} blur={4} width={'100%'} justify={'flex-start'} alignItems={'center'} flexDir={'row'} alignContent={'center'} pl={'2%'} py={'2%'} pr={'2%'} background={'white'}> 
     <Flex float={'left'} mr={'50%'}>
         <Text color={'black'} fontWeight={'regular'} fontFamily={'var(--font-family-secondary)'} fontSize={'var(--header-1)'}>Sisporlaka</Text>
       </Flex>
