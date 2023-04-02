@@ -6,8 +6,8 @@ function Home() {
   return (
     <>
     <Navbar />
-    <Flex>
-      <h1>Home</h1>
+    <Flex width={'100%'} height={'85vh'}>
+      <Flex width={'100%'} height={'100%'} bg={'red'}><h1>Home</h1></Flex>
     </Flex>
     </>
   )

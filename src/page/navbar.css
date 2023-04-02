@@ -1,0 +1,9 @@
+
+/* Active links */
+#navbar{
+  color: #ABABAB;
+}
+
+#navbar a.active {
+  color: #09322D;
+}
