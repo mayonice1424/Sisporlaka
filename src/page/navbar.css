@@ -2,8 +2,20 @@
 /* Active links */
 #navbar{
   color: #ABABAB;
+  text-decoration: none;
 }
 
 #navbar a.active {
   color: #09322D;
 }
+
+a.active {
+  color: #09322D !important;
+}
+
+a{
+  color: #ABABAB !important;
+  text-decoration: none;
+}
+
+/* Active links */

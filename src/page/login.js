@@ -1,7 +1,7 @@
 import React from 'react';
 import { Flex } from '@chakra-ui/react';
 
-function login() {
+const login = () => {
   return (
     <div>login</div>
   )
