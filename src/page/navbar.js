@@ -20,8 +20,6 @@ import './navbar.css'
 const Navbar = () => {
   const { isOpen, onOpen, onClose } = useDisclosure()
   // const btnRef = React.useRef()
-  const [navSize, setNavSize] = useState("large");
-  const [active, setActive] = useState("Home");
   return (
     <>
     <Flex height={'15vh'} bgColor={'white'} position={'absolute'} zIndex={'1'} p={10} boxShadow={'lg'} blur={4} width={'100%'} justify={'space-between'} alignItems={'center'} flexDir={'row'} alignContent={'center'} pl={'2%'} py={'2%'} pr={'2%'} background={'white'} display={{ base: "flex", md: "flex" }}  >
@@ -45,7 +43,7 @@ const Navbar = () => {
           <DrawerBody>
             <Flex flexDir="column" w="100%"  alignContent={"center"} justifyContent={"center"} alignItems={"center"}>
               <Flex marginY = {5}>
-                <NavLink to="/"><Text className='navbar active' fontWeight={'bold'} color= {{ textDecor: "#FFFF", color: "#FBFBFB"}} w={navSize == "large" && "100%"} fontFamily={'var(--font-family-secondary)'}>Home</Text></NavLink>
+                <NavLink to="/"><Text className='navbar active' fontWeight={'bold'} color= {{ textDecor: "#FFFF", color: "#FBFBFB"}} w={"large" && "100%"} fontFamily={'var(--font-family-secondary)'}>Home</Text></NavLink>
               </Flex>
               <Flex marginY = {5}>
                 <NavLink to="/informasi"><Text  className='navbar'  fontWeight={'bold'} fontFamily={'var(--font-family-secondary)'}>Informasi Publik</Text></NavLink>

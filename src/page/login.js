@@ -1,12 +1,44 @@
-import React, { useEffect } from "react"
+import React, { useEffect, useState } from "react"
 import { Box, Flex,InputGroup, InputLeftElement, Button, Image, Text, Input } from "@chakra-ui/react"
 import { Formik, Form } from 'formik'
 import {FaUser} from 'react-icons/fa'
 import {RiLockPasswordFill} from 'react-icons/ri'
 import { FormControl, FormLabel, FormErrorMessage } from "@chakra-ui/form-control"
-
+import * as yup from 'yup'
+import jwt_decode from "jwt-decode"
+import axios from "axios"
+import { useNavigate } from "react-router-dom"
+const schema = yup.object({
+  username: yup.string().required('Username harus diisi'),
+  password: yup.string().required('Password harus diisi')
+})
 
 const Login = () => {
+  const navigate = useNavigate()
+  const [msg, setMsg] = useState('')
+  const [token, setToken] = useState('')
+  const [role, setRole] = useState('')
+
+
+  const handleSubmitComplete = async (usernameValues, passwordValues) => {
+    try {
+      const response = await axios.post('http://localhost:4000/login', {
+        username: usernameValues,
+        password: passwordValues
+      })
+      .then(response => {
+        setToken(response.data.accessToken)
+        const decoded = jwt_decode(response.data.accessToken);
+        console.log(decoded)
+        setRole(decoded.role)
+        navigate(`/dashboard/${decoded.role}`)
+        })
+    } catch (error) {
+      if (error.response) {
+        setMsg(error.response.data.msg)
+      }
+    }
+  }
   return (
     <>
     <Flex backgroundColor={"var(--color-on-primary)"} width='100%' height="100vh" alignItems='center' justifyContent='center'>
@@ -27,12 +59,24 @@ const Login = () => {
 							src={process.env.PUBLIC_URL + '/logokolaborasi.png'}
 						/>
           <Text size='md' fontWeight='bold' fontFamily='var(--font-family-secondary)' fontSize='var(--header-2)' color='var(--color-primer)' >Masuk</Text>
+          <Text size='md' fontWeight='semibold' fontFamily='var(--font-family-secondary)' fontSize='var(--header-4)' color='var(--color-error)' >{msg}</Text>
           <Formik
-           
+             initialValues={{ username: '', password: '' }}
+             validationSchema={schema}
+             onSubmit={(actions) => {
+               actions.resetForm()
+             }}
           >
-            {() => (
-              <Form>
-                <FormControl width={{ base: '100%', md: '100%', lg:'380px' }} size={'md'} marginTop={'20px'}>
+            {({
+              values,
+              errors,
+              touched,
+              handleChange,
+              handleBlur,
+              handleSubmit,
+            }) => (
+              <Form onSubmit={handleSubmit}>
+                <FormControl width={{ base: '100%', md: '100%', lg:'380px' }} size={'md'} marginTop={'20px'} isInvalid={errors.username && touched.username}>
                   <FormLabel htmlFor="username">
                     Username
                   </FormLabel>
@@ -44,13 +88,16 @@ const Login = () => {
                   <Input size={'md'}
                     marginTop={'0 auto'}
                     type="text"
+                    value={values.username}
+                    onChange={handleChange}
                     name="username"
                     variant='outline'
                     placeholder="Username"
                     />
                   </InputGroup>
+                  <FormErrorMessage>{errors.username}</FormErrorMessage>
                 </FormControl>
-                <FormControl size={'md'} marginTop={'20px'}>
+                <FormControl width={{ base: '100%', md: '100%', lg:'380px' }} size={'md'} marginTop={'20px'} isInvalid={errors.username && touched.username}>
                   <FormLabel htmlFor="password">
                     Password
                   </FormLabel>
@@ -63,6 +110,8 @@ const Login = () => {
                     marginTop={'0 auto'}
                     type="text"
                     name="password"
+                    value={values.password}
+                    onChange={handleChange}
                     variant='outline'
                     placeholder="Password"
                     />
@@ -77,6 +126,9 @@ const Login = () => {
 									loadingText="Tunggu Sebentar..."
                   type="submit"
                   className="btn-login"
+                  onClick={() => {
+                    handleSubmitComplete(values.username, values.password)
+                  }}
                   >
                   <Text fontWeight='bold' fontFamily='var(--font-family-secondary)' fontSize='var(--header-3)' color='var(--color-on-primary)' >
                     Masuk
