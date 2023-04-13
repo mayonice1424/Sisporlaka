@@ -8,6 +8,7 @@ import { IoExitOutline } from 'react-icons/io5'
 import { AiOutlineMenu } from 'react-icons/ai'
 import { useSelector } from 'react-redux';
 import Draw from '../draw/draw';
+import axios from 'axios';
 import { Link } from 'react-router-dom';
 
 
@@ -16,6 +17,15 @@ const Header = () => {
   const { routeName } = useSelector(
       state => state.userReducer,
   );
+
+  const logout = async () => {
+    try {
+        const response = await axios.get("http://localhost:4000/logout");
+        console.log(response);
+    } catch (error) {
+    }
+};
+
 
   const { isOpen, onOpen, onClose } = useDisclosure()
 
@@ -50,7 +60,7 @@ const Header = () => {
           <Flex flexDirection={'row'}>
               <Link to={'/login'}
               onClick={() => {
-                  localStorage.clear()
+                    logout();
               }}
               >
                   <div>

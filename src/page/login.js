@@ -29,7 +29,7 @@ const Login = () => {
         setToken(response.data.accessToken)
         const decoded = jwt_decode(response.data.accessToken);
         console.log(decoded)
-        navigate(`/unit/dashboard/${decoded.role}`)
+        navigate(`/dishub`)
         })
     } catch (error) {
       if (error.response) {

@@ -2,7 +2,7 @@ import { Wrap, Flex, Text, color } from '@chakra-ui/react'
 import {React,useState} from 'react'
 import {SiGooglemaps} from 'react-icons/si'
 import {FiPhone} from 'react-icons/fi'
-import Navbar from './navbar';
+import Navbar from '../components/publicNavbar/navbar'
 import { icons } from 'react-icons';
 
 function Kontak() {

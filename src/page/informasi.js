@@ -1,6 +1,6 @@
 import { Flex, Text } from '@chakra-ui/react'
 import React from 'react'
-import Navbar from './navbar'
+import Navbar from '../components/publicNavbar/navbar'
 
 function Informasi() {
   return (
