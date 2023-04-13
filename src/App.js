@@ -6,6 +6,9 @@ import Informasi from './page/informasi';
 import Kontak from './page/kontak';
 import Login from './page/login';
 import Dashboard from './page/dashboard';
+import Notfound from './page/notfound';
+
+import Board from './components/board/board';
 
 
 function App() {
@@ -16,8 +19,11 @@ function App() {
         <Route path='/informasi' element={<Informasi />} />
         <Route path='/kontak' element={<Kontak />} />
         <Route path='/login' element={<Login />} />
-        <Route path='/dashboard/:role' element={<Dashboard />} />
-    </Routes>
+        <Route path="/unit" element={<Board />}>
+        <Route path='dashboard/:role' element={<Dashboard />} />
+        </Route>
+        <Route path='*' element={<Notfound />} />
+        </Routes>
     </>
 
   );

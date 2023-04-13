@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react"
-import { Box, Flex,InputGroup, InputLeftElement, Button, Image, Text, Input } from "@chakra-ui/react"
+import { Box, Flex,InputGroup, InputLeftElement, Button, Image, Text, Input, InputLeftAddon } from "@chakra-ui/react"
 import { Formik, Form } from 'formik'
 import {FaUser} from 'react-icons/fa'
 import {RiLockPasswordFill} from 'react-icons/ri'
@@ -17,7 +17,6 @@ const Login = () => {
   const navigate = useNavigate()
   const [msg, setMsg] = useState('')
   const [token, setToken] = useState('')
-  const [role, setRole] = useState('')
 
 
   const handleSubmitComplete = async (usernameValues, passwordValues) => {
@@ -30,8 +29,7 @@ const Login = () => {
         setToken(response.data.accessToken)
         const decoded = jwt_decode(response.data.accessToken);
         console.log(decoded)
-        setRole(decoded.role)
-        navigate(`/dashboard/${decoded.role}`)
+        navigate(`/unit/dashboard/${decoded.role}`)
         })
     } catch (error) {
       if (error.response) {
@@ -81,10 +79,12 @@ const Login = () => {
                     Username
                   </FormLabel>
                   <InputGroup>
+                  <InputLeftAddon>
                     <InputLeftElement
                        pointerEvents='none'
                        children={<FaUser color='gray.300' />}
                    />
+                  </InputLeftAddon>
                   <Input size={'md'}
                     marginTop={'0 auto'}
                     type="text"
@@ -102,13 +102,15 @@ const Login = () => {
                     Password
                   </FormLabel>
                   <InputGroup>
-                    <InputLeftElement
+                  <InputLeftAddon>
+                  <InputLeftElement
                        pointerEvents='none'
                        children={<RiLockPasswordFill size={'20'} color='gray.300' />}
-                   />
+                   />                  
+                  </InputLeftAddon>
                   <Input size={'md'}
                     marginTop={'0 auto'}
-                    type="text"
+                    type="password"
                     name="password"
                     value={values.password}
                     onChange={handleChange}

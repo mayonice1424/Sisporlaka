@@ -1,5 +1,8 @@
 import { NavLink } from 'react-router-dom';
-import { Box, Flex, Select, Image, Text, Wrap, Drawer,
+import { 
+  Flex,
+  Text,
+  Drawer,
   DrawerBody,
   Icon,
   Button,
@@ -9,8 +12,7 @@ import { Box, Flex, Select, Image, Text, Wrap, Drawer,
   DrawerCloseButton
 } from '@chakra-ui/react';
 import { useDisclosure } from '@chakra-ui/hooks'
-import { Link } from 'react-router-dom';
-import { React, useState } from 'react';
+import { React } from 'react';
 import { GiHamburgerMenu } from 'react-icons/gi';
 
 

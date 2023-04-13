@@ -1,13 +1,14 @@
 import React from 'react'
 import { Flex, Text } from '@chakra-ui/react'
 
-
 const Dashboard = () => {
 
   return (
+    <>
     <Flex>
-      <Text>Ini dashboard</Text>
+      <Text color={'red'}>Ini dashboard</Text>
     </Flex>
+    </>
   )
 }
 
