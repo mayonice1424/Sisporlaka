@@ -1,15 +1,16 @@
 import React from 'react'
 import { Flex, Text } from '@chakra-ui/react'
-
-const Dashboard = () => {
+import Board from '../../../src/components/board/board'
+const AdminJasaRaharja = () => {
 
   return (
     <>
+    <Board />
     <Flex>
-      <Text color={'red'}>Ini dashboard</Text>
+      <Text color={'red'}>Halaman Role</Text>
     </Flex>
     </>
   )
 }
 
-export default Dashboard
+export default AdminJasaRaharja

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react"
+import React, { useEffect,useContext, useState } from "react"
 import { Box, Flex,InputGroup, InputLeftElement, Button, Image, Text, Input, InputLeftAddon } from "@chakra-ui/react"
 import { Formik, Form } from 'formik'
 import {FaUser} from 'react-icons/fa'
@@ -13,10 +13,12 @@ const schema = yup.object({
   password: yup.string().required('Password harus diisi')
 })
 
-const Login = () => {
+const Login = ( ) => {
+
   const navigate = useNavigate()
   const [msg, setMsg] = useState('')
   const [token, setToken] = useState('')
+  const [role, setRole] = useState('')
 
 
   const handleSubmitComplete = async (usernameValues, passwordValues) => {
@@ -28,8 +30,8 @@ const Login = () => {
       .then(response => {
         setToken(response.data.accessToken)
         const decoded = jwt_decode(response.data.accessToken);
-        console.log(decoded)
-        navigate(`/dishub`)
+        //console.log(decoded);
+        setRole(decoded.role);
         })
     } catch (error) {
       if (error.response) {
@@ -130,6 +132,24 @@ const Login = () => {
                   className="btn-login"
                   onClick={() => {
                     handleSubmitComplete(values.username, values.password)
+                    if (role === 'polisi') {
+                      navigate('/polisi')
+                    }
+                    else if (role === 'dinas-perhubungan') {
+                      navigate('/dishub')
+                    }
+                    else if (role === 'dinas-kesehatan') {
+                      navigate('/dinkes')
+                    }
+                    else if (role === 'rumah-sakit') {
+                      navigate('/rs')
+                    }
+                    else if (role === 'jasa-raharja') {
+                      navigate('/pt-jasa-raharja')
+                    }
+                    else {
+                      navigate('/login')
+                    }
                   }}
                   >
                   <Text fontWeight='bold' fontFamily='var(--font-family-secondary)' fontSize='var(--header-3)' color='var(--color-on-primary)' >
