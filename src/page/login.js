@@ -8,6 +8,7 @@ import * as yup from 'yup'
 import jwt_decode from "jwt-decode"
 import axios from "axios"
 import { useNavigate } from "react-router-dom"
+export const UserContext = React.createContext();
 const schema = yup.object({
   username: yup.string().required('Username harus diisi'),
   password: yup.string().required('Password harus diisi')
