@@ -9,7 +9,8 @@ import { routePageName } from "../../Redux/action";
 import { Link } from "react-router-dom";
 import axios from "axios";
 import jwt_decode from "jwt-decode";
-
+import useAuth from "../../middleware/useAuth";
+import DashboardItem from "../boardItem/dashboardItem";
 const SideNav = () => {
 	const navSize = "large";
 
@@ -19,26 +20,7 @@ const SideNav = () => {
 		dispatch(routePageName(data));
 	};
 	const { routeName } = useSelector((state) => state.userReducer);
-	const [role, setRole] = useState("");
-	const [token, setToken] = useState("");
-
-	
-	const refreshToken = async () => {
-		try {
-			const response = await axios.get("http://localhost:4000/token");
-			setToken (response.data.accessToken);
-			const decoded = jwt_decode(response.data.accessToken);
-			console.log(decoded);
-			setRole(decoded.role);
-			console.log(role);
-		} catch (error) {
-			
-		}
-	};
-	
-	useEffect(() => {
-		refreshToken();
-	}, []);
+	const role = useAuth()
 	return (
 		<>
 			<Flex
@@ -63,9 +45,21 @@ const SideNav = () => {
 							<Text>Sisporlaka</Text>
 						</Center>
 					</Box>
-
-					<Link
-						to={`/unit/dashboard/${role}`}
+					<Link 
+						to={`/unit/${role}`}
+						onClick={() => {
+							patchRoute("Dashboard");
+						}}>
+						<NavItem
+							navSize={navSize}
+							icon={FiHome}
+							title="Dashboard"
+							active={routeName === "Dashboard"}
+						/>
+					</Link>
+					<DashboardItem role={role} navSize={navSize} />
+					<Link 
+						to={`/unit/${role}`}
 						onClick={() => {
 							patchRoute("Dashboard");
 						}}>

@@ -11,7 +11,7 @@ import AdminDinkes from "./page/dinkes/dashboard";
 import AdminJasaRaharja from "./page/jasaRaharja/dashboard";
 import AdminPolisi from "./page/polisi/dashboard";
 import AdminRS from "./page/rumahsakit/dashboard";
-import Dashboard from "./page/Dashboard/dashboard";
+import Board from "./components/board/board";
 
 
 function App() {
@@ -22,12 +22,21 @@ function App() {
         <Route path='/informasi' element={<Informasi />} />
         <Route path='/kontak' element={<Kontak />} />
         <Route path='/login' element={<Login />} />
-        <Route path="/dashboard" element={<Dashboard />} />
-        <Route path='/pt-jasa-raharja' element={<AdminJasaRaharja />} />
-        <Route path='/rs' element={<AdminRS />} />
-        <Route path='/polisi' element={<AdminPolisi />} />
-        <Route path='/dinkes' element={<AdminDinkes />} />
-        <Route path='/dishub' element={<AdminDishub />} />
+        <Route path="/unit" element = {<Board />}>
+        <Route path='jasa-raharja' element={<AdminJasaRaharja />} />
+        </Route>
+        <Route path="/unit" element = {<Board />}>
+        <Route path='polisi' element={<AdminPolisi />} />
+        </Route>
+        <Route path="/unit" element = {<Board />}>
+        <Route path='dinas-kesehatan' element={<AdminDinkes />} />
+        </Route>
+        <Route path="/unit" element = {<Board />}>
+        <Route path='dinas-perhubungan' element={<AdminDishub />} />
+        </Route>
+        <Route path="/unit" element = {<Board />}>
+        <Route path='rumah-sakit' element={<AdminRS />} />
+        </Route>
         <Route path='*' element={<Notfound />} />
         </Routes>
     </>

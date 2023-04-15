@@ -8,6 +8,8 @@ import * as yup from 'yup'
 import jwt_decode from "jwt-decode"
 import axios from "axios"
 import { useNavigate } from "react-router-dom"
+import { useDispatch } from "react-redux";
+import { routePageName } from "../Redux/action";
 export const UserContext = React.createContext();
 const schema = yup.object({
   username: yup.string().required('Username harus diisi'),
@@ -20,8 +22,13 @@ const Login = ( ) => {
   const [msg, setMsg] = useState('')
   const [token, setToken] = useState('')
   const [role, setRole] = useState('')
+  
 
+	const dispatch = useDispatch();
 
+	const patchRoute = (data) => {
+		dispatch(routePageName(data));
+	};
   const handleSubmitComplete = async (usernameValues, passwordValues) => {
     try {
       const response = await axios.post('http://localhost:4000/login', {
@@ -31,8 +38,8 @@ const Login = ( ) => {
       .then(response => {
         setToken(response.data.accessToken)
         const decoded = jwt_decode(response.data.accessToken);
-        //console.log(decoded);
-        setRole(decoded.role);
+        patchRoute('Dashboard')
+        navigate(`/unit/${decoded.role}`)
         })
     } catch (error) {
       if (error.response) {
@@ -133,24 +140,6 @@ const Login = ( ) => {
                   className="btn-login"
                   onClick={() => {
                     handleSubmitComplete(values.username, values.password)
-                    if (role === 'polisi') {
-                      navigate('/polisi')
-                    }
-                    else if (role === 'dinas-perhubungan') {
-                      navigate('/dishub')
-                    }
-                    else if (role === 'dinas-kesehatan') {
-                      navigate('/dinkes')
-                    }
-                    else if (role === 'rumah-sakit') {
-                      navigate('/rs')
-                    }
-                    else if (role === 'jasa-raharja') {
-                      navigate('/pt-jasa-raharja')
-                    }
-                    else {
-                      navigate('/login')
-                    }
                   }}
                   >
                   <Text fontWeight='bold' fontFamily='var(--font-family-secondary)' fontSize='var(--header-3)' color='var(--color-on-primary)' >

@@ -10,6 +10,7 @@ import { useSelector } from 'react-redux';
 import Draw from '../draw/draw';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
+import { useEffect } from 'react';
 
 
 const Header = () => {
@@ -20,11 +21,15 @@ const Header = () => {
 
   const logout = async () => {
     try {
-        const response = await axios.get("http://localhost:4000/logout");
+        const response = await axios.delete("http://localhost:4000/logout");
         console.log(response);
     } catch (error) {
     }
 };
+
+useEffect(() => {
+    // tambahkan header Cache-Control pada halaman yang dilindungi
+  }, []);
 
 
   const { isOpen, onOpen, onClose } = useDisclosure()
@@ -60,7 +65,8 @@ const Header = () => {
           <Flex flexDirection={'row'}>
               <Link to={'/login'}
               onClick={() => {
-                    logout();
+                    logout(
+                    );
               }}
               >
                   <div>
