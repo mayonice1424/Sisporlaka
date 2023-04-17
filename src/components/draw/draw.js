@@ -1,7 +1,10 @@
 import React, { useState,useEffect } from "react";
 import {
 	Drawer,
-	Image,
+	Flex,
+	Box,
+	Center,
+	Text,
 	DrawerBody,
 	DrawerHeader,
 	DrawerOverlay,
@@ -15,7 +18,9 @@ import { AiOutlineControl, AiOutlineHistory } from "react-icons/ai";
 import { routePageName } from "../../Redux/action";
 import { Link } from "react-router-dom";
 import axios from "axios";
+import useAuth from "../../middleware/useAuth";
 import jwt_decode from "jwt-decode";
+import DashboardItem from "../boardItem/dashboardItem";
 
 const Draw = (props) => {
 	const data = props.data;
@@ -25,26 +30,12 @@ const Draw = (props) => {
 
 	const dispatch = useDispatch();
 
-	const [role, setRole] = useState("");
+	const role = useAuth();
 	const [token, setToken] = useState("");
 
 	
-	const refreshToken = async () => {
-		try {
-			const response = await axios.get("http://localhost:4000/token");
-			setToken (response.data.accessToken);
-			const decoded = jwt_decode(response.data.accessToken);
-			console.log(decoded);
-			setRole(decoded.role);
-			console.log(role);
-		} catch (error) {
-			
-		}
-	};
-
-	
 	useEffect(() => {
-		refreshToken();
+		
 	}, []);
 
 	const patchRoute = (data) => {
@@ -56,28 +47,18 @@ const Draw = (props) => {
 			<DrawerOverlay />
 			<DrawerContent>
 				<DrawerHeader borderBottomWidth="1px">
-					<Image
-						display={{ base: "flex", lg: "none" }}
-						position={"Relative"}
-						width={"80%"}
-						maxWidth={"200px"}
-						src="https://res.cloudinary.com/diyu8lkwy/image/upload/v1663418492/itera%20herro%20icon/Frame_3_2_3_1_hfojfh.png"
-					/>
+				<Box paddingRight="5%">
+						<Center>
+							<Flex mt={'8'} textAlign={'center'} justifyContent={'center'} alignContent={"center"} flexDir={'column'}>
+								<Text fontSize={'var(--header-2)'} fontWeight={'light'} fontFamily={'var(--font-family-secondary)'} color={'#000000'}>Sisporlaka</Text>
+								<Text fontSize={'var(--header-5)'} fontWeight={'light'} fontFamily={'var(--font-family-tertiary)'} color={'#000000'}> Sistem Informasi Pelaporan Kecelakaan </Text>
+							</Flex>
+						</Center>
+					</Box>
 				</DrawerHeader>
 				<DrawerBody>
-					<Link
-						to={`/unit/dashboard/${role}`}
-						onClick={() => {
-							patchRoute("Dashboard");
-						}}>
-						<NavItem
-							navSize={navSize}
-							icon={FiHome}
-							title="Dashboard"
-							active={routeName === "Dashboard"}
-						/>
-						<Link
-						to={`/unit/dashboard/${role}`}
+				<Link 
+						to={`/unit/${role}`}
 						onClick={() => {
 							patchRoute("Dashboard");
 						}}>
@@ -88,6 +69,30 @@ const Draw = (props) => {
 							active={routeName === "Dashboard"}
 						/>
 					</Link>
+					<DashboardItem role={role} navSize={navSize} />
+					<Link 
+						to={`/unit/${role}/laporan`}
+						onClick={() => {
+							patchRoute("Laporkan Kejadian");
+						}}>
+						<NavItem
+							navSize={navSize}
+							icon={FiHome}
+							title="Laporkan Kejadian"
+							active={routeName === "Laporkan Kejadian"}
+						/>
+					</Link>
+					<Link 
+						to={`/unit/${role}/grafik`}
+						onClick={() => {
+							patchRoute("Grafik Kecelakaan");
+						}}>
+						<NavItem
+							navSize={navSize}
+							icon={FiHome}
+							title="Grafik Kecelakaan"
+							active={routeName === "Grafik Kecelakaan"}
+						/>
 					</Link>
 				</DrawerBody>
 			</DrawerContent>

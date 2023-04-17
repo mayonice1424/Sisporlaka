@@ -14,16 +14,19 @@ export default function NavItem({ icon, title, active, navSize }) {
 			flexDir="column"
 			w="100%"
 			alignContent={"center"}
+			alignSelf={"center"}
+			textAlign={"center"}
 			justifyContent={"center"}
-			alignItems={navSize == "small" ? "center" : "flex-start"}>
+			alignItems={navSize == "large" ? "center" : "center"}>
 			<Menu placement="right">
 				<Flex
-					backgroundColor={active && "#FFFF"}
+					backgroundColor={active && "var(--color-primer)"}
 					p={3}
-					borderLeftRadius={25}
-					_hover={{ textDecor: "#FFFF", backgroundColor: "#FBFBFB" }}
-					w={navSize == "large" && "100%"}
+					borderRadius={10}
+					_hover={{ backgroundColor: "var(--color-hover)"}}
+					w={navSize == "large" && "80%"}
 					alignContent={"center"}
+					textAlign={"center"}
 					alignItems={"center"}
 					className="nav-item">
 					<MenuButton w="100%">
@@ -32,14 +35,14 @@ export default function NavItem({ icon, title, active, navSize }) {
 								fontWeight={"bold"}
 								fontSize={"var(--header-3)"}
 								as={icon}
-								color={active ? "var(--color-primer)" : "var(--color-grey)"}
+								color={active ? "var(--color-on-primary)" : "var(--color-grey)"}
 							/>
 							<Text
 								ml={5}
 								display={navSize == "small" ? "none" : "flex"}
 								fontWeight={"semibold"}
 								fontSize={"var(--header-3)"}
-								color={active ? "var(--color-primer)" : "var(--color-grey)"}>
+								color={active ? "var(--color-on-primary)" : "var(--color-grey)"}>
 								{title}
 							</Text>
 						</Flex>

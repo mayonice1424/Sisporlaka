@@ -24,7 +24,7 @@ const SideNav = () => {
 	return (
 		<>
 			<Flex
-				backgroundColor={"red"}
+				backgroundColor={"white"}
 				display={{
 					base: "none",
 					lg: "flex",
@@ -42,7 +42,10 @@ const SideNav = () => {
 					className="navbar">
 					<Box paddingRight="5%">
 						<Center>
-							<Text>Sisporlaka</Text>
+							<Flex mt={'8'} textAlign={'center'} justifyContent={'center'} alignContent={"center"} flexDir={'column'}>
+								<Text fontSize={'var(--header-1)'} fontWeight={'regular'} fontFamily={'var(--font-family-secondary)'} color={'#000000'}>Sisporlaka</Text>
+								<Text fontFamily={'var(--font-family-tertiary)'} color={'#000000'}> Sistem Informasi Pelaporan Kecelakaan </Text>
+							</Flex>
 						</Center>
 					</Box>
 					<Link 
@@ -59,15 +62,27 @@ const SideNav = () => {
 					</Link>
 					<DashboardItem role={role} navSize={navSize} />
 					<Link 
-						to={`/unit/${role}`}
+						to={`/unit/${role}/laporan`}
 						onClick={() => {
-							patchRoute("Dashboard");
+							patchRoute("Laporkan Kejadian");
 						}}>
 						<NavItem
 							navSize={navSize}
 							icon={FiHome}
-							title="Dashboard"
-							active={routeName === "Dashboard"}
+							title="Laporkan Kejadian"
+							active={routeName === "Laporkan Kejadian"}
+						/>
+					</Link>
+					<Link 
+						to={`/unit/${role}/grafik`}
+						onClick={() => {
+							patchRoute("Grafik Kecelakaan");
+						}}>
+						<NavItem
+							navSize={navSize}
+							icon={FiHome}
+							title="Grafik Kecelakaan"
+							active={routeName === "Grafik Kecelakaan"}
 						/>
 					</Link>
 				</Flex>

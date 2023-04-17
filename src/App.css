@@ -1,5 +1,6 @@
 @import url("https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800&display=swap");
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@100;200;300;400;500;600;700;800;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@100;200;300;400;500;600;700;800;900&family=Work+Sans:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&display=swap');
 
 :root{
   --header-1: 32px;
@@ -8,9 +9,11 @@
   --header-4: 15px;
   --header-5: 14px;
   --header-6: 10px;
+  --header: 24px;
   --caption: 12px;
 	--font-family-main:'Poppins', sans-serif;
   --font-family-secondary:'Montserrat';
+  --font-family-tertiary:'Work Sans';
   --font-weight-100: 100;
   --font-weight-200: 200;
   --font-weight-300: 300;
@@ -23,10 +26,12 @@
   --color-primer:#4AA8FF;
   --color-primary-variant: #329cff;
   --color-secondary:#319795;
+  --color-header:#09322D;
   --color-secondary-variant:#41BF06;
   --color-background : #f6f6f6;
   --color-surface: #FCFFFC;
   --color-grey: #ABABAB;
+  --color-hover: #efefef;
   --color-error: #B00020;
   --color-on-primary: #FFFFFF;
   --color-on-background: #000000;

@@ -15,7 +15,7 @@ const DashboardItem = ({role, navSize}) => {
   switch (role){
     case 'dinas-perhubungan' :
       return <Link
-      to={`/unit/${role}/validasi`}
+      to={`/unit/${role}/validasi-laporan`}
 						onClick={() => {
 							patchRoute("Validasi Laporan");
 						}}>

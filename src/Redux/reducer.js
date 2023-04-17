@@ -8,7 +8,6 @@ function userReducer(state = initialState, action) {
   switch (action.type) {
       case ROUTE_PAGE_NAME:
           return { ...state, routeName: action.data };
-
       default:
           return state;
   }

@@ -58,7 +58,7 @@ useEffect(() => {
               isopen: isOpen,
           }} />
 
-          <Text color={'var(--color-primer)'} fontWeight={'bold'} fontSize={'var(--header-2)'}>
+          <Text color={'var(--color-primer)'} fontWeight={'bold'} fontSize={'var(--header)'}>
               {routeName}
           </Text>
 
