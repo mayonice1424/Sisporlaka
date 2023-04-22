@@ -1,0 +1,1 @@
+export const loginApi = 'http://localhost:4000/login'

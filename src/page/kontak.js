@@ -3,9 +3,10 @@ import {React,useState} from 'react'
 import {SiGooglemaps} from 'react-icons/si'
 import {FiPhone} from 'react-icons/fi'
 import Navbar from '../components/publicNavbar/navbar'
-import { icons } from 'react-icons';
+import { TabTitle } from '../Utility/utility'
 
 function Kontak() {
+  TabTitle("Kontak - Sisporlaka");
   const [data, setData] = useState([
     {
       id: 1,

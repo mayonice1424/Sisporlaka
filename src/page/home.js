@@ -2,8 +2,9 @@ import { Box, Flex,Text } from '@chakra-ui/react'
 import React from 'react'
 import Navbar from '../components/publicNavbar/navbar'
 import './home.css'
-
+import { TabTitle } from '../Utility/utility'
 function Home() {
+  TabTitle("Home - Sisporlaka");
   return (
     <>
     <Navbar />

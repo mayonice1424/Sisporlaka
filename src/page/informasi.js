@@ -1,8 +1,9 @@
 import { Flex, Text } from '@chakra-ui/react'
 import React from 'react'
 import Navbar from '../components/publicNavbar/navbar'
-
+import { TabTitle } from '../Utility/utility'
 function Informasi() {
+  TabTitle("Informasi - Sisporlaka");
   return (
     <>
     <Navbar />

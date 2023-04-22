@@ -10,6 +10,8 @@ import axios from "axios"
 import { useNavigate } from "react-router-dom"
 import { useDispatch } from "react-redux";
 import { routePageName } from "../Redux/action";
+import { loginApi } from "../Utility/api"
+import { TabTitle } from "../Utility/utility"
 export const UserContext = React.createContext();
 const schema = yup.object({
   username: yup.string().required('Username harus diisi'),
@@ -17,7 +19,7 @@ const schema = yup.object({
 })
 
 const Login = ( ) => {
-
+  TabTitle('Login - Sisporlaka')
   const navigate = useNavigate()
   const [msg, setMsg] = useState('')
   const [token, setToken] = useState('')
@@ -31,7 +33,7 @@ const Login = ( ) => {
 	};
   const handleSubmitComplete = async (usernameValues, passwordValues) => {
     try {
-      const response = await axios.post('http://localhost:4000/login', {
+      const response = await axios.post(loginApi, {
         username: usernameValues,
         password: passwordValues
       })

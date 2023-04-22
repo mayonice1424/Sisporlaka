@@ -1,9 +1,9 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { FiHome, FiMonitor } from "react-icons/fi";
 import NavItem from "../navitem/navitem";
 import { useSelector, useDispatch } from "react-redux";
 import { routePageName } from "../../Redux/action";
+import {MdOutlineFactCheck} from "react-icons/md";
 
 const DashboardItem = ({role, navSize}) => {
   const { routeName } = useSelector((state) => state.userReducer);
@@ -21,7 +21,7 @@ const DashboardItem = ({role, navSize}) => {
 						}}>
 						<NavItem
 							navSize={navSize}
-							icon={FiHome}
+							icon={MdOutlineFactCheck}
 							title="Validasi"
 							active={routeName === "Validasi Laporan"}
 						/>

@@ -21,6 +21,7 @@ import axios from "axios";
 import useAuth from "../../middleware/useAuth";
 import jwt_decode from "jwt-decode";
 import DashboardItem from "../boardItem/dashboardItem";
+import {CgFileDocument} from "react-icons/cg";
 
 const Draw = (props) => {
 	const data = props.data;
@@ -77,7 +78,7 @@ const Draw = (props) => {
 						}}>
 						<NavItem
 							navSize={navSize}
-							icon={FiHome}
+							icon={CgFileDocument}
 							title="Laporkan Kejadian"
 							active={routeName === "Laporkan Kejadian"}
 						/>

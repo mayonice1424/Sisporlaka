@@ -10,6 +10,8 @@ import { Link } from "react-router-dom";
 import axios from "axios";
 import jwt_decode from "jwt-decode";
 import useAuth from "../../middleware/useAuth";
+import {CgFileDocument} from "react-icons/cg";
+import {VscGraphLine} from "react-icons/vsc";
 import DashboardItem from "../boardItem/dashboardItem";
 const SideNav = () => {
 	const navSize = "large";
@@ -68,7 +70,7 @@ const SideNav = () => {
 						}}>
 						<NavItem
 							navSize={navSize}
-							icon={FiHome}
+							icon={CgFileDocument}
 							title="Laporkan Kejadian"
 							active={routeName === "Laporkan Kejadian"}
 						/>
@@ -80,7 +82,7 @@ const SideNav = () => {
 						}}>
 						<NavItem
 							navSize={navSize}
-							icon={FiHome}
+							icon={VscGraphLine}
 							title="Grafik Kecelakaan"
 							active={routeName === "Grafik Kecelakaan"}
 						/>
