@@ -23,7 +23,7 @@ export default function NavItem({ icon, title, active, navSize }) {
 					backgroundColor={active && "var(--color-primer)"}
 					p={3}
 					borderRadius={10}
-					_hover={{ backgroundColor: "var(--color-hover)"}}
+					_hover={active?{}:{ backgroundColor: "var(--color-hover)"}}
 					w={navSize == "large" && "80%"}
 					alignContent={"center"}
 					textAlign={"center"}
