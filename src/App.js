@@ -22,6 +22,7 @@ import AdminJasaRaharjaGrafik from "./page/jasaRaharja/grafik";
 import AdminPolisiGrafik from "./page/polisi/grafik";
 import AdminDinkesGrafik from "./page/dinkes/grafik";
 import AdminDishubGrafik from "./page/dishub/grafik";
+import AdminRSGrafik from "./page/rumahsakit/grafik";
 
 
 function App() {
@@ -56,7 +57,7 @@ function App() {
         <Route path="/unit" element = {<Board />}>
         <Route path='rumah-sakit' element={<AdminRS />} />
         <Route path='rumah-sakit/laporan' element={<AdminRSLaporan />} />
-        <Route path='rumah-sakit/grafik' element={<AdminDishubGrafik/>} />
+        <Route path='rumah-sakit/grafik' element={<AdminRSGrafik/>} />
         </Route>
         <Route path='*' element={<Notfound />} />
         </Routes>

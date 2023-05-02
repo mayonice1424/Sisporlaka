@@ -12,14 +12,10 @@ import {
 } from "@chakra-ui/react";
 import { useSelector, useDispatch } from "react-redux";
 import NavItem from "../navitem/navitem";
-import { FiHome, FiMonitor } from "react-icons/fi";
-import { GiGreenhouse } from "react-icons/gi";
-import { AiOutlineControl, AiOutlineHistory } from "react-icons/ai";
+import { FiHome } from "react-icons/fi";
 import { routePageName } from "../../Redux/action";
 import { Link } from "react-router-dom";
-import axios from "axios";
 import useAuth from "../../middleware/useAuth";
-import jwt_decode from "jwt-decode";
 import DashboardItem from "../boardItem/dashboardItem";
 import {CgFileDocument} from "react-icons/cg";
 

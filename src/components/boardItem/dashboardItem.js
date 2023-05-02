@@ -22,7 +22,7 @@ const DashboardItem = ({role, navSize}) => {
 						<NavItem
 							navSize={navSize}
 							icon={MdOutlineFactCheck}
-							title="Validasi"
+							title="Validasi Laporan"
 							active={routeName === "Validasi Laporan"}
 						/>
       </Link>

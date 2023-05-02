@@ -1,17 +1,17 @@
-import React,{useState,useEffect} from 'react'
-import { Flex, Text } from '@chakra-ui/react'
-import useAuth from '../../middleware/useAuth'
-import { TabTitle } from '../../Utility/utility'
+import React from 'react'
+import useAuth from '../../middleware/useAuth';
+import { TabTitle } from '../../Utility/utility';
+import Dashboard from '../../components/dashboard/dashboard';
+import DashboardTable from '../../components/dashboard/dashboardTable';
+
 const AdminJasaRaharja = () => {
   TabTitle("Dashboard - Sisporlaka");
   const role = useAuth('jasa-raharja')
-  return (
-    <>
-    <Flex>
-      <Text color={'red'}>Halaman Role {role}</Text>
-    </Flex>
-    </>
-  )
+    return (
+      <>
+        <Dashboard />
+        <DashboardTable />
+      </>
+    )
 }
-
 export default AdminJasaRaharja
