@@ -1,16 +1,24 @@
-import React,{useEffect, useState} from 'react'
-import { Flex, Text } from '@chakra-ui/react'
+import React,{useEffect} from 'react'
+import { Flex
+ } from '@chakra-ui/react'
 import useAuth from '../../middleware/useAuth';
 import { TabTitle } from '../../Utility/utility'
+import LaporanPolisi from '../../components/laporan/laporanPolisi';
+import { useDispatch } from "react-redux";
+import { routePageName } from "../../Redux/action";
 
 const AdminPolisiLaporan = () => {
- TabTitle("Laporan - Sisporlaka");
+  TabTitle("Laporan - Sisporlaka");
+  const dispatch = useDispatch();
+  useEffect(() => {
+		dispatch(routePageName("Laporkan Kejadian"));
+	}, []);
  const role = useAuth('polisi')
   return (
     <>
-    <Flex>
-      <Text color={'blue'}>Halaman Role {role}  </Text>
-    </Flex>
+    <div>
+        <LaporanPolisi />
+    </div>
     </>
   )
 }

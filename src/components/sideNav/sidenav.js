@@ -1,14 +1,10 @@
-import React, { useState,useEffect } from "react";
-import { Flex, Image, Box, Center,Text } from "@chakra-ui/react";
-import { FiHome, FiMonitor } from "react-icons/fi";
-import { GiGreenhouse } from "react-icons/gi";
-import { AiOutlineControl, AiOutlineHistory } from "react-icons/ai";
+import React from "react";
+import { Flex, Box, Center,Text } from "@chakra-ui/react";
+import { FiHome } from "react-icons/fi";
 import NavItem from "../navitem/navitem";
 import { useSelector, useDispatch } from "react-redux";
 import { routePageName } from "../../Redux/action";
 import { Link } from "react-router-dom";
-import axios from "axios";
-import jwt_decode from "jwt-decode";
 import useAuth from "../../middleware/useAuth";
 import {CgFileDocument} from "react-icons/cg";
 import {VscGraphLine} from "react-icons/vsc";
