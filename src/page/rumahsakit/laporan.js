@@ -16,7 +16,7 @@ const AdminRSLaporan = () => {
   const role = useAuth('rumah-sakit')
   return (
     <>
-    <div>
+    <div width={'100%'}>
       <LaporanRS />
     </div>
     </>

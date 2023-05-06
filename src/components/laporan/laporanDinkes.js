@@ -4,33 +4,45 @@ import { Flex, Text, Input,
   Thead,
   Tbody,
   FormControl,
-  FormLabel,
-  FormErrorMessage,
-  FormHelperText,
-  InputGroup,
   Tr,
   Th,
   Td,
-  TableCaption,
-  TableContainer
+  TableContainer,
+  Button
  } from '@chakra-ui/react'
 import useAuth from '../../middleware/useAuth';
 import { TabTitle } from '../../Utility/utility'
-import {getLaporan} from '../../Utility/api.js'
+import {getLaporan, getLaporanToCount} from '../../Utility/api.js'
 import axios from 'axios';
 import { FormatRupiah } from "@arismun/format-rupiah";
 import Loading from '../loading/loading.js'
 import moment from 'moment';
+import ReactPaginate from 'react-paginate';
+import './laporan.css';
+import { Link } from 'react-router-dom';
 
 const LaporanDinkes = () => {
+ const role = useAuth('dinas-kesehatan')
  const [data , setData] = useState([])
  const [loading, setLoading] = useState(true)
- const [search, setSearch] = useState('')
- console.log(search)
- const getAllLaporan = async () => {
-  axios.get(getLaporan)
+ const [page, setPage] = useState(0)
+ const [totalPage, setTotalPage] = useState(0)
+ const [totalData, setTotalData] = useState(0)
+ const [dataLaporan, setDataLaporan] = useState('')
+ const [jumlahSearch, setJumlahSearch] = useState(0)
+
+ const [rows, setRows] = useState(0)
+ const [limit, setLimit] = useState(10)
+ const [keyword, setKeyword] = useState('')
+ const [query, setQuery] = useState('')
+ const [msg, setMsg] = useState("");
+ const getAllLaporanByQuery  = async () => {
+  axios.get(`${getLaporan}search_query=${keyword}&limit=${limit}&page=${page}`)
   .then(response => {
     setData(response.data.laporan)
+    setTotalPage(response.data.totalPages)
+    setTotalData(response.data.totalRows)
+    setPage(response.data.page)
     console.log (data)
     }
     )
@@ -40,27 +52,70 @@ const LaporanDinkes = () => {
   )
 }
 
+const getAllLaporan  = async () => {
+  axios.get(getLaporanToCount)
+  .then(response => {
+    setDataLaporan(response.data.laporan)
+    console.log (data)
+    }
+    )
+  .catch(error => {
+    console.log(error)
+  }
+  )
+}
+const changePage = ({ selected }) => {
+  setPage(selected);
+  if (selected === 9) {
+    setMsg(
+      "Jika tidak menemukan data yang Anda cari, silahkan cari data dengan kata kunci spesifik!"
+    );
+  } else {
+    setMsg("");
+  }
+};
+const searchData = (e) => {
+  e.preventDefault()
+  setPage(0)
+  setMsg("")
+  setKeyword(query)
+}
 useEffect(() => {
   getAllLaporan()
+  getAllLaporanByQuery()
   setLoading(true)
-}, [])
+}, [page,keyword])
 var idLocale = require('moment/locale/id');
 moment.updateLocale('id', idLocale);
   return (
     <>
     {
       data === null ? <Loading/> : 
-    <Flex flexDir={'column'}>
-    <Flex  mt={'-20px'}>
-      <FormControl id="search" onChange={(e) => setSearch(e.target.value)} >
-        <FormLabel>Cari Data</FormLabel>
-        <Input width={'20%'} color={'black'} maxWidth={'1000px'} type="text" placeholder="Cari Data" />
-      </FormControl>
+    <Flex flexDir={'column'} >
+      <form onSubmit={searchData}>
+      <FormControl id="search" >
+    <Flex justify={'space-between'} flexDir={'row'} mt={'20px'}>
+          <Flex ml={'5%'}  width={'20%'} maxWidth={'1000px'}>
+            <Input variant={'filled'} color={'black'} type="text" value={query} onChange={(e)=> setQuery(e.target.value)} placeholder="Cari Data" />
+            <Button ml={'14px'} width={'50%'} bg={'#4AA8FF'} maxWidth={'80px'} type='submit' className='button'>
+              Cari
+            </Button>
+          </Flex>
+    <Flex mr={'6%'}>
+     <Link to={`/unit/${role}/laporan/add`}>
+      <Button bg={'#4AA8FF'} maxWidth={'100px'} type='submit' className='button'>
+      <Text color={'white'} >
+        Tambah
+      </Text>
+      </Button>
+      </Link>
     </Flex>
+    </Flex>
+      </FormControl>
+      </form>
     <Flex justify={'center'} mt={'20px'}>
-      <TableContainer width={'90%'} rounded={'2xl'} maxWidth={'2000px'} >
+      <TableContainer width={'90%'} maxWidth={'2000px'} >
         <Table  size='md' variant="simple">
-          <TableCaption>TOP 3 Kecamatan dengan Tingkat Kecelakaan Tertinggi</TableCaption>
           <Thead bg={'var(--color-primer)'}>
             <Tr>
               <Th color={'white'}>No</Th>
@@ -74,10 +129,7 @@ moment.updateLocale('id', idLocale);
           </Thead>
           <Tbody>
           {
-                  Object.values(data).filter((item)=> {
-                    return search === "" ? item : item.judul_kejadian.toLowerCase().includes(search.toLowerCase()) || item.Kecamatan.nama_kecamatan.toLowerCase().includes(search.toLowerCase()) 
-                  }
-                  ).map((item,index, key) => (
+                  Object.values(data).map((item,index, key) => (
                     <Tr key={item.id}>
                       <Td color={'black'}>{index+1}</Td>
                       <Td color={'black'}>{item.judul_kejadian}</Td>
@@ -93,10 +145,38 @@ moment.updateLocale('id', idLocale);
         </Table>
       </TableContainer>
     </Flex>
+    <Flex mx={'5%'} flexDir={'row'} mt={'20px'} justify={'space-between'}>
+    <Flex>
+      <Text color={'black'} >Menampilkan {data.length} dari {totalData} Data</Text>
     </Flex>
+    <Flex
+      key={rows}
+    >
+      <ReactPaginate
+        previousLabel={"<"}
+        previousClassName={'page-item'}
+        nextLabel={">"}
+        nextClassName={'page-item'}
+        breakLabel={"..."}
+        breakClassName={"break-me"}
+        pageCount={Math.min(10, totalPage)}
+        onPageChange={changePage}
+        marginPagesDisplayed={2}
+        breakLinkClassName={'page-link'}
+        breakAriaLabels={'Break'}
+        pageRangeDisplayed={2}
+        containerClassName={"pagination"}
+        subContainerClassName={"pages pagination"}
+        activeClassName={"active"}
+        pageClassName={'page-item'}
+        disabledClassName={'disabled'}
+        disabledLinkClassName={'disabledLink'}
+      />
+    </Flex>
+    </Flex>
+  </Flex>
   }
     </>
   )
 }
-
 export default LaporanDinkes

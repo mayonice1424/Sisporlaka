@@ -18,6 +18,7 @@ import { Link } from "react-router-dom";
 import useAuth from "../../middleware/useAuth";
 import DashboardItem from "../boardItem/dashboardItem";
 import {CgFileDocument} from "react-icons/cg";
+import {VscGraphLine} from "react-icons/vsc";
 
 const Draw = (props) => {
 	const data = props.data;
@@ -86,7 +87,7 @@ const Draw = (props) => {
 						}}>
 						<NavItem
 							navSize={navSize}
-							icon={FiHome}
+							icon={VscGraphLine}
 							title="Grafik Kecelakaan"
 							active={routeName === "Grafik Kecelakaan"}
 						/>

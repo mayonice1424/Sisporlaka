@@ -1,5 +1,4 @@
 import React,{useEffect} from 'react'
-import { Flex, Text } from '@chakra-ui/react'
 import useAuth from '../../middleware/useAuth'
 import { TabTitle } from '../../Utility/utility'
 import { useDispatch } from "react-redux";

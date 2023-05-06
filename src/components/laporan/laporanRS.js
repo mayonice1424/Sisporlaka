@@ -18,8 +18,10 @@ import { FormatRupiah } from "@arismun/format-rupiah";
 import Loading from '../loading/loading.js'
 import moment from 'moment';
 import ReactPaginate from 'react-paginate';
-import './laporan.css'
+import './laporan.css';
+import { Link } from 'react-router-dom';
 const LaporanRS = () => {
+ const role = useAuth('rumah-sakit')
  const [data , setData] = useState([])
  const [loading, setLoading] = useState(true)
  const [page, setPage] = useState(0)
@@ -27,6 +29,7 @@ const LaporanRS = () => {
  const [totalData, setTotalData] = useState(0)
  const [dataLaporan, setDataLaporan] = useState('')
  const [jumlahSearch, setJumlahSearch] = useState(0)
+
  const [rows, setRows] = useState(0)
  const [limit, setLimit] = useState(10)
  const [keyword, setKeyword] = useState('')
@@ -87,15 +90,26 @@ moment.updateLocale('id', idLocale);
     <>
     {
       data === null ? <Loading/> : 
-    <Flex flexDir={'column'}>
+    <Flex flexDir={'column'} >
       <form onSubmit={searchData}>
       <FormControl id="search" >
-    <Flex flexDir={'row'} mt={'20px'}>
-          <Input width={'20%'} color={'black'} maxWidth={'1000px'} type="text" value={query} onChange={(e)=> setQuery(e.target.value)} placeholder="Cari Data" />
-          <Button ml={'14px'} width={'10%'} bg={'#4AA8FF'} maxWidth={'80px'} type='submit' className='button'>
-            Cari
-          </Button>
-      </Flex>
+    <Flex justify={'space-between'} flexDir={'row'} mt={'20px'}>
+          <Flex ml={'5%'}  width={'20%'} maxWidth={'1000px'}>
+            <Input variant={'filled'} color={'black'} type="text" value={query} onChange={(e)=> setQuery(e.target.value)} placeholder="Cari Data" />
+            <Button ml={'14px'} width={'50%'} bg={'#4AA8FF'} maxWidth={'80px'} type='submit' className='button'>
+              Cari
+            </Button>
+          </Flex>
+    <Flex mr={'6%'}>
+     <Link to={`/unit/${role}/laporan/add`}>
+      <Button bg={'#4AA8FF'} maxWidth={'100px'} type='submit' className='button'>
+      <Text color={'white'} >
+        Tambah
+      </Text>
+      </Button>
+      </Link>
+    </Flex>
+    </Flex>
       </FormControl>
       </form>
     <Flex justify={'center'} mt={'20px'}>
