@@ -1,6 +1,6 @@
 import "./App.css";
 import React from 'react';
-import { BrowserRouter as Router,Routes, Route } from 'react-router-dom';
+import { BrowserRouter ,Routes, Route } from 'react-router-dom';
 import Home from './page/home';
 import Informasi from './page/informasi';
 import Kontak from './page/kontak';
@@ -28,6 +28,7 @@ import AddLaporanDishub from "./page/dishub/addLaporan";
 import AddLaporanDinkes from "./page/dinkes/addLaporan";
 import AddLaporanPolisi from "./page/polisi/addLaporan";
 import AddLaporanJasaRaharja from "./page/jasaRaharja/addLaporan copy";
+
 
 
 function App() {

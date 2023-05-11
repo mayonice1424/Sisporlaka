@@ -7,6 +7,7 @@ import { ChakraProvider } from '@chakra-ui/react'
 import { BrowserRouter } from 'react-router-dom';
 import axios from 'axios';
 
+
 import { Provider } from 'react-redux';
 import { Store } from './Redux/store';
 

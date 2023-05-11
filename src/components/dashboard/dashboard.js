@@ -1,27 +1,26 @@
 import React,{useEffect, useState} from 'react'
 import { Flex, Text ,Wrap,Image } from '@chakra-ui/react'
-import useAuth from '../../middleware/useAuth';
 import Loading from '../../components/loading/loading';
 import { BsClipboardData } from 'react-icons/bs';
 import axios from 'axios';
 import { dashboardInfoApi } from '../../Utility/api';
 import CardDashboard from '../../components/boardItem/cardDashboard';
 
-
 const Dashboard = () => {
 	const [data, setData] = useState('');
   const [isloading, setLoading] = useState(true);
-
   const getCount = async () => {
        axios.get(dashboardInfoApi)
       .then(response => {
         setData(response.data)
+        setLoading(false)
       })
       .catch(error => {
         console.log(error)
       }
       )
     }
+
 
     useEffect(() => {
       getCount()
@@ -36,19 +35,21 @@ const Dashboard = () => {
 				<Flex w="100%"  flexDir={"row"} alignContent={"center"} justifyContent={"center"} alignItems={"center"}>
         <Flex  justify="center" mt={'-30px'}>
 						<Wrap  spacing="60px" justify="center">
-							<CardDashboard
-								data={{
-									value: data.count,
-                  icon: BsClipboardData,
-									name: "Jumlah Laporan",
-								}}
-							/><CardDashboard
+              <CardDashboard
               data={{
-                value: data.count,
+                value: data.countNotValidate,
                 icon: BsClipboardData,
-                name: "Jumlah Laporan",
+                name: "Jumlah Permintaan Validasi",
               }}
-            /><CardDashboard
+            />
+              <CardDashboard
+                data={{
+                  value: data.count,
+                  icon: BsClipboardData,
+                  name: "Jumlah Kasus Kecelakaan",
+                }}
+              />
+            <CardDashboard
             data={{
               value: data.count,
               icon: BsClipboardData,

@@ -128,15 +128,24 @@ moment.updateLocale('id', idLocale);
           </Thead>
           <Tbody>
           {
-                  Object.values(data).map((item,index, key) => (
+                  data.map((item,index, key) => (
                     <Tr key={item.id}>
                       <Td color={'black'}>{index+1}</Td>
-                      <Td color={'black'}>{item.judul_kejadian}</Td>
-                      <Td color={'black'}>{moment(item.tanggal).format('LL')}</Td>
-                      <Td color={'black'}>{moment(item.waktu, 'HH:mm:ss').format('h:mm A')}</Td>
-                      <Td color={'black'}>{item.Kecamatan.nama_kecamatan}</Td>
-                      <Td color={'black'}><FormatRupiah value={item.kerugian_materil}/></Td>
-                      <Td color={'black'}>{item.penyebab}</Td>
+                      <Td color={'black'}>
+                        {item.judul_kejadian == null ? '-' : item.judul_kejadian}</Td>
+                      <Td color={'black'}>
+                        {moment(item.tanggal).format('LL') == null ? '-' : moment(item.tanggal).format('LL')}</Td>
+                      <Td color={'black'}>{moment(item.waktu, 'HH:mm:ss').format('h:mm A') == null ? '-' : moment(item.waktu, 'HH:mm:ss').format('h:mm A') }</Td>
+                      <Td color={'black'}>
+                        {item.Kecamatan.nama_kecamatan == null ? '-' : item.Kecamatan.nama_kecamatan}</Td>
+                      <Td color={'black'}>
+                        {
+                          item.kerugian_materil == null ? '-': <FormatRupiah value={item.kerugian_materil == null ? '-': item.kerugian_materil}/>
+                        }
+                      </Td>
+                      <Td color={'black'}>
+                        {item.penyebab == null ? '-' : item.penyebab}
+                      </Td>
                     </Tr>
                   ))
                 }

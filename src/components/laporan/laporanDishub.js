@@ -8,53 +8,65 @@ import { Flex, Text, Input,
   Th,
   Td,
   TableContainer,
-  Button
+  Button,
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalFooter,
+  ModalBody,
+  ModalCloseButton
  } from '@chakra-ui/react'
 import useAuth from '../../middleware/useAuth';
 import { TabTitle } from '../../Utility/utility'
-import {getLaporan, getLaporanToCount} from '../../Utility/api.js'
+import {getLaporan, deleteLaporanApi} from '../../Utility/api.js'
 import axios from 'axios';
 import { FormatRupiah } from "@arismun/format-rupiah";
 import Loading from '../loading/loading.js'
 import moment from 'moment';
 import ReactPaginate from 'react-paginate';
 import './laporan.css';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate} from 'react-router-dom';
+import { useDisclosure } from "@chakra-ui/react"
 
 const LaporanDishub = () => {
+ const navigate = useNavigate()
+ const { isOpen, onOpen, onClose } = useDisclosure()
  const role = useAuth('dinas-perhubungan')
  const [data , setData] = useState([])
  const [loading, setLoading] = useState(true)
  const [page, setPage] = useState(0)
  const [totalPage, setTotalPage] = useState(0)
  const [totalData, setTotalData] = useState(0)
- const [dataLaporan, setDataLaporan] = useState('')
-
  const [rows, setRows] = useState(0)
  const [limit, setLimit] = useState(10)
  const [keyword, setKeyword] = useState('')
  const [query, setQuery] = useState('')
  const [msg, setMsg] = useState("");
+ const [id, setId] = useState('')
+ const [judulKejadian, setJudulKejadian] = useState('')
+
+ const deleteItem = (e,id) => {
+  e.preventDefault();
+  axios.delete(`${deleteLaporanApi}${id}`,
+  console.log(id)
+  )
+ .then(response => {
+   console.log(response)
+   navigate(window.location.reload(true))
+ })
+ .catch(error => {
+   console.log(error)
+ }
+ )
+}
  const getAllLaporanByQuery  = async () => {
-  axios.get(`${getLaporan}search_query=${keyword}&limit=${limit}&page=${page}`)
+  await axios.get(`${getLaporan}search_query=${keyword}&limit=${limit}&page=${page}`)
   .then(response => {
     setData(response.data.laporan)
     setTotalPage(response.data.totalPages)
     setTotalData(response.data.totalRows)
     setPage(response.data.page)
-    console.log (data)
-    }
-    )
-  .catch(error => {
-    console.log(error)
-  }
-  )
-}
-
-const getAllLaporan  = async () => {
-  axios.get(getLaporanToCount)
-  .then(response => {
-    setDataLaporan(response.data.laporan)
     console.log (data)
     }
     )
@@ -80,7 +92,6 @@ const searchData = (e) => {
   setKeyword(query)
 }
 useEffect(() => {
-  getAllLaporan()
   getAllLaporanByQuery()
   setLoading(true)
 }, [page,keyword])
@@ -101,6 +112,30 @@ moment.updateLocale('id', idLocale);
             </Button>
           </Flex>
     <Flex mr={'6%'}>
+    <Modal isOpen={isOpen} onClose={onClose}>
+          <ModalOverlay />
+          <ModalContent>
+            <ModalHeader>Modal Title</ModalHeader>
+            <ModalCloseButton />
+            <ModalBody>
+              Apakah anda yakin ingin menghapus data {judulKejadian} ini?
+            </ModalBody>
+            <ModalFooter>
+            <Button
+                bg={'#4AA8FF'}
+                onClick={(e) => {
+                deleteItem(e, id);
+                onClose();
+              }}
+              mr={3}
+              > Hapus
+              </Button>
+              <Button colorScheme='blue' mr={3} onClick={onClose}>
+                Close
+              </Button>
+            </ModalFooter>
+          </ModalContent>
+        </Modal>
      <Link to={`/unit/${role}/laporan/add`}>
       <Button bg={'#4AA8FF'} maxWidth={'100px'} type='submit' className='button'>
       <Text color={'white'} >
@@ -124,19 +159,44 @@ moment.updateLocale('id', idLocale);
               <Th color={'white'}>Kecamatan</Th>
               <Th color={'white'}>Kerugian Materil</Th>
               <Th color={'white'}>Penyebab</Th>
+              <Th color={'white'}>Aksi</Th>
             </Tr>
           </Thead>
           <Tbody>
           {
-                  Object.values(data).map((item,index, key) => (
-                    <Tr key={item.id}>
+                  data.map((item,index, key) => (
+                    <Tr key={item.id_laporan}>
                       <Td color={'black'}>{index+1}</Td>
-                      <Td color={'black'}>{item.judul_kejadian}</Td>
-                      <Td color={'black'}>{moment(item.tanggal).format('LL')}</Td>
-                      <Td color={'black'}>{moment(item.waktu, 'HH:mm:ss').format('h:mm A')}</Td>
-                      <Td color={'black'}>{item.Kecamatan.nama_kecamatan}</Td>
-                      <Td color={'black'}><FormatRupiah value={item.kerugian_materil}/></Td>
-                      <Td color={'black'}>{item.penyebab}</Td>
+                      <Td color={'black'}>
+                        {item.judul_kejadian == null ? '-' : item.judul_kejadian}</Td>
+                      <Td color={'black'}>
+                        {moment(item.tanggal).format('LL') == null ? '-' : moment(item.tanggal).format('LL')}</Td>
+                      <Td color={'black'}>{moment(item.waktu, 'HH:mm:ss').format('h:mm A') == null ? '-' : moment(item.waktu, 'HH:mm:ss').format('h:mm A') }</Td>
+                      <Td color={'black'}>
+                        {item.Kecamatan.nama_kecamatan == null ? '-' : item.Kecamatan.nama_kecamatan}</Td>
+                      <Td color={'black'}>
+                        {
+                          item.kerugian_materil == null ? '-': <FormatRupiah value={item.kerugian_materil == null ? '-': item.kerugian_materil}/>
+                        }
+                      </Td>
+                      <Td color={'black'}>
+                        {item.penyebab == null ? '-' : item.penyebab}
+                      </Td>
+                      <Td color={'black'}>
+                        <Flex justify={'center'} flexDir={'row'}>
+                        <Button 
+                          onClick= {
+                            () => {
+                              setJudulKejadian(item.judul_kejadian)
+                              setId(item.id_laporan)
+                              onOpen()
+                               }
+                            }
+                            ml={'10px'} bg={'red'} maxWidth={'100px'} type='submit' className='deleteButton'> 
+                            {item.id_laporan}
+                        </Button>
+                       </Flex>
+                       </Td>
                     </Tr>
                   ))
                 }
