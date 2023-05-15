@@ -13,7 +13,7 @@ import {
 } from '@chakra-ui/react';
 import axios from 'axios';
 import Loading from '../../components//loading/loading.js'
-import { top3Api } from '../../Utility/api';
+import { countKecamatan } from '../../Utility/api';
 
 const DashboardTable = () => {
   TabTitle("Dashboard - Sisporlaka");
@@ -23,7 +23,7 @@ const DashboardTable = () => {
 
 
   const getCountKecamatan = async () => {
-    axios.get(top3Api)
+    axios.get(countKecamatan)
     .then(response => {
       setData(response.data.count)
       console.log (kecamatanId)
@@ -51,7 +51,6 @@ const DashboardTable = () => {
         <Flex justify={'center'} mt={'50px'}>
           <TableContainer width={'95%'} rounded={'2xl'} maxWidth={'1200px'} >
             < Table  size='lg' variant="simple">
-              <TableCaption>TOP 3 Kecamatan dengan Tingkat Kecelakaan Tertinggi</TableCaption>
               <Thead bg={'var(--color-primer)'}>
                 <Tr>
                   <Th color={'white'}>No</Th>

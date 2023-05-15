@@ -100,15 +100,6 @@ moment.updateLocale('id', idLocale);
               Cari
             </Button>
           </Flex>
-    <Flex mr={'6%'}>
-     <Link to={`/unit/${role}/laporan/add`}>
-      <Button bg={'#4AA8FF'} maxWidth={'100px'} type='submit' className='button'>
-      <Text color={'white'} >
-        Tambah
-      </Text>
-      </Button>
-      </Link>
-    </Flex>
     </Flex>
       </FormControl>
       </form>

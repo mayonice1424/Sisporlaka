@@ -64,6 +64,7 @@ const LaporanDishub = () => {
   await axios.get(`${getLaporan}search_query=${keyword}&limit=${limit}&page=${page}`)
   .then(response => {
     setData(response.data.laporan)
+    console.log(response.data.laporan)
     setTotalPage(response.data.totalPages)
     setTotalData(response.data.totalRows)
     setPage(response.data.page)
@@ -115,34 +116,28 @@ moment.updateLocale('id', idLocale);
     <Modal isOpen={isOpen} onClose={onClose}>
           <ModalOverlay />
           <ModalContent>
-            <ModalHeader>Modal Title</ModalHeader>
+            <ModalHeader>Hapus Laporan</ModalHeader>
             <ModalCloseButton />
             <ModalBody>
               Apakah anda yakin ingin menghapus data {judulKejadian} ini?
             </ModalBody>
             <ModalFooter>
             <Button
-                bg={'#4AA8FF'}
+                bg={'red'}
                 onClick={(e) => {
                 deleteItem(e, id);
                 onClose();
               }}
+              color={'white'}
               mr={3}
               > Hapus
               </Button>
-              <Button colorScheme='blue' mr={3} onClick={onClose}>
+              <Button border={'solid 2px red'} bg={'white'}  mr={3} onClick={onClose}>
                 Close
               </Button>
             </ModalFooter>
           </ModalContent>
         </Modal>
-     <Link to={`/unit/${role}/laporan/add`}>
-      <Button bg={'#4AA8FF'} maxWidth={'100px'} type='submit' className='button'>
-      <Text color={'white'} >
-        Tambah
-      </Text>
-      </Button>
-      </Link>
     </Flex>
     </Flex>
       </FormControl>
@@ -159,7 +154,11 @@ moment.updateLocale('id', idLocale);
               <Th color={'white'}>Kecamatan</Th>
               <Th color={'white'}>Kerugian Materil</Th>
               <Th color={'white'}>Penyebab</Th>
-              <Th color={'white'}>Aksi</Th>
+              <Th color={'white'}>
+                <Flex>
+                  Aksi
+                </Flex>
+              </Th>
             </Tr>
           </Thead>
           <Tbody>
@@ -182,7 +181,7 @@ moment.updateLocale('id', idLocale);
                       <Td color={'black'}>
                         {item.penyebab == null ? '-' : item.penyebab}
                       </Td>
-                      <Td color={'black'}>
+                      <Td color={'#646464'}>
                         <Flex justify={'center'} flexDir={'row'}>
                         <Button 
                           onClick= {
@@ -192,7 +191,7 @@ moment.updateLocale('id', idLocale);
                               onOpen()
                                }
                             }
-                            ml={'10px'} bg={'red'} maxWidth={'100px'} type='submit' className='deleteButton'> 
+                            ml={'10px'} border={'solid 2px red'} bg={'#FAFBFC'} maxWidth={'100px'} type='submit' className='deleteButton'> 
                             {item.id_laporan}
                         </Button>
                        </Flex>

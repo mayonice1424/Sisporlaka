@@ -4,6 +4,9 @@ import { TabTitle } from '../../Utility/utility';
 import { useDispatch } from "react-redux";
 import { routePageName } from "../../Redux/action";
 import { Flex,Text } from '@chakra-ui/react';
+import { Formik } from 'formik';
+import * as Yup from 'yup';
+
 
 
 const AddLaporanPolisi = () => {
@@ -17,7 +20,7 @@ const AddLaporanPolisi = () => {
       <>
        <Flex>
         <Text color={'red'}>
-          INI HALAMAN add laporan
+          
         </Text>
        </Flex>
       </>

@@ -24,7 +24,6 @@ import AdminDinkesGrafik from "./page/dinkes/grafik";
 import AdminDishubGrafik from "./page/dishub/grafik";
 import AdminRSGrafik from "./page/rumahsakit/grafik";
 import AddLaporanRS from "./page/rumahsakit/addLaporan";
-import AddLaporanDishub from "./page/dishub/addLaporan";
 import AddLaporanDinkes from "./page/dinkes/addLaporan";
 import AddLaporanPolisi from "./page/polisi/addLaporan";
 import AddLaporanJasaRaharja from "./page/jasaRaharja/addLaporan copy";
@@ -61,7 +60,6 @@ function App() {
         <Route path="/unit" element = {<Board />}>
         <Route path='dinas-perhubungan' element={<AdminDishub />} />
         <Route path='dinas-perhubungan/laporan' element={<AdminDishubLaporan />} />
-        <Route path='dinas-perhubungan/laporan/add' element={<AddLaporanDishub />} />
         <Route path='dinas-perhubungan/validasi-laporan' element={<AdminDishubValidasi/>} />
         <Route path='dinas-perhubungan/grafik' element={<AdminDishubGrafik/>} />
         </Route>

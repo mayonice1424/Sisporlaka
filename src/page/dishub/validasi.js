@@ -142,34 +142,28 @@ moment.updateLocale('id', idLocale);
     <Modal isOpen={isOpen} onClose={onClose}>
           <ModalOverlay />
           <ModalContent>
-            <ModalHeader>Modal Title</ModalHeader>
+            <ModalHeader>Hapus Laporan</ModalHeader>
             <ModalCloseButton />
             <ModalBody>
               Apakah anda yakin ingin menghapus data {judulKejadian} ini?
             </ModalBody>
             <ModalFooter>
             <Button
-                bg={'#4AA8FF'}
+                bg={'red'}
                 onClick={(e) => {
                 deleteItem(e, id);
                 onClose();
               }}
+              color={'white'}
               mr={3}
               > Hapus
               </Button>
-              <Button colorScheme='blue' mr={3} onClick={onClose}>
+              <Button border={'solid 2px red'} bg={'white'}  mr={3} onClick={onClose}>
                 Close
               </Button>
             </ModalFooter>
           </ModalContent>
         </Modal>
-     <Link to={`/unit/${role}/laporan/add`}>
-      <Button bg={'#4AA8FF'} maxWidth={'100px'} type='submit' className='button'>
-      <Text color={'white'} >
-        Tambah
-      </Text>
-      </Button>
-      </Link>
     </Flex>
     </Flex>
       </FormControl>
@@ -213,10 +207,11 @@ moment.updateLocale('id', idLocale);
                   <Td color={'black'}>
                     {item.penyebab == null ? '-' : item.penyebab}
                   </Td>
-                  <Td color={'black'}>
+                  <Td>
                     <Flex justify={'center'} flexDir={'row'}>
                         <Button onClick={(e) => patchLaporan(item.users[0].Users_Laporan.id_users_laporan,e)} bg={'#4AA8FF'} maxWidth={'100px'} type='submit' color={'white'} className='validasiButton'> Validasi</Button>
                         <Button 
+                          color={'#646464'}
                           onClick= {
                             () => {
                               setJudulKejadian(item.judul_kejadian)
@@ -224,7 +219,7 @@ moment.updateLocale('id', idLocale);
                               onOpen()
                                }
                             }
-                            ml={'10px'} bg={'red'} maxWidth={'100px'} type='submit' className='deleteButton'> 
+                            ml={'10px'} border={'solid 2px red'} bg={'#FAFBFC'} maxWidth={'100px'} type='submit' className='deleteButton'> 
                             {item.id_laporan}
                         </Button>
                     </Flex>
