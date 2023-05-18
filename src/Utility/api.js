@@ -8,3 +8,7 @@ export const getLaporanToCountUnvalidatedLaporan = 'http://localhost:4000/countk
 export const getLaporanValidation = 'http://localhost:4000/laporanvalidate?'
 export const updateStatusApi = 'http://localhost:4000/laporanstatus/'
 export const deleteLaporanApi = 'http://localhost:4000/laporan/'
+export const postLaporanApi = 'http://localhost:4000/laporan'
+export const getAllKecamatan = 'http://localhost:4000/kecamatan'
+export const getIdUserByTokenApi = 'http://localhost:4000/token'
+export const updateLaporan = 'http://localhost:4000/laporan/'

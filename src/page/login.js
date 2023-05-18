@@ -105,6 +105,8 @@ const Login = ( ) => {
                     name="username"
                     variant='outline'
                     placeholder="Username"
+                    isInvalid
+                    errorBorderColor='crimson'
                     />
                   </InputGroup>
                   <FormErrorMessage>{errors.username}</FormErrorMessage>
@@ -120,7 +122,8 @@ const Login = ( ) => {
                        children={<RiLockPasswordFill size={'20'} color='gray.300' />}
                    />                  
                   </InputLeftAddon>
-                  <Input size={'md'}
+                  <Input 
+                    size={'md'}
                     marginTop={'0 auto'}
                     type="password"
                     name="password"
@@ -128,6 +131,8 @@ const Login = ( ) => {
                     onChange={handleChange}
                     variant='outline'
                     placeholder="Password"
+                    isInvalid
+                    errorBorderColor='crimson'
                     />
                   </InputGroup>
                 </FormControl>

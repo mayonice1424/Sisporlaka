@@ -27,6 +27,7 @@ import AddLaporanRS from "./page/rumahsakit/addLaporan";
 import AddLaporanDinkes from "./page/dinkes/addLaporan";
 import AddLaporanPolisi from "./page/polisi/addLaporan";
 import AddLaporanJasaRaharja from "./page/jasaRaharja/addLaporan copy";
+import DetailLaporanPolisi from "./page/polisi/detailLaporan";
 
 
 
@@ -41,7 +42,6 @@ function App() {
         <Route path="/unit" element = {<Board />}>
         <Route path='jasa-raharja' element={<AdminJasaRaharja />} />
         <Route path='jasa-raharja/laporan' element={<AdminJasaRaharjaLaporan />} />
-        <Route path='jasa-raharja/laporan/add' element={<AddLaporanDinkes />} />
         <Route path='jasa-raharja/laporan/add' element={<AddLaporanJasaRaharja/>} />
         <Route path='jasa-raharja/grafik' element={<AdminJasaRaharjaGrafik />} />
         </Route>
@@ -50,6 +50,7 @@ function App() {
         <Route path='polisi/laporan' element={<AdminPolisiLaporan />} />
         <Route path='polisi/laporan/add' element={<AddLaporanPolisi />} />
         <Route path='polisi/grafik' element={<AdminPolisiGrafik />} />
+        <Route path='polisi/detail-laporan/:id' element={<DetailLaporanPolisi />} />
         </Route>
         <Route path="/unit" element = {<Board />}>
         <Route path='dinas-kesehatan' element={<AdminDinkes />} />
@@ -72,7 +73,6 @@ function App() {
         <Route path='*' element={<Notfound />} />
         </Routes>
     </>
-
   );
 }
 
