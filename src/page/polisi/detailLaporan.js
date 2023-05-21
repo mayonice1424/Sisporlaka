@@ -8,7 +8,8 @@ import {
   FormControl,
   FormErrorMessage,
   FormLabel,
-  Select
+  Select,
+  list
 } from '@chakra-ui/react';
 import { Formik,Form } from 'formik';
 import * as Yup from 'yup';
@@ -17,10 +18,10 @@ import { useDispatch } from 'react-redux';
 import { routePageName } from '../../Redux/action';
 import { TabTitle } from '../../Utility/utility';
 import {
-  getAllKecamatan,updateLaporan
+  createDetailLaporanPolisi,getAllLuka
 } from '../../Utility/api.js';
 import { Link, useNavigate, useParams } from 'react-router-dom';
-import './input.css'
+import './detailInput.css'
 
 const DetailLaporanPolisi = () => {
   const navigate = useNavigate();
@@ -29,64 +30,454 @@ const DetailLaporanPolisi = () => {
   const { id } = useParams();
   console.log(id);
   const [loading, setLoading] = useState(true);
-  const [dataApi, setDataApi] = useState();
   const role = useAuth('polisi')
-  const [dataLaporan, setDataLaporan] = useState([]);
+  const [pengemudiList, setPengemudiList] = useState([{ 
+    nama_pengemudi: "",
+    jenis_kelamin_pengemudi: "",
+    umur_pengemudi: "",
+    alamat_pengemudi: "",
+    no_sim: "",
+    no_STNK: ""
+  }]);
+ const [korbanList, setKorbanList] = useState([{
+    nama: "",
+    jenis_kelamin: "",
+    umur: "",
+    alamat: "",
+    NIK: "",
+    id_luka: "",
+    plat_ambulance: "",
+    nama_rumah_sakit: "",
+    nomor_rekam_medis: ""
+  }]);
+  const addKorbanInput = () => {
+    setKorbanList([...korbanList, {
+      nama: "",
+      jenis_kelamin: "",
+      umur: "",
+      alamat: "",
+      NIK: "",
+      id_luka: "",
+      plat_ambulance: "",
+      nama_rumah_sakit: "",
+      nomor_rekam_medis: ""
+    }]);
+  };
+  const handleKorbanChange = (index, field, value) => {
+    const updatedKorbanList = [...korbanList];
+    updatedKorbanList[index][field] = value;
+    setKorbanList(updatedKorbanList);
+  };
+  const removeKorbanInput = (index) => {
+    const updatedKorbanList = [...korbanList];
+    updatedKorbanList.splice(index, 1);
+    setKorbanList(updatedKorbanList);
+  }
+  const addPengemudiInput = () => {
+    setPengemudiList([...pengemudiList, { 
+      nama_pengemudi: "",
+      jenis_kelamin_pengemudi: "",
+      umur_pengemudi: "",
+      alamat_pengemudi: "",
+      no_sim: "",
+      no_STNK: ""
+    }]);
+  };
+    const data = {
+      identitas_korban: korbanList,
+      identitas_pengemudi: pengemudiList,
+      id_laporan: id,
+    };
+    // Kirim data ke backend
+    console.log(data);
+  const handlePengemudiChange = (index, field, value) => {
+    const updatedPengemudiList = [...pengemudiList];
+    updatedPengemudiList[index][field] = value;
+    setPengemudiList(updatedPengemudiList);
+  };
+  const removePengemudiInput = (index) => {
+    const updatedPengemudiList = [...pengemudiList];
+    updatedPengemudiList.splice(index, 1);
+    setPengemudiList(updatedPengemudiList);
+  }
+  const schema = Yup.object({
+    //identitas pengemudi
+    nama_pengemudi: Yup.string(),
+    jenis_kelamin_pengemudi: Yup.string(),
+    umur_pengemudi: Yup.number(),
+    alamat_pengemudi: Yup.string(),
+    no_sim: Yup.number(),
+    no_STNK: Yup.number(),
 
-  // const schema = Yup.object({
-  //   //identitas kecelakaan
-  //   id_laporan_kategori: Yup.string().required('Id Laporan Kecelakaan harus diisi'),
-  //   //identitas pengemudi
-  //   nama_pengemudi: Yup.string().required('Nama harus diisi'),
-  //   jenis_kelamin_pengemudi: Yup.string().required('Jenis Kelamin harus diisi'),
-  //   umur_pengemudi: Yup.number().required('Umur harus diisi'),
-  //   alamat_pengemudi: Yup.string().required('Alamat harus diisi'),
-  //   no_sim: Yup.number().required('No SIM harus diisi'),
-  //   no_stnk: Yup.number().required('No STNK harus diisi'),
+    //identitas korban
+    nama: Yup.string(),
+    jenis_kelamin: Yup.string(),
+    umur: Yup.number(),
+    alamat: Yup.string(),
+    NIK: Yup.number(),
+    id_luka: Yup.number(),
+    nama_rumah_sakit: Yup.string(),
+    plat_ambulance: Yup.string(),
+    nomor_rekam_medis: Yup.string(),
+  })
 
-  //   //identitas korban
-  //   nama: Yup.string().required('Nama harus diisi'),
-  //   jenis_kelamin: Yup.string().required('Jenis Kelamin harus diisi'),
-  //   umur: Yup.number().required('Umur harus diisi'),
-  //   alamat: Yup.string().required('Alamat harus diisi'),
-  //   NIK: Yup.number().required('NIK harus diisi'),
-  //   id_luka: Yup.number().required('Id Luka harus diisi'),
-  //   nama_rumah_sakit: Yup.string().required('Nama Rumah Sakit harus diisi'),
-  //   nomor_rekam_medis: Yup.string().required('Nomor Rekam Medis harus diisi'),
-  // })
-  // const postDetailData = async (values) => {
-  //   const data = {
-
-  //   }
-  //   console.log(data);
-  //   await axios.(`${updateLaporan}${id}`, data)
-  //     .then((res) => {
-  //       console.log(res);
-  //       navigate('/polisi/laporan')
-  //     })
-  //     .catch((err) => {
-  //       console.log(err);
-  //     })
-  // }
-  // const getData = async () => {
-  //   await axios.get(`${getAllKecamatan}`)
-  //     .then((res) => {
-  //       setDataLaporan(res.data.data);
-  //       setLoading(false);
-  //     })
-  //     .catch((err) => {
-  //       console.log(err);
-  //     })
-  // }
-
-  // useEffect(() => {
-  //   dispatch(routePageName("Laporkan Kejadian"));
-  //   setLoading(true);
-  // }, []);
+  useEffect(() => {
+    dispatch(routePageName("Laporkan Kejadian"));
+    setLoading(true);
+  }, []);
   return (
     <>
-      <Flex>
+      <Flex flexDir={'column'} justify={'flex-start'} width={'100%'}>
        
+        <Formik
+          initialValues={{
+            //identitas pengemudi
+            nama_pengemudi: '',
+            jenis_kelamin_pengemudi: '',
+            umur_pengemudi: '',
+            alamat_pengemudi: '',
+            no_sim: '',
+            no_STNK: '',
+            //identitas korban
+            nama: '',
+            jenis_kelamin: '',
+            umur: '',
+            alamat: '',
+            NIK: '',
+            id_luka: '',
+            plat_ambulance: '',
+            nama_rumah_sakit: '',
+            nomor_rekam_medis: '',
+          }}
+          validationSchema={schema}
+          validateOnChange={false}
+          validateOnBlur={false}
+          onSubmit={(values, {setSubmitting}) => {
+            setTimeout(() => {
+              const submitedData = new FormData();
+              submitedData.append('nama_pengemudi', values.nama_pengemudi);
+              submitedData.append('jenis_kelamin_pengemudi', values.jenis_kelamin_pengemudi);
+              submitedData.append('umur_pengemudi', values.umur_pengemudi);
+              submitedData.append('alamat_pengemudi', values.alamat_pengemudi);
+              submitedData.append('no_sim', values.no_sim);
+              submitedData.append('no_STNK', values.no_STNK);
+              submitedData.append('nama', values.nama);
+              submitedData.append('jenis_kelamin', values.jenis_kelamin);
+              submitedData.append('umur', values.umur);
+              submitedData.append('alamat', values.alamat);
+              submitedData.append('NIK', values.NIK);
+              submitedData.append('id_luka', values.id_luka);
+              submitedData.append('plat_ambulance', values.plat_ambulance);
+              submitedData.append('nama_rumah_sakit', values.nama_rumah_sakit);
+              submitedData.append('nomor_rekam_medis', values.nomor_rekam_medis);
+              submitedData.append('id_laporan', id);
+              axios.post(createDetailLaporanPolisi, data).then((response) => {
+                if (response.status === 201) {
+                  navigate(`/unit/${role}/laporan`);
+                  console.log(response);
+                }
+                else {
+                  console.log(response);
+                }
+              })
+              .catch((error) => {
+                console.log(error);
+              });
+              setSubmitting(false);
+            }, 400);
+          }}
+          >
+            {({
+              values,
+              errors,
+              touched,
+              handleChange,
+              handleBlur,
+              handleSubmit,
+              isSubmitting,
+              setFieldValue,
+            }) => (
+              <Flex width={1500}>
+                <Form className='formInput' size='xl' method='POST' onSubmit={handleSubmit}>
+                <Text fontSize={'var(--header-1)'} color={'black'}>Identitas Pengemudi</Text>
+                  {pengemudiList.map((pengemudi, index) => (
+                    <React.Fragment key={index} >
+                      <Flex flexDir={'row'} alignItems={'center'} alignContent={'center'}>
+                      <Flex flexDir={'column'} >
+                      <FormControl mt={4} isInvalid={errors.nama_pengemudi && touched.nama_pengemudi}>
+                        <FormLabel color={"var(--color-primer)"}>Nama Pengemudi</FormLabel>
+                        <Input
+                          name='nama_pengemudi'
+                          type='text'
+                          color='black'
+                          placeholder='Nama Pengemudi'
+                          onChange={(e) => handlePengemudiChange(index, 'nama_pengemudi', e.target.value)}
+                          onBlur={handleBlur}
+                          value={pengemudi.nama_pengemudi}
+                        />
+                        <FormErrorMessage>{errors.nama_pengemudi}</FormErrorMessage>
+                      </FormControl>
+                      <FormControl mt={4} isInvalid={errors.jenis_kelamin_pengemudi && touched.jenis_kelamin_pengemudi}>
+                        <FormLabel color={"var(--color-primer)"}>Jenis Kelamin Pengemudi</FormLabel>
+                        <Select
+                          name='jenis_kelamin_pengemudi'
+                          color='black'
+                          placeholder="Pilih Jenis Kelamin"
+                          onChange={(e) => handlePengemudiChange(index, 'jenis_kelamin_pengemudi', e.target.value)}
+                          onBlur={handleBlur}
+                          value={pengemudi.jenis_kelamin_pengemudi}
+                        >
+                          <option value='Laki-laki'>Laki-laki</option>
+                          <option value='Perempuan'>Perempuan</option>
+                        </Select>
+                        <FormErrorMessage>{errors.jenis_kelamin_pengemudi}</FormErrorMessage>
+                      </FormControl>
+                      <FormControl mt={4} isInvalid={errors.umur_pengemudi && touched.umur_pengemudi}>
+                        <FormLabel color={"var(--color-primer)"}>Umur Pengemudi</FormLabel>
+                        <Input
+                          name='umur_pengemudi'
+                          type='number'
+                          color='black'
+                          placeholder='Umur Pengemudi'
+                          onChange={(e) => handlePengemudiChange(index, 'umur_pengemudi', e.target.value)}
+                          onBlur={handleBlur}
+                          value={pengemudi.umur_pengemudi}
+                        />
+                        <FormErrorMessage>{errors.umur_pengemudi}</FormErrorMessage>
+                      </FormControl>
+                      <FormControl mt={4} isInvalid={errors.alamat_pengemudi && touched.alamat_pengemudi}>
+                        <FormLabel color={"var(--color-primer)"}>Alamat Pengemudi</FormLabel>
+                        <Input
+                          name='alamat_pengemudi'
+                          type='text'
+                          color='black'
+                          placeholder='Alamat Pengemudi'
+                          onChange={(e) => handlePengemudiChange(index, 'alamat_pengemudi', e.target.value)}
+                          onBlur={handleBlur}
+                          value={pengemudi.alamat_pengemudi}
+                        />
+                        <FormErrorMessage>{errors.alamat_pengemudi}</FormErrorMessage>
+                      </FormControl>
+                      <FormControl mt={4} isInvalid={errors.no_sim && touched.no_sim}>
+                        <FormLabel color={"var(--color-primer)"}>No SIM</FormLabel>
+                        <Input
+                          name='no_sim'
+                          type='text'
+                          color='black'
+                          placeholder='No SIM'
+                          onChange={(e) => handlePengemudiChange(index, 'no_sim', e.target.value)}
+                          onBlur={handleBlur}
+                          value={pengemudi.no_sim}
+                        />
+                        <FormErrorMessage>{errors.no_sim}</FormErrorMessage>
+                      </FormControl>
+                      <FormControl mt={4} isInvalid={errors.no_STNK && touched.no_STNK}>
+                        <FormLabel color={"var(--color-primer)"}>No STNK</FormLabel>
+                        <Input
+                          name='no_STNK'
+                          type='text'
+                          color='black'
+                          placeholder='No STNK'
+                          onChange={(e) => handlePengemudiChange(index, 'no_STNK', e.target.value)}
+                          onBlur={handleBlur}
+                          value={pengemudi.no_STNK}
+                        />
+                        <FormErrorMessage>{errors.no_STNK}</FormErrorMessage>
+                      </FormControl>
+                      </Flex>
+                      <Flex ml={20} flexDir={'column'}>
+                      <Button
+                        mt={4}
+                        size='md'
+                        width={'100px'}
+                        bg={"red"}
+                        disabled={pengemudiList.length === 1} onClick={() => removePengemudiInput(index)}
+                      >
+                        <Text>
+                          -
+                        </Text>
+                      </Button>
+                      <Button fontSize={50} bg={"var(--color-primer)"} display={index === pengemudiList.length - 1 ? 'flex' : 'none'} mt={4} size='md' onClick={addPengemudiInput}>
+                        +
+                      </Button>
+                      </Flex>
+                      </Flex>
+                    </React.Fragment>
+                  ))}
+                <Text mt={10} fontSize={'var(--header-1)'} color={'black'}>Identitas Korban</Text>
+                  {korbanList.map((korban, index) => (
+                    <React.Fragment key={index} >
+                      <Flex flexDir={'row'} alignItems={'center'} alignContent={'center'}>
+                      <Flex flexDir={'column'} >
+                      <FormControl mt={4} isInvalid={errors.nama && touched.nama}>
+                        <FormLabel color={"var(--color-primer)"}>Nama Korban</FormLabel>
+                        <Input
+                          name='nama'
+                          type='text'
+                          color='black'
+                          placeholder='Nama Korban'
+                          onChange={(e) => handleKorbanChange(index, 'nama', e.target.value)}
+                          onBlur={handleBlur}
+                          value={korban.nama}
+                        />
+                        <FormErrorMessage>{errors.nama}</FormErrorMessage>
+                      </FormControl>
+                      <FormControl mt={4} isInvalid={errors.jenis_kelamin && touched.jenis_kelamin}>
+                        <FormLabel color={"var(--color-primer)"}>Jenis Kelamin Korban</FormLabel>
+                        <Select
+                          name='jenis_kelamin'
+                          color='black'
+                          placeholder="Pilih Jenis Kelamin"
+                          onChange={(e) => handleKorbanChange(index, 'jenis_kelamin', e.target.value)}
+                          onBlur={handleBlur}
+                          value={korban.jenis_kelamin}
+                        >
+                          <option value='Laki-laki'>Laki-laki</option>
+                          <option value='Perempuan'>Perempuan</option>
+                        </Select>
+                        <FormErrorMessage>{errors.jenis_kelamin}</FormErrorMessage>
+                      </FormControl>
+                      <FormControl mt={4} isInvalid={errors.umur && touched.umur}>
+                        <FormLabel color={"var(--color-primer)"}>Umur Korban</FormLabel>
+                        <Input
+                          name='umur'
+                          type='number'
+                          color='black'
+                          placeholder='Umur Korban'
+                          onChange={(e) => handleKorbanChange(index, 'umur', e.target.value)}
+                          onBlur={handleBlur}
+                          value={korban.umur}
+                        />
+                        <FormErrorMessage>{errors.umur}</FormErrorMessage>
+                      </FormControl>
+                      <FormControl mt={4} isInvalid={errors.alamat && touched.alamat}>
+                        <FormLabel color={"var(--color-primer)"}>Alamat Korban</FormLabel>
+                        <Input
+                          name='alamat'
+                          type='text'
+                          color='black'
+                          placeholder='Alamat Korban'
+                          onChange={(e) => handleKorbanChange(index, 'alamat', e.target.value)}
+                          onBlur={handleBlur}
+                          value={korban.alamat}
+                        />
+                        <FormErrorMessage>{errors.alamat}</FormErrorMessage>
+                      </FormControl>
+                      <FormControl mt={4} isInvalid={errors.NIK && touched.NIK}>
+                        <FormLabel color={"var(--color-primer)"}>NIK Korban</FormLabel>
+                        <Input
+                          name='NIK'
+                          type='text'
+                          color='black'
+                          placeholder='NIK Korban'
+                          onChange={(e) => handleKorbanChange(index, 'NIK', e.target.value)}
+                          onBlur={handleBlur}
+                          value={korban.NIK}
+                        />
+                        <FormErrorMessage>{errors.NIK}</FormErrorMessage>
+                      </FormControl>
+                      <FormControl mt={4} isInvalid={errors.id_luka && touched.id_luka}>
+                        <FormLabel color={"var(--color-primer)"}>Luka Korban</FormLabel>
+                        <Select
+                          name='id_luka'
+                          type='number'
+                          color='black'
+                          placeholder="Pilih Luka"
+                          onChange={(e) => {
+                            handleKorbanChange(index, 'id_luka', e.target.value);
+                            console.log(e.target.value);
+                          }}
+                          onBlur={handleBlur}
+                          value={korban.id_luka}
+                        >
+                          <option value='1'>Luka Ringan</option>
+                          <option value='2'>Luka Berat</option>
+                          <option value='3'>Meninggal</option>
+                        </Select>
+                        <FormErrorMessage>{errors.id_luka}</FormErrorMessage>
+                      </FormControl>
+                      <FormControl mt={4} isInvalid={errors.plat_ambulance && touched.plat_ambulance}>
+                        <FormLabel color={"var(--color-primer)"}>Nomor Plat Ambulance</FormLabel>
+                        <Input
+                          name='plat_ambulance'
+                          type='text'
+                          color='black'
+                          placeholder='Nomor Plat Ambulance'
+                          onChange={(e) => handleKorbanChange(index, 'plat_ambulance', e.target.value)}
+                          onBlur={handleBlur}
+                          value={korban.plat_ambulance}
+                        />
+                        <FormErrorMessage>{errors.plat_ambulance}</FormErrorMessage>
+                      </FormControl>
+                      <FormControl mt={4} isInvalid={errors.nama_rumah_sakit && touched.nama_rumah_sakit}>
+                        <FormLabel color={"var(--color-primer)"}>Nama Rumah Sakit</FormLabel>
+                        <Input
+                          name='nama_rumah_sakit'
+                          type='text'
+                          color='black'
+                          placeholder='Nama Rumah Sakit'
+                          onChange={(e) => handleKorbanChange(index, 'nama_rumah_sakit', e.target.value)}
+                          onBlur={handleBlur}
+                          value={korban.nama_rumah_sakit}
+                        />
+                        <FormErrorMessage>{errors.nama_rumah_sakit}</FormErrorMessage>
+                      </FormControl>
+                      <FormControl mt={4} isInvalid={errors.nomor_rekam_medis && touched.nomor_rekam_medis}>
+                        <FormLabel color={"var(--color-primer)"}> Nomor Rekam Medis</FormLabel>
+                        <Input
+                          name='nomor_rekam_medis'
+                          type='text'
+                          color='black'
+                          placeholder='Nomor Rekam Medis'
+                          onChange={(e) => handleKorbanChange(index, 'nomor_rekam_medis', e.target.value)}
+                          onBlur={handleBlur}
+                          value={korban.nomor_rekam_medis}
+                        />
+                        <FormErrorMessage>{errors.nomor_rekam_medis}</FormErrorMessage>
+                      </FormControl>
+                      </Flex>
+                      <Flex ml={20} flexDir={'column'}>
+                      <Button
+                        mt={4}
+                        size='md'
+                        width={'100px'}
+                        bg={"red"}
+                        disabled={korbanList.length === 1} onClick={() => removeKorbanInput(index)}
+                      >
+                      -
+                      </Button>
+                      <Button fontSize={50} bg={"var(--color-primer)"} display={index === korbanList.length - 1 ? 'flex' : 'none'} mt={4} size='md' onClick={addKorbanInput}>
+                        +
+                      </Button>
+                      </Flex>
+                      </Flex>
+                      
+                    </React.Fragment>
+                  ))}
+              <Input
+                        color={'black'}
+                        type="hidden"
+                        value={id}
+                        onBlur={handleBlur}
+                        variant="outline"
+                        placeholder="ID User..."
+                    />
+            <Button
+              bg={"var(--color-primer)"}
+              color={"white"}
+              mt={8}
+              size='md'
+              isLoading={isSubmitting}
+              disabled={isSubmitting}
+              type="submit"
+              onClick={handleSubmit}
+            >
+              Buat Laporan
+            </Button>
+          </Form>
+      </Flex>
+        )}
+      </Formik>
       </Flex>
     </>
   )
