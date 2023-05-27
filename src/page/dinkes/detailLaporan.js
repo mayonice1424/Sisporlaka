@@ -11,34 +11,26 @@ import {
   Select,
   list
 } from '@chakra-ui/react';
-import { Formik,Form } from 'formik';
+import { Formik,Form, Field } from 'formik';
 import * as Yup from 'yup';
 import axios from 'axios';
 import { useDispatch } from 'react-redux';
 import { routePageName } from '../../Redux/action';
 import { TabTitle } from '../../Utility/utility';
 import {
-  createDetailLaporanPolisi,getAllLuka
+  createDetailLaporanPolisi
 } from '../../Utility/api.js';
 import { Link, useNavigate, useParams } from 'react-router-dom';
-import './detailInput.css'
+import './input.css'
 
-const DetailLaporanPolisi = () => {
+const DetailLaporanDinkes = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   TabTitle("Laporan - Sisporlaka");
   const { id } = useParams();
   console.log(id);
   const [loading, setLoading] = useState(true);
-  const role = useAuth('polisi')
-  const [pengemudiList, setPengemudiList] = useState([{ 
-    nama_pengemudi: "",
-    jenis_kelamin_pengemudi: "",
-    umur_pengemudi: "",
-    alamat_pengemudi: "",
-    no_sim: "",
-    no_STNK: ""
-  }]);
+  const role = useAuth('dinas-kesehatan')
  const [korbanList, setKorbanList] = useState([{
     nama: "",
     jenis_kelamin: "",
@@ -46,9 +38,9 @@ const DetailLaporanPolisi = () => {
     alamat: "",
     NIK: "",
     id_luka: "",
-    plat_ambulance: "",
     nama_rumah_sakit: "",
-    nomor_rekam_medis: ""
+    nomor_rekam_medis: "",
+    kode_ATS: ""
   }]);
   const addKorbanInput = () => {
     setKorbanList([...korbanList, {
@@ -58,9 +50,9 @@ const DetailLaporanPolisi = () => {
       alamat: "",
       NIK: "",
       id_luka: "",
-      plat_ambulance: "",
       nama_rumah_sakit: "",
-      nomor_rekam_medis: ""
+      nomor_rekam_medis: "",
+      kode_ATS: ""
     }]);
   };
   const handleKorbanChange = (index, field, value) => {
@@ -73,42 +65,11 @@ const DetailLaporanPolisi = () => {
     updatedKorbanList.splice(index, 1);
     setKorbanList(updatedKorbanList);
   }
-  const addPengemudiInput = () => {
-    setPengemudiList([...pengemudiList, { 
-      nama_pengemudi: "",
-      jenis_kelamin_pengemudi: "",
-      umur_pengemudi: "",
-      alamat_pengemudi: "",
-      no_sim: "",
-      no_STNK: ""
-    }]);
-  };
     const data = {
       identitas_korban: korbanList,
-      identitas_pengemudi: pengemudiList,
       id_laporan: id,
     };
-    // Kirim data ke backend
-    console.log(data);
-  const handlePengemudiChange = (index, field, value) => {
-    const updatedPengemudiList = [...pengemudiList];
-    updatedPengemudiList[index][field] = value;
-    setPengemudiList(updatedPengemudiList);
-  };
-  const removePengemudiInput = (index) => {
-    const updatedPengemudiList = [...pengemudiList];
-    updatedPengemudiList.splice(index, 1);
-    setPengemudiList(updatedPengemudiList);
-  }
   const schema = Yup.object({
-    //identitas pengemudi
-    nama_pengemudi: Yup.string(),
-    jenis_kelamin_pengemudi: Yup.string(),
-    umur_pengemudi: Yup.number(),
-    alamat_pengemudi: Yup.string(),
-    no_sim: Yup.number(),
-    no_STNK: Yup.number(),
-
     //identitas korban
     nama: Yup.string(),
     jenis_kelamin: Yup.string(),
@@ -117,8 +78,8 @@ const DetailLaporanPolisi = () => {
     NIK: Yup.number(),
     id_luka: Yup.number(),
     nama_rumah_sakit: Yup.string(),
-    plat_ambulance: Yup.string(),
     nomor_rekam_medis: Yup.string(),
+    kode_ATS: Yup.string(),
   })
 
   useEffect(() => {
@@ -131,13 +92,6 @@ const DetailLaporanPolisi = () => {
        
         <Formik
           initialValues={{
-            //identitas pengemudi
-            nama_pengemudi: '',
-            jenis_kelamin_pengemudi: '',
-            umur_pengemudi: '',
-            alamat_pengemudi: '',
-            no_sim: '',
-            no_STNK: '',
             //identitas korban
             nama: '',
             jenis_kelamin: '',
@@ -145,9 +99,9 @@ const DetailLaporanPolisi = () => {
             alamat: '',
             NIK: '',
             id_luka: '',
-            plat_ambulance: '',
             nama_rumah_sakit: '',
             nomor_rekam_medis: '',
+            kode_ATS: '',
           }}
           validationSchema={schema}
           validateOnChange={false}
@@ -155,24 +109,18 @@ const DetailLaporanPolisi = () => {
           onSubmit={(values, {setSubmitting}) => {
             setTimeout(() => {
               const submitedData = new FormData();
-              submitedData.append('nama_pengemudi', values.nama_pengemudi);
-              submitedData.append('jenis_kelamin_pengemudi', values.jenis_kelamin_pengemudi);
-              submitedData.append('umur_pengemudi', values.umur_pengemudi);
-              submitedData.append('alamat_pengemudi', values.alamat_pengemudi);
-              submitedData.append('no_sim', values.no_sim);
-              submitedData.append('no_STNK', values.no_STNK);
               submitedData.append('nama', values.nama);
               submitedData.append('jenis_kelamin', values.jenis_kelamin);
               submitedData.append('umur', values.umur);
               submitedData.append('alamat', values.alamat);
               submitedData.append('NIK', values.NIK);
               submitedData.append('id_luka', values.id_luka);
-              submitedData.append('plat_ambulance', values.plat_ambulance);
               submitedData.append('nama_rumah_sakit', values.nama_rumah_sakit);
               submitedData.append('nomor_rekam_medis', values.nomor_rekam_medis);
+              submitedData.append('kode_ATS', values.kode_ATS);
               submitedData.append('id_laporan', id);
               axios.post(createDetailLaporanPolisi, data).then((response) => {
-                if (response.status === 200) {
+                if (response.status === 201) {
                   navigate(`/unit/${role}/laporan`);
                   console.log(response);
                 }
@@ -199,112 +147,7 @@ const DetailLaporanPolisi = () => {
             }) => (
               <Flex width={1500}>
                 <Form className='formInput' size='xl' method='POST' onSubmit={handleSubmit}>
-                <Text fontSize={'var(--header-1)'} color={'black'}>Identitas Pengemudi</Text>
-                  {pengemudiList.map((pengemudi, index) => (
-                    <React.Fragment key={index} >
-                      <Flex flexDir={'row'} alignItems={'center'} alignContent={'center'}>
-                      <Flex flexDir={'column'} >
-                      <FormControl mt={4} isInvalid={errors.nama_pengemudi && touched.nama_pengemudi}>
-                        <FormLabel color={"var(--color-primer)"}>Nama Pengemudi</FormLabel>
-                        <Input
-                          name='nama_pengemudi'
-                          type='text'
-                          color='black'
-                          placeholder='Nama Pengemudi'
-                          onChange={(e) => handlePengemudiChange(index, 'nama_pengemudi', e.target.value)}
-                          onBlur={handleBlur}
-                          value={pengemudi.nama_pengemudi}
-                        />
-                        <FormErrorMessage>{errors.nama_pengemudi}</FormErrorMessage>
-                      </FormControl>
-                      <FormControl mt={4} isInvalid={errors.jenis_kelamin_pengemudi && touched.jenis_kelamin_pengemudi}>
-                        <FormLabel color={"var(--color-primer)"}>Jenis Kelamin Pengemudi</FormLabel>
-                        <Select
-                          name='jenis_kelamin_pengemudi'
-                          color='black'
-                          placeholder="Pilih Jenis Kelamin"
-                          onChange={(e) => handlePengemudiChange(index, 'jenis_kelamin_pengemudi', e.target.value)}
-                          onBlur={handleBlur}
-                          value={pengemudi.jenis_kelamin_pengemudi}
-                        >
-                          <option value='Laki-laki'>Laki-laki</option>
-                          <option value='Perempuan'>Perempuan</option>
-                        </Select>
-                        <FormErrorMessage>{errors.jenis_kelamin_pengemudi}</FormErrorMessage>
-                      </FormControl>
-                      <FormControl mt={4} isInvalid={errors.umur_pengemudi && touched.umur_pengemudi}>
-                        <FormLabel color={"var(--color-primer)"}>Umur Pengemudi</FormLabel>
-                        <Input
-                          name='umur_pengemudi'
-                          type='number'
-                          color='black'
-                          placeholder='Umur Pengemudi'
-                          onChange={(e) => handlePengemudiChange(index, 'umur_pengemudi', e.target.value)}
-                          onBlur={handleBlur}
-                          value={pengemudi.umur_pengemudi}
-                        />
-                        <FormErrorMessage>{errors.umur_pengemudi}</FormErrorMessage>
-                      </FormControl>
-                      <FormControl mt={4} isInvalid={errors.alamat_pengemudi && touched.alamat_pengemudi}>
-                        <FormLabel color={"var(--color-primer)"}>Alamat Pengemudi</FormLabel>
-                        <Input
-                          name='alamat_pengemudi'
-                          type='text'
-                          color='black'
-                          placeholder='Alamat Pengemudi'
-                          onChange={(e) => handlePengemudiChange(index, 'alamat_pengemudi', e.target.value)}
-                          onBlur={handleBlur}
-                          value={pengemudi.alamat_pengemudi}
-                        />
-                        <FormErrorMessage>{errors.alamat_pengemudi}</FormErrorMessage>
-                      </FormControl>
-                      <FormControl mt={4} isInvalid={errors.no_sim && touched.no_sim}>
-                        <FormLabel color={"var(--color-primer)"}>No SIM</FormLabel>
-                        <Input
-                          name='no_sim'
-                          type='text'
-                          color='black'
-                          placeholder='No SIM'
-                          onChange={(e) => handlePengemudiChange(index, 'no_sim', e.target.value)}
-                          onBlur={handleBlur}
-                          value={pengemudi.no_sim}
-                        />
-                        <FormErrorMessage>{errors.no_sim}</FormErrorMessage>
-                      </FormControl>
-                      <FormControl mt={4} isInvalid={errors.no_STNK && touched.no_STNK}>
-                        <FormLabel color={"var(--color-primer)"}>No STNK</FormLabel>
-                        <Input
-                          name='no_STNK'
-                          type='text'
-                          color='black'
-                          placeholder='No STNK'
-                          onChange={(e) => handlePengemudiChange(index, 'no_STNK', e.target.value)}
-                          onBlur={handleBlur}
-                          value={pengemudi.no_STNK}
-                        />
-                        <FormErrorMessage>{errors.no_STNK}</FormErrorMessage>
-                      </FormControl>
-                      </Flex>
-                      <Flex ml={20} flexDir={'column'}>
-                      <Button
-                        mt={4}
-                        size='md'
-                        width={'100px'}
-                        bg={"red"}
-                        disabled={pengemudiList.length === 1} onClick={() => removePengemudiInput(index)}
-                      >
-                        <Text>
-                          -
-                        </Text>
-                      </Button>
-                      <Button fontSize={50} bg={"var(--color-primer)"} display={index === pengemudiList.length - 1 ? 'flex' : 'none'} mt={4} size='md' onClick={addPengemudiInput}>
-                        +
-                      </Button>
-                      </Flex>
-                      </Flex>
-                    </React.Fragment>
-                  ))}
-                <Text mt={10} fontSize={'var(--header-1)'} color={'black'}>Identitas Korban</Text>
+                <Text fontSize={'var(--header-1)'} color={'black'}>Identitas Korban</Text>
                   {korbanList.map((korban, index) => (
                     <React.Fragment key={index} >
                       <Flex flexDir={'row'} alignItems={'center'} alignContent={'center'}>
@@ -396,19 +239,6 @@ const DetailLaporanPolisi = () => {
                         </Select>
                         <FormErrorMessage>{errors.id_luka}</FormErrorMessage>
                       </FormControl>
-                      <FormControl mt={4} isInvalid={errors.plat_ambulance && touched.plat_ambulance}>
-                        <FormLabel color={"var(--color-primer)"}>Nomor Plat Ambulance</FormLabel>
-                        <Input
-                          name='plat_ambulance'
-                          type='text'
-                          color='black'
-                          placeholder='Nomor Plat Ambulance'
-                          onChange={(e) => handleKorbanChange(index, 'plat_ambulance', e.target.value)}
-                          onBlur={handleBlur}
-                          value={korban.plat_ambulance}
-                        />
-                        <FormErrorMessage>{errors.plat_ambulance}</FormErrorMessage>
-                      </FormControl>
                       <FormControl mt={4} isInvalid={errors.nama_rumah_sakit && touched.nama_rumah_sakit}>
                         <FormLabel color={"var(--color-primer)"}>Nama Rumah Sakit</FormLabel>
                         <Input
@@ -422,7 +252,29 @@ const DetailLaporanPolisi = () => {
                         />
                         <FormErrorMessage>{errors.nama_rumah_sakit}</FormErrorMessage>
                       </FormControl>
-                      <FormControl mt={4} isInvalid={errors.nomor_rekam_medis && touched.nomor_rekam_medis}>
+                      <FormControl mt={4} isInvalid={errors.kode_ATS && touched.kode_ATS}>
+                        <FormLabel color={"var(--color-primer)"}> Skala Triase </FormLabel>
+                        <Select
+                          name='kode_ATS'
+                          type='text'
+                          color='black'
+                          placeholder="Pilih Skala"
+                          onChange={(e) => {
+                            handleKorbanChange(index, 'kode_ATS', e.target.value);
+                            console.log(e.target.value);
+                          }}
+                          onBlur={handleBlur}
+                          value={korban.kode_ATS}
+                        >
+                          <option value='ATS 1'>Resusitasi</option>
+                          <option value='ATS 2'>Emergency</option>
+                          <option value='ATS 3'>Urgent</option>
+                          <option value='ATS 4'>Semi Darurat</option>
+                          <option value="ATS 5">Tidak Darurat</option>
+                        </Select>
+                        <FormErrorMessage>{errors.kode_ATS}</FormErrorMessage>
+                      </FormControl>
+                     <FormControl mt={4} isInvalid={errors.nomor_rekam_medis && touched.nomor_rekam_medis}>
                         <FormLabel color={"var(--color-primer)"}> Nomor Rekam Medis</FormLabel>
                         <Input
                           name='nomor_rekam_medis'
@@ -451,7 +303,6 @@ const DetailLaporanPolisi = () => {
                       </Button>
                       </Flex>
                       </Flex>
-                      
                     </React.Fragment>
                   ))}
               <Input
@@ -482,4 +333,4 @@ const DetailLaporanPolisi = () => {
     </>
   )
 }
-export default DetailLaporanPolisi;
+export default DetailLaporanDinkes;

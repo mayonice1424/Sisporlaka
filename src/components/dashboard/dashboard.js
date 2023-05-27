@@ -51,9 +51,9 @@ const Dashboard = () => {
               />
             <CardDashboard
             data={{
-              value: data.count,
+              value: data.jumlahKorban,
               icon: BsClipboardData,
-              name: "Jumlah Laporan",
+              name: "Jumlah Korban Kecelakaan",
             }}
           />
 						</Wrap>

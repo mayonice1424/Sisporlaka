@@ -47,3 +47,6 @@ li.page-item {
   cursor: pointer;
   border: 1px;
 }
+.custom-icon {
+  stroke: rgb(255, 255, 255);
+}

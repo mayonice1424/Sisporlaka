@@ -1,4 +1,5 @@
 import React,{useEffect, useState} from 'react'
+import { IconContext } from 'react-icons';
 import { Flex, Text, Input,
   Table,
   Thead,
@@ -8,9 +9,17 @@ import { Flex, Text, Input,
   Th,
   Td,
   TableContainer,
-  Button
+  Button, 
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalFooter,
+  ModalBody,
+  ModalCloseButton
  } from '@chakra-ui/react'
 import useAuth from '../../middleware/useAuth';
+import {IoAddCircleOutline} from 'react-icons/io5';
 import { TabTitle } from '../../Utility/utility'
 import {getLaporan, getLaporanToCount} from '../../Utility/api.js'
 import axios from 'axios';
@@ -19,38 +28,54 @@ import Loading from '../loading/loading.js'
 import moment from 'moment';
 import ReactPaginate from 'react-paginate';
 import './laporan.css';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { useDisclosure } from "@chakra-ui/react"
+import { routePageName } from '../../Redux/action';
+import { useDispatch } from 'react-redux';
 
 const LaporanDinkes = () => {
- const role = useAuth('dinas-kesehatan')
+ const role = useAuth("dinas-kesehatan")
  const [data , setData] = useState([])
+ const [identitasKorban, setIdentitasKorban] = useState([])
+ const [identitasPengemudi, setIdentitasPengemudi] = useState([])
  const [loading, setLoading] = useState(true)
  const [page, setPage] = useState(0)
+ const { isOpen, onOpen, onClose } = useDisclosure()
  const [totalPage, setTotalPage] = useState(0)
  const [totalData, setTotalData] = useState(0)
  const [dataLaporan, setDataLaporan] = useState('')
- const [jumlahSearch, setJumlahSearch] = useState(0)
-
+ const [judul_kejadian, setJudulKejadian] = useState('')
  const [rows, setRows] = useState(0)
  const [limit, setLimit] = useState(10)
  const [keyword, setKeyword] = useState('')
  const [query, setQuery] = useState('')
+ const [idLaporan, setIdLaporan] = useState('')
  const [msg, setMsg] = useState("");
- const getAllLaporanByQuery  = async () => {
-  axios.get(`${getLaporan}search_query=${keyword}&limit=${limit}&page=${page}`)
-  .then(response => {
-    setData(response.data.laporan)
-    setTotalPage(response.data.totalPages)
-    setTotalData(response.data.totalRows)
-    setPage(response.data.page)
-    console.log (data)
-    }
-    )
-  .catch(error => {
-    console.log(error)
+const dispatch = useDispatch()
+const navigate  = useNavigate()
+const getAllLaporanByQuery = async () => {
+  try {
+    const response = await axios.get(`${getLaporan}search_query=${keyword}&limit=${limit}&page=${page}`);
+    setData(response.data.laporan);
+    console.log(response.data);
+    setTotalPage(response.data.totalPages);
+    setTotalData(response.data.totalRows);
+    setPage(response.data.page);
+    setDataLaporan(response.data.laporan[0].Laporan_Kategori.nama_kategori);
+    setIdentitasKorban(response.data.identitas_korban);
+    setIdentitasPengemudi(response.data.identitas_pengemudi);
+    console.log(response.data);
+  } catch (error) {
+    console.log(error);
   }
-  )
 }
+
+const customModalSize = {
+  maxWidth: "2000px",
+  width: "80%",
+  height: "80%",
+  maxHeight: "1500px",
+};
 
 const getAllLaporan  = async () => {
   axios.get(getLaporanToCount)
@@ -82,6 +107,7 @@ const searchData = (e) => {
 }
 useEffect(() => {
   getAllLaporan()
+  dispatch(routePageName("Laporkan Kejadian"))
   getAllLaporanByQuery()
   setLoading(true)
 }, [page,keyword])
@@ -101,12 +127,79 @@ moment.updateLocale('id', idLocale);
               Cari
             </Button>
           </Flex>
-    <Flex mr={'6%'}>
+      <Flex mr={'6%'}>
+      <Modal isOpen={isOpen} onClose={onClose}>
+          <ModalOverlay />
+          <ModalContent className="custom-modal-content" style={customModalSize}>
+            <ModalHeader>Detail Laporan {judul_kejadian}</ModalHeader>
+            <ModalCloseButton />
+            <ModalBody overflow={'auto'}>
+              <Text fontWeight="bold" fontSize={'35px'}>Identitas Korban</Text>
+              <hr/>
+            {
+              identitasKorban.map((item, index) => {
+                if (item.laporan.id_laporan === idLaporan) {
+                  return (
+                    <>
+                    <Flex flexDir="column" mb="20px">
+                      <Text fontWeight="bold">Nama Korban</Text>
+                      <Text>{item.nama == null? '-' : item.nama}</Text>
+                      <Text fontWeight="bold">Jenis Kelamin</Text>
+                      <Text>{item.jenis_kelamin == null? '-' : item.jenis_kelamin }</Text>
+                      <Text fontWeight="bold">Umur</Text>
+                      <Text>{item.umur == null ? '-' : item.umur}</Text>
+                      <Text fontWeight="bold">Alamat</Text>
+                      <Text>{item.alamat == null ? '-' : item.alamat }</Text>
+                      <Text fontWeight="bold">NIK</Text>
+                      <Text>{item.NIK  == null ? '-' : item.NIK }</Text>
+                      <Text fontWeight="bold">Nomor Plat Ambulance</Text>
+                      <Text>{item.plat_ambulance == null ? '-' : item.plat_ambulance}</Text>
+                      <Text fontWeight="bold">Nama Rumah Sakit</Text>
+                      <Text>{item.nama_rumah_sakit == null ? '-' : item.nama_rumah_saki}</Text>
+                      <Text fontWeight="bold">Jenis Luka</Text>
+                      <Text>{item.wound.keterangan_luka == null ? '-' : item.wound.keterangan_luka }</Text>
+                      <Text fontWeight="bold">Nomor Rekam Medis</Text>
+                      <Text>{item.nomor_rekam_medis == null ? '-' : item.nomor_rekam_medis}</Text>
+                      <Text fontWeight="bold">Skala Triase</Text>
+                      <Text>{item.kode_ATS == null ? '-' : `${item.kode_ATS} : ${item.Skala_Triase.keterangan}`}</Text>
+                      <Text fontWeight="bold">------------------------------</Text>
+                    </Flex>
+                    </>
+                  );
+                }
+                return null;
+              })
+            }
+            </ModalBody>
+            <ModalFooter>
+            <Button
+                bg={'red'}
+                onClick={(e) => {
+                 navigate(`/unit/${role}/laporan/edit/${idLaporan}`)
+              }}
+              color={'white'}
+              mr={3}
+              >
+                Update Data
+              </Button>
+              <Button border={'solid 2px var(--color-primer)'} bg={'white'}  mr={3} onClick={onClose}>
+                Tutup
+              </Button>
+            </ModalFooter>
+          </ModalContent>
+        </Modal>
      <Link to={`/unit/${role}/laporan/add`}>
-      <Button bg={'#4AA8FF'} maxWidth={'100px'} type='submit' className='button'>
-      <Text color={'white'} >
-        Tambah
-      </Text>
+      <Button bg={'#4AA8FF'} maxWidth={'160px'} type='submit' className='button'>
+        <Flex justify={'center'} flexDir={'row'}>
+          <Flex>
+            <IoAddCircleOutline className="custom-icon" fontSize={23} />
+          </Flex>
+          <Flex>
+            <Text ml={2} color={'white'} >
+              Buat Laporan
+            </Text>
+          </Flex>
+        </Flex>
       </Button>
       </Link>
     </Flex>
@@ -124,16 +217,20 @@ moment.updateLocale('id', idLocale);
               <Th color={'white'}>Waktu</Th>
               <Th color={'white'}>Kecamatan</Th>
               <Th color={'white'}>Kerugian Materil</Th>
+              <Th color={'white'}>Kategori Kecelakaan</Th>
               <Th color={'white'}>Penyebab</Th>
+              <Th color={'white'}>
+                <Flex justify={'center'}>
+                  <Text>Aksi</Text>
+                </Flex>
+              </Th>
             </Tr>
           </Thead>
           <Tbody>
           {
-                  data.map((item,index, key) => (
+                  Object.values(data).map((item,index, key) => (
                     <Tr key={item.id}>
-                      <Td color={'black'}>
-                        {index+1}
-                      </Td>
+                      <Td color={'black'}>{index+1}</Td>
                       <Td color={'black'}>
                         {item.judul_kejadian == null ? '-' : item.judul_kejadian}</Td>
                       <Td color={'black'}>
@@ -147,7 +244,56 @@ moment.updateLocale('id', idLocale);
                         }
                       </Td>
                       <Td color={'black'}>
+                        {
+                        item.Laporan_Kategori.nama_kategori == null ? '-' :  item.Laporan_Kategori.nama_kategori
+                        }
+                      </Td>
+                      <Td color={'black'}>
                         {item.penyebab == null ? '-' : item.penyebab}
+                      </Td>
+                      <Td color={'black'}>
+                        <Flex flexDir={'row'}>
+                        <Flex justify={'center'} alignContent={'center'} alignItems={'center'}>
+                      <Button mr={'10px'}
+                         ml={'10px'} border={'solid 2px var(--color-primer) '} bg={'#FAFBFC'} maxWidth={'160px'} type='submit'
+                        color={'#646464'}>
+                        <Link to={`/unit/${role}/detail-laporan/${item.id_laporan}`}>  
+                          <Text color={'black'} >
+                            Tambah Korban
+                          </Text>
+                        </Link>
+                      </Button>
+                        </Flex>
+                      <Flex flexDir={'column'}>
+                      <Button 
+                          mb={3}
+                          mr={'10px'}
+                          color={'#646464'}
+                          onClick= {
+                            () => {
+                              setIdLaporan(item.id_laporan)
+                              setJudulKejadian(item.judul_kejadian)
+                              onOpen()
+                            }
+                          }
+                            ml={'10px'} border={'solid 2px var(--color-primer) '} bg={'#FAFBFC'} maxWidth={'150px'} type='submit'>
+                            <Text color={'black'} >
+                            Detail Laporan
+                            </Text>
+                        </Button>
+                        <Button
+                         mr={'10px'}
+                         ml={'10px'} border={'solid 2px var(--color-primer) '} bg={'#FAFBFC'} maxWidth={'150px'} type='submit'
+                        color={'#646464'}
+                         >
+                        <Link to={`/unit/${role}/laporan/edit/${item.id_laporan}`}>
+                          <Text color={'black'} >
+                            Edit
+                          </Text>
+                        </Link>
+                        </Button>
+                        </Flex>
+                        </Flex>
                       </Td>
                     </Tr>
                   ))
@@ -190,4 +336,4 @@ moment.updateLocale('id', idLocale);
     </>
   )
 }
-export default LaporanDinkes
+export default LaporanDinkes;

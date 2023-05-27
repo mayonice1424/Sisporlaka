@@ -18,108 +18,174 @@ import { useDispatch } from 'react-redux';
 import { routePageName } from '../../Redux/action';
 import { TabTitle } from '../../Utility/utility';
 import {
-  createDetailLaporanPolisi,getAllLuka
+  createDetailLaporanPolisi
 } from '../../Utility/api.js';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import './detailInput.css'
 
-const DetailLaporanPolisi = () => {
+const TambahKorbanLaporan = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   TabTitle("Laporan - Sisporlaka");
   const { id } = useParams();
   console.log(id);
   const [loading, setLoading] = useState(true);
-  const role = useAuth('polisi')
-  const [pengemudiList, setPengemudiList] = useState([{ 
-    nama_pengemudi: "",
-    jenis_kelamin_pengemudi: "",
-    umur_pengemudi: "",
-    alamat_pengemudi: "",
-    no_sim: "",
-    no_STNK: ""
-  }]);
- const [korbanList, setKorbanList] = useState([{
-    nama: "",
-    jenis_kelamin: "",
-    umur: "",
-    alamat: "",
-    NIK: "",
-    id_luka: "",
-    plat_ambulance: "",
-    nama_rumah_sakit: "",
-    nomor_rekam_medis: ""
-  }]);
-  const addKorbanInput = () => {
-    setKorbanList([...korbanList, {
-      nama: "",
-      jenis_kelamin: "",
-      umur: "",
-      alamat: "",
-      NIK: "",
-      id_luka: "",
-      plat_ambulance: "",
-      nama_rumah_sakit: "",
-      nomor_rekam_medis: ""
-    }]);
+  const role = useAuth('jasa-raharja')
+  const [data,set] = useState({
+    identitas_korban: [
+      {
+        nama: '',
+        jenis_kelamin: '',
+        umur: '',
+        alamat: '',
+        plat_ambulance: '',
+        NIK: '',
+        nama_rumah_sakit: '',
+        nomor_rekam_medis: '',
+        id_luka: '',
+        identitas_santunan: [{
+          nominal: '',
+          id_santunan: ''
+      }],
+      },
+    ],
+    identitas_pengemudi: [
+      {
+        nama_pengemudi: '',
+        jenis_kelamin_pengemudi: '',
+        umur_pengemudi: '',
+        alamat_pengemudi: '',
+        no_sim: '',
+        no_STNK: '',
+      },
+    ],
+    id_laporan: id,
+  });
+  const handleKorbanChange = (e, index) => {
+    const { name, value } = e.target;
+    const korbanData = [...data.identitas_korban];
+    korbanData[index] = { ...korbanData[index], [name]: value };
+    set({ ...data, identitas_korban: korbanData });
   };
-  const handleKorbanChange = (index, field, value) => {
-    const updatedKorbanList = [...korbanList];
-    updatedKorbanList[index][field] = value;
-    setKorbanList(updatedKorbanList);
+  const handlePengemudiChange = (e, index) => {
+    const { name, value } = e.target;
+    const pengemudiData = [...data.identitas_pengemudi];
+    pengemudiData[index] = { ...pengemudiData[index], [name]: value };
+    set({ ...data, identitas_pengemudi: pengemudiData });
   };
-  const removeKorbanInput = (index) => {
-    const updatedKorbanList = [...korbanList];
-    updatedKorbanList.splice(index, 1);
-    setKorbanList(updatedKorbanList);
-  }
-  const addPengemudiInput = () => {
-    setPengemudiList([...pengemudiList, { 
-      nama_pengemudi: "",
-      jenis_kelamin_pengemudi: "",
-      umur_pengemudi: "",
-      alamat_pengemudi: "",
-      no_sim: "",
-      no_STNK: ""
-    }]);
-  };
-    const data = {
-      identitas_korban: korbanList,
-      identitas_pengemudi: pengemudiList,
-      id_laporan: id,
-    };
-    // Kirim data ke backend
-    console.log(data);
-  const handlePengemudiChange = (index, field, value) => {
-    const updatedPengemudiList = [...pengemudiList];
-    updatedPengemudiList[index][field] = value;
-    setPengemudiList(updatedPengemudiList);
-  };
-  const removePengemudiInput = (index) => {
-    const updatedPengemudiList = [...pengemudiList];
-    updatedPengemudiList.splice(index, 1);
-    setPengemudiList(updatedPengemudiList);
-  }
-  const schema = Yup.object({
-    //identitas pengemudi
-    nama_pengemudi: Yup.string(),
-    jenis_kelamin_pengemudi: Yup.string(),
-    umur_pengemudi: Yup.number(),
-    alamat_pengemudi: Yup.string(),
-    no_sim: Yup.number(),
-    no_STNK: Yup.number(),
 
-    //identitas korban
-    nama: Yup.string(),
-    jenis_kelamin: Yup.string(),
-    umur: Yup.number(),
-    alamat: Yup.string(),
-    NIK: Yup.number(),
-    id_luka: Yup.number(),
-    nama_rumah_sakit: Yup.string(),
-    plat_ambulance: Yup.string(),
-    nomor_rekam_medis: Yup.string(),
-  })
+  const handleKorbanSantunanChange = (e, korbanIndex, santunanIndex) => {
+    const { name, value } = e.target;
+    const korbanData = [...data.identitas_korban];
+    const santunanData = [...korbanData[korbanIndex].identitas_santunan];
+    santunanData[santunanIndex] = { ...santunanData[santunanIndex], [name]: value };
+    korbanData[korbanIndex] = { ...korbanData[korbanIndex], identitas_santunan: santunanData };
+    set({ ...data, identitas_korban: korbanData });
+  };
+
+
+  const handleAddKorban = () => {
+    set({
+      ...data,
+      identitas_korban: [
+        ...data.identitas_korban,
+        {
+          nama: '',
+          jenis_kelamin: '',
+          umur: '',
+          alamat: '',
+          plat_ambulance: '',
+          NIK: '',
+          nama_rumah_sakit: '',
+          nomor_rekam_medis: '',
+          id_luka: '',
+          identitas_santunan: [{
+            nominal: '',
+            id_santunan: '',
+        }],
+        },
+      ],
+    });
+  };
+
+  const handleAddKorbanSantunan = (korbanIndex) => {
+    const korbanData = [...data.identitas_korban];
+    korbanData[korbanIndex].identitas_santunan.push({ nominal: '', id_santunan: '' });
+    set({ ...data, identitas_korban: korbanData });
+  };
+
+  const handleAddPengemudi = () => {
+    set({
+      ...data,
+      identitas_pengemudi: [
+        ...data.identitas_pengemudi,
+        {
+          nama_pengemudi: '',
+          jenis_kelamin_pengemudi: '',
+          umur_pengemudi: '',
+          alamat_pengemudi: '',
+          no_sim: '',
+          no_STNK: '',
+        },
+      ],
+    });
+  };
+
+  const handleRemoveKorban = (korbanIndex) => {
+    const korbanData = [...data.identitas_korban];
+    korbanData.splice(korbanIndex, 1);
+    set({ ...data, identitas_korban: korbanData });
+  };
+  
+  const handleRemoveKorbanSantunan = (korbanIndex, santunanIndex) => {
+    const korbanData = [...data.identitas_korban];
+    const santunanData = [...korbanData[korbanIndex].identitas_santunan];
+    santunanData.splice(santunanIndex, 1);
+    korbanData[korbanIndex] = { ...korbanData[korbanIndex], identitas_santunan: santunanData };
+    set({ ...data, identitas_korban: korbanData });
+  };
+  
+  const handleRemovePengemudi = (pengemudiIndex) => {
+    const pengemudiData = [...data.identitas_pengemudi];
+    pengemudiData.splice(pengemudiIndex, 1);
+    set({ ...data, identitas_pengemudi: pengemudiData });
+  };
+
+  const schema = Yup.object().shape({
+    identitas_pengemudi: Yup.array().of(
+      Yup.object().shape({
+        nama_pengemudi: Yup.string().required(),
+        jenis_kelamin_pengemudi: Yup.string().required(),
+        umur_pengemudi: Yup.number().required(),
+        alamat_pengemudi: Yup.string().required(),
+        no_sim: Yup.number().required(),
+        no_STNK: Yup.number().required(),
+      })
+    ),
+  
+    identitas_korban: Yup.array().of(
+      Yup.object().shape({
+        nama: Yup.string().required(),
+        jenis_kelamin: Yup.string().required(),
+        umur: Yup.number().required(),
+        alamat: Yup.string().required(),
+        NIK: Yup.number().required(),
+        id_luka: Yup.number().required(),
+        nama_rumah_sakit: Yup.string().required(),
+        plat_ambulance: Yup.string().required(),
+        nomor_rekam_medis: Yup.string().required(),
+        identitas_santunan: Yup.array().of(
+          Yup.object().shape({
+            id_santunan: Yup.number(),
+            nominal: Yup.number(),
+          })
+        ),
+      })
+    ),
+  
+    id_laporan: Yup.number().required(),
+  });
+
 
   useEffect(() => {
     dispatch(routePageName("Laporkan Kejadian"));
@@ -131,46 +197,61 @@ const DetailLaporanPolisi = () => {
        
         <Formik
           initialValues={{
-            //identitas pengemudi
-            nama_pengemudi: '',
-            jenis_kelamin_pengemudi: '',
-            umur_pengemudi: '',
-            alamat_pengemudi: '',
-            no_sim: '',
-            no_STNK: '',
+            identitas_pengemudi: {
+              nama_pengemudi: '',
+              jenis_kelamin_pengemudi: '',
+              umur_pengemudi: '',
+              alamat_pengemudi: '',
+              no_sim: '',
+              no_STNK: '',
+            },
             //identitas korban
-            nama: '',
-            jenis_kelamin: '',
-            umur: '',
-            alamat: '',
-            NIK: '',
-            id_luka: '',
-            plat_ambulance: '',
-            nama_rumah_sakit: '',
-            nomor_rekam_medis: '',
+            identitas_korban: [
+              {
+                nama: '',
+                jenis_kelamin: '',
+                umur: '',
+                alamat: '',
+                plat_ambulance: '',
+                NIK: '',
+                nama_rumah_sakit: '',
+                nomor_rekam_medis: '',
+                id_luka: '',
+                identitas_santunan: [{
+                  nominal: '',
+                  id_santunan: '',
+              }],
+              },
+            ],
           }}
-          validationSchema={schema}
+          // validationSchema={schema}
           validateOnChange={false}
           validateOnBlur={false}
           onSubmit={(values, {setSubmitting}) => {
             setTimeout(() => {
               const submitedData = new FormData();
-              submitedData.append('nama_pengemudi', values.nama_pengemudi);
-              submitedData.append('jenis_kelamin_pengemudi', values.jenis_kelamin_pengemudi);
-              submitedData.append('umur_pengemudi', values.umur_pengemudi);
-              submitedData.append('alamat_pengemudi', values.alamat_pengemudi);
-              submitedData.append('no_sim', values.no_sim);
-              submitedData.append('no_STNK', values.no_STNK);
-              submitedData.append('nama', values.nama);
-              submitedData.append('jenis_kelamin', values.jenis_kelamin);
-              submitedData.append('umur', values.umur);
-              submitedData.append('alamat', values.alamat);
-              submitedData.append('NIK', values.NIK);
-              submitedData.append('id_luka', values.id_luka);
-              submitedData.append('plat_ambulance', values.plat_ambulance);
-              submitedData.append('nama_rumah_sakit', values.nama_rumah_sakit);
-              submitedData.append('nomor_rekam_medis', values.nomor_rekam_medis);
-              submitedData.append('id_laporan', id);
+              console.log(values);
+                          // Identitas Pengemudi
+            submitedData.append('nama_pengemudi', values.identitas_pengemudi.nama_pengemudi);
+            submitedData.append('jenis_kelamin_pengemudi', values.identitas_pengemudi.jenis_kelamin_pengemudi);
+            submitedData.append('umur_pengemudi', values.identitas_pengemudi.umur_pengemudi);
+            submitedData.append('alamat_pengemudi', values.identitas_pengemudi.alamat_pengemudi);
+            submitedData.append('no_sim', values.identitas_pengemudi.no_sim);
+            submitedData.append('no_STNK', values.identitas_pengemudi.no_STNK);
+            submitedData.append('nama', values.identitas_korban.nama);
+            submitedData.append('jenis_kelamin', values.identitas_korban.jenis_kelamin);
+            submitedData.append('umur', values.identitas_korban.umur);
+            submitedData.append('alamat', values.identitas_korban.alamat);
+            submitedData.append('NIK', values.identitas_korban.NIK);
+            submitedData.append('id_luka', values.identitas_korban.id_luka);
+            submitedData.append('plat_ambulance', values.identitas_korban.plat_ambulance);
+            submitedData.append('nama_rumah_sakit', values.identitas_korban.nama_rumah_sakit);
+            submitedData.append('nomor_rekam_medis', values.identitas_korban.nomor_rekam_medis);
+            if (Array.isArray(values.identitas_korban.identitas_santunan)) {
+              submitedData.append('nominal', JSON.stringify(values.identitas_korban.identitas_santunan.map(item => item.nominal)));
+              submitedData.append('id_santunan', JSON.stringify(values.identitas_korban.identitas_santunan.map(item => item.id_santunan)));
+            }
+            submitedData.append('id_laporan', id);
               axios.post(createDetailLaporanPolisi, data).then((response) => {
                 if (response.status === 200) {
                   navigate(`/unit/${role}/laporan`);
@@ -200,8 +281,8 @@ const DetailLaporanPolisi = () => {
               <Flex width={1500}>
                 <Form className='formInput' size='xl' method='POST' onSubmit={handleSubmit}>
                 <Text fontSize={'var(--header-1)'} color={'black'}>Identitas Pengemudi</Text>
-                  {pengemudiList.map((pengemudi, index) => (
-                    <React.Fragment key={index} >
+                  {data.identitas_pengemudi.map((pengemudi, pengemudiIndex) => (
+                    <React.Fragment key={pengemudiIndex} >
                       <Flex flexDir={'row'} alignItems={'center'} alignContent={'center'}>
                       <Flex flexDir={'column'} >
                       <FormControl mt={4} isInvalid={errors.nama_pengemudi && touched.nama_pengemudi}>
@@ -211,7 +292,7 @@ const DetailLaporanPolisi = () => {
                           type='text'
                           color='black'
                           placeholder='Nama Pengemudi'
-                          onChange={(e) => handlePengemudiChange(index, 'nama_pengemudi', e.target.value)}
+                          onChange={(e) => handlePengemudiChange(e, pengemudiIndex)}
                           onBlur={handleBlur}
                           value={pengemudi.nama_pengemudi}
                         />
@@ -223,7 +304,7 @@ const DetailLaporanPolisi = () => {
                           name='jenis_kelamin_pengemudi'
                           color='black'
                           placeholder="Pilih Jenis Kelamin"
-                          onChange={(e) => handlePengemudiChange(index, 'jenis_kelamin_pengemudi', e.target.value)}
+                          onChange={(e) => handlePengemudiChange(e, pengemudiIndex)}
                           onBlur={handleBlur}
                           value={pengemudi.jenis_kelamin_pengemudi}
                         >
@@ -239,7 +320,7 @@ const DetailLaporanPolisi = () => {
                           type='number'
                           color='black'
                           placeholder='Umur Pengemudi'
-                          onChange={(e) => handlePengemudiChange(index, 'umur_pengemudi', e.target.value)}
+                          onChange={(e) => handlePengemudiChange(e, pengemudiIndex)}
                           onBlur={handleBlur}
                           value={pengemudi.umur_pengemudi}
                         />
@@ -252,7 +333,7 @@ const DetailLaporanPolisi = () => {
                           type='text'
                           color='black'
                           placeholder='Alamat Pengemudi'
-                          onChange={(e) => handlePengemudiChange(index, 'alamat_pengemudi', e.target.value)}
+                          onChange={(e) => handlePengemudiChange(e, pengemudiIndex)}
                           onBlur={handleBlur}
                           value={pengemudi.alamat_pengemudi}
                         />
@@ -265,7 +346,7 @@ const DetailLaporanPolisi = () => {
                           type='text'
                           color='black'
                           placeholder='No SIM'
-                          onChange={(e) => handlePengemudiChange(index, 'no_sim', e.target.value)}
+                          onChange={(e) => handlePengemudiChange(e, pengemudiIndex)}
                           onBlur={handleBlur}
                           value={pengemudi.no_sim}
                         />
@@ -278,7 +359,7 @@ const DetailLaporanPolisi = () => {
                           type='text'
                           color='black'
                           placeholder='No STNK'
-                          onChange={(e) => handlePengemudiChange(index, 'no_STNK', e.target.value)}
+                          onChange={(e) => handlePengemudiChange(e, pengemudiIndex)}
                           onBlur={handleBlur}
                           value={pengemudi.no_STNK}
                         />
@@ -291,22 +372,22 @@ const DetailLaporanPolisi = () => {
                         size='md'
                         width={'100px'}
                         bg={"red"}
-                        disabled={pengemudiList.length === 1} onClick={() => removePengemudiInput(index)}
+                        disabled={data.identitas_pengemudi.length === 1} onClick={() => handleRemovePengemudi(pengemudiIndex)}
                       >
                         <Text>
                           -
                         </Text>
                       </Button>
-                      <Button fontSize={50} bg={"var(--color-primer)"} display={index === pengemudiList.length - 1 ? 'flex' : 'none'} mt={4} size='md' onClick={addPengemudiInput}>
+                      <Button fontSize={50} bg={"var(--color-primer)"} display={pengemudiIndex === data.identitas_pengemudi.length - 1 ? 'flex' : 'none'} mt={4} size='md' onClick={handleAddPengemudi}>
                         +
                       </Button>
                       </Flex>
                       </Flex>
                     </React.Fragment>
                   ))}
-                <Text mt={10} fontSize={'var(--header-1)'} color={'black'}>Identitas Korban</Text>
-                  {korbanList.map((korban, index) => (
-                    <React.Fragment key={index} >
+                 <Text mt={10} fontSize={'var(--header-1)'} color={'black'}>Identitas Korban</Text>
+                  {Object.values(data.identitas_korban).map((korban, korbanIndex) => (
+                    <React.Fragment key={korbanIndex} >
                       <Flex flexDir={'row'} alignItems={'center'} alignContent={'center'}>
                       <Flex flexDir={'column'} >
                       <FormControl mt={4} isInvalid={errors.nama && touched.nama}>
@@ -316,7 +397,7 @@ const DetailLaporanPolisi = () => {
                           type='text'
                           color='black'
                           placeholder='Nama Korban'
-                          onChange={(e) => handleKorbanChange(index, 'nama', e.target.value)}
+                          onChange={(e) => handleKorbanChange(e,korbanIndex)}
                           onBlur={handleBlur}
                           value={korban.nama}
                         />
@@ -328,7 +409,7 @@ const DetailLaporanPolisi = () => {
                           name='jenis_kelamin'
                           color='black'
                           placeholder="Pilih Jenis Kelamin"
-                          onChange={(e) => handleKorbanChange(index, 'jenis_kelamin', e.target.value)}
+                          onChange={(e) => handleKorbanChange(e,korbanIndex)}
                           onBlur={handleBlur}
                           value={korban.jenis_kelamin}
                         >
@@ -344,7 +425,7 @@ const DetailLaporanPolisi = () => {
                           type='number'
                           color='black'
                           placeholder='Umur Korban'
-                          onChange={(e) => handleKorbanChange(index, 'umur', e.target.value)}
+                          onChange={(e) => handleKorbanChange(e,korbanIndex)}
                           onBlur={handleBlur}
                           value={korban.umur}
                         />
@@ -357,7 +438,7 @@ const DetailLaporanPolisi = () => {
                           type='text'
                           color='black'
                           placeholder='Alamat Korban'
-                          onChange={(e) => handleKorbanChange(index, 'alamat', e.target.value)}
+                          onChange={(e) => handleKorbanChange(e,korbanIndex)}
                           onBlur={handleBlur}
                           value={korban.alamat}
                         />
@@ -370,7 +451,7 @@ const DetailLaporanPolisi = () => {
                           type='text'
                           color='black'
                           placeholder='NIK Korban'
-                          onChange={(e) => handleKorbanChange(index, 'NIK', e.target.value)}
+                          onChange={(e) => handleKorbanChange(e,korbanIndex)}
                           onBlur={handleBlur}
                           value={korban.NIK}
                         />
@@ -384,7 +465,7 @@ const DetailLaporanPolisi = () => {
                           color='black'
                           placeholder="Pilih Luka"
                           onChange={(e) => {
-                            handleKorbanChange(index, 'id_luka', e.target.value);
+                            handleKorbanChange(e,korbanIndex);
                             console.log(e.target.value);
                           }}
                           onBlur={handleBlur}
@@ -403,7 +484,7 @@ const DetailLaporanPolisi = () => {
                           type='text'
                           color='black'
                           placeholder='Nomor Plat Ambulance'
-                          onChange={(e) => handleKorbanChange(index, 'plat_ambulance', e.target.value)}
+                          onChange={(e) => handleKorbanChange(e,korbanIndex)}
                           onBlur={handleBlur}
                           value={korban.plat_ambulance}
                         />
@@ -416,7 +497,7 @@ const DetailLaporanPolisi = () => {
                           type='text'
                           color='black'
                           placeholder='Nama Rumah Sakit'
-                          onChange={(e) => handleKorbanChange(index, 'nama_rumah_sakit', e.target.value)}
+                          onChange={(e) => handleKorbanChange(e,korbanIndex)}
                           onBlur={handleBlur}
                           value={korban.nama_rumah_sakit}
                         />
@@ -429,12 +510,54 @@ const DetailLaporanPolisi = () => {
                           type='text'
                           color='black'
                           placeholder='Nomor Rekam Medis'
-                          onChange={(e) => handleKorbanChange(index, 'nomor_rekam_medis', e.target.value)}
+                          onChange={(e) => handleKorbanChange(e,korbanIndex)}
                           onBlur={handleBlur}
                           value={korban.nomor_rekam_medis}
                         />
                         <FormErrorMessage>{errors.nomor_rekam_medis}</FormErrorMessage>
                       </FormControl>
+                      <Button onClick={()=> handleAddKorbanSantunan(korbanIndex)}>
+                          Tambah Santunan
+                      </Button>
+                      {Object.values(korban.identitas_santunan).map((santunan, santunanIndex) => (
+                        <React.Fragment key={santunanIndex}>
+                          <FormControl mt={4} isInvalid={errors.nominal && touched.nominal}>
+                            <FormLabel color={"var(--color-primer)"}>Santunan</FormLabel>
+                            <Input
+                              name='nominal'
+                              type='number'
+                              color='black'
+                              placeholder='Santunan'
+                              onChange={(e) => handleKorbanSantunanChange(e, korbanIndex, santunanIndex)}
+                              onBlur={handleBlur}
+                              value={santunan.nominal}
+                            />
+                            <FormErrorMessage>{errors.nominal}</FormErrorMessage>
+                          </FormControl>
+                          <FormControl mt={4} isInvalid={errors.id_santunan && touched.id_santunan}>
+                            <FormLabel color={"var(--color-primer)"}>Jenis Santunan</FormLabel>
+                            <Select 
+                              name='id_santunan'
+                              type='text'
+                              color='black'
+                              placeholder="Pilih Jenis Santunan"
+                              onChange={(e) => {
+                                handleKorbanSantunanChange(e, korbanIndex, santunanIndex);
+                                console.log(e.target.value);
+                              }}
+                              onBlur={handleBlur}
+                              value={santunan.id_santunan}
+                            >
+                              <option value='1'>Santunan Kematian</option>
+                              <option value='2'>Santunan Kecelakaan</option>
+                            </Select>
+                            <FormErrorMessage>{errors.id_santunan}</FormErrorMessage>
+                          </FormControl>
+                          <Button onClick={()=> handleRemoveKorbanSantunan(korbanIndex, santunanIndex)}>
+                            Hapus Santunan
+                          </Button>
+                        </React.Fragment>
+                      ))}
                       </Flex>
                       <Flex ml={20} flexDir={'column'}>
                       <Button
@@ -442,18 +565,17 @@ const DetailLaporanPolisi = () => {
                         size='md'
                         width={'100px'}
                         bg={"red"}
-                        disabled={korbanList.length === 1} onClick={() => removeKorbanInput(index)}
+                        disabled={data.identitas_korban.length === 1} onClick={() => handleRemoveKorban(korbanIndex)}
                       >
                       -
                       </Button>
-                      <Button fontSize={50} bg={"var(--color-primer)"} display={index === korbanList.length - 1 ? 'flex' : 'none'} mt={4} size='md' onClick={addKorbanInput}>
+                      <Button fontSize={50} bg={"var(--color-primer)"} display={korbanIndex === data.identitas_korban.length - 1 ? 'flex' : 'none'} mt={4} size='md' onClick={handleAddKorban}>
                         +
                       </Button>
                       </Flex>
                       </Flex>
-                      
                     </React.Fragment>
-                  ))}
+                  ))} 
               <Input
                         color={'black'}
                         type="hidden"
@@ -466,10 +588,8 @@ const DetailLaporanPolisi = () => {
               bg={"var(--color-primer)"}
               color={"white"}
               mt={8}
+              type='submit'
               size='md'
-              isLoading={isSubmitting}
-              disabled={isSubmitting}
-              type="submit"
               onClick={handleSubmit}
             >
               Buat Laporan
@@ -482,4 +602,4 @@ const DetailLaporanPolisi = () => {
     </>
   )
 }
-export default DetailLaporanPolisi;
+export default TambahKorbanLaporan;
