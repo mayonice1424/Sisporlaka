@@ -23,7 +23,7 @@ import {
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import './detailInput.css'
 
-const TambahKorbanLaporan = () => {
+const TambahKorbanLaporanPolisi = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   TabTitle("Laporan - Sisporlaka");
@@ -55,6 +55,18 @@ const TambahKorbanLaporan = () => {
       nomor_rekam_medis: ""
     }]);
   };
+  const getLuka = async () => {
+    axios.get(getAllLuka)
+    .then(response => {
+      setLuka(response.data.luka)
+      setLoading(false)
+    })
+    .catch(error => {
+      console.log(error)
+    }
+    )
+  }
+  const [luka, setLuka] = useState([]);
   const handleKorbanChange = (index, field, value) => {
     const updatedKorbanList = [...korbanList];
     updatedKorbanList[index][field] = value;
@@ -86,6 +98,7 @@ const TambahKorbanLaporan = () => {
   useEffect(() => {
     dispatch(routePageName("Laporkan Kejadian"));
     setLoading(true);
+    getLuka();
   }, []);
   return (
     <>
@@ -234,9 +247,9 @@ const TambahKorbanLaporan = () => {
                           onBlur={handleBlur}
                           value={korban.id_luka}
                         >
-                          <option value='1'>Luka Ringan</option>
-                          <option value='2'>Luka Berat</option>
-                          <option value='3'>Meninggal</option>
+                          {luka.map((luka) => (
+                            <option key={luka.id_luka} value={luka.id_luka}>{luka.keterangan_luka}</option>
+                          ))}
                         </Select>
                         <FormErrorMessage>{errors.id_luka}</FormErrorMessage>
                       </FormControl>
@@ -326,4 +339,4 @@ const TambahKorbanLaporan = () => {
     </>
   )
 }
-export default TambahKorbanLaporan;
+export default TambahKorbanLaporanPolisi;

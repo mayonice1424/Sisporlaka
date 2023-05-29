@@ -76,20 +76,6 @@ const customModalSize = {
   maxHeight: "1500px",
 };
 
-const getAllLaporan = async () => {
-  try {
-    const response = await axios.get(getLaporanToCount);
-    const responseData = response.data;
-    if (responseData && responseData.laporan && responseData.laporan.length > 0) {
-      setDataLaporan(responseData.laporan[0].Laporan_Kategori?.nama_kategori || '');
-    } else {
-      setDataLaporan('');
-    }
-    setLoading(false);
-  } catch (error) {
-    console.log(error);
-  }
-};
 const changePage = ({ selected }) => {
   setPage(selected);
   if (selected === 9) {
@@ -107,7 +93,6 @@ const searchData = (e) => {
   setKeyword(query)
 }
 useEffect(() => {
-  getAllLaporan()
   dispatch(routePageName("Laporkan Kejadian"))
   getAllLaporanByQuery()
   setLoading(true)
@@ -138,11 +123,11 @@ moment.updateLocale('id', idLocale);
               <Text fontWeight="bold" fontSize={'35px'}>Identitas Korban</Text>
               <hr/>
               {
-              identitasKorban.map((item, index) => {
+              identitasKorban.map((item, index, key) => {
                 if (item.laporan.id_laporan === idLaporan) {
                   return (
                     <>
-                    <Flex flexDir="column" mb="20px">
+                    <Flex key={item.id_laporan}  flexDir="column" mb="20px">
                       <Text fontWeight="bold">Nama Korban</Text>
                       <Text>{item.nama == null? '-' : item.nama}</Text>
                       <Text fontWeight="bold">Jenis Kelamin</Text>
@@ -238,16 +223,19 @@ moment.updateLocale('id', idLocale);
                         {moment(item.tanggal).format('LL') == null ? '-' : moment(item.tanggal).format('LL')}</Td>
                       <Td color={'black'}>{moment(item.waktu, 'HH:mm:ss').format('h:mm A') == null ? '-' : moment(item.waktu, 'HH:mm:ss').format('h:mm A') }</Td>
                       <Td color={'black'}>
-                        {item.Kecamatan.nama_kecamatan == null ? '-' : item.Kecamatan.nama_kecamatan}</Td>
+                        {
+                          item.Kecamatan == null ? '-' : item.Kecamatan.nama_kecamatan
+                        }
+                      </Td>
                       <Td color={'black'}>
                         {
                           item.kerugian_materil == null ? '-': <FormatRupiah value={item.kerugian_materil == null ? '-': item.kerugian_materil}/>
                         }
                       </Td>
                       <Td color={'black'}>
-                        {
-                        item.Laporan_Kategori.nama_kategori != null ?item.Laporan_Kategori.nama_kategori : '-'  
-                        }
+                      {
+                        item.Laporan_Kategori == null ? '-' : item.Laporan_Kategori.nama_kategori
+                      }
                       </Td>
                       <Td color={'black'}>
                         {item.penyebab == null ? '-' : item.penyebab}

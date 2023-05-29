@@ -104,18 +104,6 @@ const customModalSize = {
   maxHeight: "1500px",
 };
 
-const getAllLaporan  = async () => {
-  axios.get(getLaporanToCount)
-  .then(response => {
-    setDataLaporan(response.data.laporan)
-    console.log (data)
-    }
-    )
-  .catch(error => {
-    console.log(error)
-  }
-  )
-}
 const changePage = ({ selected }) => {
   setPage(selected);
   if (selected === 9) {
@@ -133,7 +121,6 @@ const searchData = (e) => {
   setKeyword(query)
 }
 useEffect(() => {
-  getAllLaporan()
   getAllLaporanByQuery()
   dispatch(routePageName("Validasi Laporan"))
   setLoading(true)
@@ -281,16 +268,16 @@ moment.updateLocale('id', idLocale);
                         {moment(item.tanggal).format('LL') == null ? '-' : moment(item.tanggal).format('LL')}</Td>
                       <Td color={'black'}>{moment(item.waktu, 'HH:mm:ss').format('h:mm A') == null ? '-' : moment(item.waktu, 'HH:mm:ss').format('h:mm A') }</Td>
                       <Td color={'black'}>
-                        {item.Kecamatan.nama_kecamatan == null ? '-' : item.Kecamatan.nama_kecamatan}</Td>
+                        {item.Kecamatan == null ? '-' : item.Kecamatan.nama_kecamatan}</Td>
                       <Td color={'black'}>
                         {
                           item.kerugian_materil == null ? '-': <FormatRupiah value={item.kerugian_materil == null ? '-': item.kerugian_materil}/>
                         }
                       </Td>
                       <Td color={'black'}>
-                        {
-                        item.Laporan_Kategori.nama_kategori == null ? '-' :  item.Laporan_Kategori.nama_kategori
-                        }
+                      {
+                        item.Laporan_Kategori == null ? '-' : item.Laporan_Kategori.nama_kategori
+                      }
                       </Td>
                       <Td color={'black'}>
                         {item.penyebab == null ? '-' : item.penyebab}

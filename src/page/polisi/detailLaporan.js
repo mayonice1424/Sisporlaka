@@ -31,6 +31,18 @@ const DetailLaporanPolisi = () => {
   console.log(id);
   const [loading, setLoading] = useState(true);
   const role = useAuth('polisi')
+  const getLuka = async () => {
+    axios.get(getAllLuka)
+    .then(response => {
+      setLuka(response.data.luka)
+      setLoading(false)
+    })
+    .catch(error => {
+      console.log(error)
+    }
+    )
+  }
+  const [luka, setLuka] = useState([]);
   const [pengemudiList, setPengemudiList] = useState([{ 
     nama_pengemudi: "",
     jenis_kelamin_pengemudi: "",
@@ -46,7 +58,6 @@ const DetailLaporanPolisi = () => {
     alamat: "",
     NIK: "",
     id_luka: "",
-    plat_ambulance: "",
     nama_rumah_sakit: "",
     nomor_rekam_medis: ""
   }]);
@@ -58,7 +69,6 @@ const DetailLaporanPolisi = () => {
       alamat: "",
       NIK: "",
       id_luka: "",
-      plat_ambulance: "",
       nama_rumah_sakit: "",
       nomor_rekam_medis: ""
     }]);
@@ -117,13 +127,13 @@ const DetailLaporanPolisi = () => {
     NIK: Yup.number(),
     id_luka: Yup.number(),
     nama_rumah_sakit: Yup.string(),
-    plat_ambulance: Yup.string(),
     nomor_rekam_medis: Yup.string(),
   })
 
   useEffect(() => {
     dispatch(routePageName("Laporkan Kejadian"));
     setLoading(true);
+    getLuka();
   }, []);
   return (
     <>
@@ -145,7 +155,6 @@ const DetailLaporanPolisi = () => {
             alamat: '',
             NIK: '',
             id_luka: '',
-            plat_ambulance: '',
             nama_rumah_sakit: '',
             nomor_rekam_medis: '',
           }}
@@ -167,12 +176,11 @@ const DetailLaporanPolisi = () => {
               submitedData.append('alamat', values.alamat);
               submitedData.append('NIK', values.NIK);
               submitedData.append('id_luka', values.id_luka);
-              submitedData.append('plat_ambulance', values.plat_ambulance);
               submitedData.append('nama_rumah_sakit', values.nama_rumah_sakit);
               submitedData.append('nomor_rekam_medis', values.nomor_rekam_medis);
               submitedData.append('id_laporan', id);
               axios.post(createDetailLaporanPolisi, data).then((response) => {
-                if (response.status === 200) {
+                if (response.status === 201) {
                   navigate(`/unit/${role}/laporan`);
                   console.log(response);
                 }
@@ -390,24 +398,11 @@ const DetailLaporanPolisi = () => {
                           onBlur={handleBlur}
                           value={korban.id_luka}
                         >
-                          <option value='1'>Luka Ringan</option>
-                          <option value='2'>Luka Berat</option>
-                          <option value='3'>Meninggal</option>
+                          {luka.map((luka) => (
+                            <option key={luka.id_luka} value={luka.id_luka}>{luka.keterangan_luka}</option>
+                          ))}
                         </Select>
                         <FormErrorMessage>{errors.id_luka}</FormErrorMessage>
-                      </FormControl>
-                      <FormControl mt={4} isInvalid={errors.plat_ambulance && touched.plat_ambulance}>
-                        <FormLabel color={"var(--color-primer)"}>Nomor Plat Ambulance</FormLabel>
-                        <Input
-                          name='plat_ambulance'
-                          type='text'
-                          color='black'
-                          placeholder='Nomor Plat Ambulance'
-                          onChange={(e) => handleKorbanChange(index, 'plat_ambulance', e.target.value)}
-                          onBlur={handleBlur}
-                          value={korban.plat_ambulance}
-                        />
-                        <FormErrorMessage>{errors.plat_ambulance}</FormErrorMessage>
                       </FormControl>
                       <FormControl mt={4} isInvalid={errors.nama_rumah_sakit && touched.nama_rumah_sakit}>
                         <FormLabel color={"var(--color-primer)"}>Nama Rumah Sakit</FormLabel>

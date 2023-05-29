@@ -89,18 +89,7 @@ const customModalSize = {
   maxHeight: "1500px",
 };
 
-const getAllLaporan  = async () => {
-  axios.get(getLaporanToCount)
-  .then(response => {
-    setDataLaporan(response.data.laporan)
-    console.log (data)
-    }
-    )
-  .catch(error => {
-    console.log(error)
-  }
-  )
-}
+
 const changePage = ({ selected }) => {
   setPage(selected);
   if (selected === 9) {
@@ -118,7 +107,6 @@ const searchData = (e) => {
   setKeyword(query)
 }
 useEffect(() => {
-  getAllLaporan()
   dispatch(routePageName("Laporkan Kejadian"))
   getAllLaporanByQuery()
   setLoading(true)
@@ -200,10 +188,23 @@ moment.updateLocale('id', idLocale);
                       <Text>{item.wound.keterangan_luka == null ? '-' : item.wound.keterangan_luka }</Text>
                       <Text fontWeight="bold">Nomor Rekam Medis</Text>
                       <Text>{item.nomor_rekam_medis == null ? '-' : item.nomor_rekam_medis}</Text>
+                      <Text fontWeight="bold">Kode ICD-10</Text>
+                      <Text>{item.kode_icd_10 == null ? '-' : `${item.kode_icd_10} : ${item['ICD-10'].insiden}`}</Text>
                       <Text fontWeight="bold">Kode Skala Triase</Text>
                       <Text>{item.kode_ATS == null ? '-' : `${item.kode_ATS} : ${item.Skala_Triase.keterangan}`}</Text>
                       <Text fontWeight="bold">Santunan</Text>
-                      <Text>{item.Santunans == null ? '-' : item.Santunans}</Text>
+                      <Text>
+                      {item.santunans == null || !Array.isArray(item.santunans) || item.santunans.length === 0
+                      ? '-'
+                      : item.santunans.map((item) => (
+                          <span key={item.id}>
+                            {item.jenis_santunan} - <FormatRupiah value={item.Identitas_Santunan.nominal == null ? '-' : item.Identitas_Santunan.nominal} />
+                            <br />
+                          </span>
+                        ))}
+                      <br />
+                      Total: <FormatRupiah value={item.santunans.reduce((sum, item) => sum + (item.Identitas_Santunan.nominal || 0), 0)} />
+                      </Text>
                       <Text fontWeight="bold">------------------------------</Text>
                     </Flex>
                     </>
@@ -269,16 +270,19 @@ moment.updateLocale('id', idLocale);
                         {moment(item.tanggal).format('LL') == null ? '-' : moment(item.tanggal).format('LL')}</Td>
                       <Td color={'black'}>{moment(item.waktu, 'HH:mm:ss').format('h:mm A') == null ? '-' : moment(item.waktu, 'HH:mm:ss').format('h:mm A') }</Td>
                       <Td color={'black'}>
-                        {item.Kecamatan.nama_kecamatan == null ? '-' : item.Kecamatan.nama_kecamatan}</Td>
+                        {
+                          item.Kecamatan == null ? '-' : item.Kecamatan.nama_kecamatan
+                        }
+                      </Td>
                       <Td color={'black'}>
                         {
                           item.kerugian_materil == null ? '-': <FormatRupiah value={item.kerugian_materil == null ? '-': item.kerugian_materil}/>
                         }
                       </Td>
                       <Td color={'black'}>
-                        {
-                        item.Laporan_Kategori.nama_kategori == null ? '-' :  item.Laporan_Kategori.nama_kategori
-                        }
+                      {
+                        item.Laporan_Kategori == null ? '-' : item.Laporan_Kategori.nama_kategori
+                      }
                       </Td>
                       <Td color={'black'}>
                         {item.penyebab == null ? '-' : item.penyebab}

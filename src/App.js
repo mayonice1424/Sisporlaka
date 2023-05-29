@@ -26,15 +26,13 @@ import AdminRSGrafik from "./page/rumahsakit/grafik";
 import AddLaporanRS from "./page/rumahsakit/addLaporan";
 import AddLaporanDinkes from "./page/dinkes/addLaporan";
 import AddLaporanPolisi from "./page/polisi/addLaporan";
-import AddLaporanJasaRaharja from "./page/jasaRaharja/addLaporan copy";
 import DetailLaporanPolisi from "./page/polisi/detailLaporan";
-import TambahPengemudiLaporan from "./page/polisi/tambahPengemudiLaporan";
-import TambahKorbanLaporan from "./page/polisi/tambahKorbanLaporan";
+import TambahPengemudiLaporanPolisi from "./page/polisi/tambahPengemudiLaporan";
+import TambahKorbanLaporanPolisi from "./page/polisi/tambahKorbanLaporan";
 import DetailLaporanRS from "./page/rumahsakit/detailLaporan";
 import DetailLaporanDinkes from "./page/dinkes/detailLaporan";
 import TambahKorbanLaporanJasaRaharja from "./page/jasaRaharja/tambahKorbanLaporan";
-import TambahPengemudiLaporanJasaRaharja from "./page/jasaRaharja/tambahPengemudiLaporan";
-import DetailLaporanJasaRaharja from "./page/jasaRaharja/detailLaporan";
+import EditKorbanLaporanJasaRaharja from "./page/jasaRaharja/editLaporan";
 function App() {
   return (
     <>
@@ -46,10 +44,8 @@ function App() {
         <Route path="/unit" element = {<Board />}>
         <Route path='jasa-raharja' element={<AdminJasaRaharja />} />
         <Route path='jasa-raharja/laporan' element={<AdminJasaRaharjaLaporan />} />
-        <Route path='jasa-raharja/detail-laporan/:id' element={<DetailLaporanJasaRaharja />} />
-        <Route path='jasa-raharja/tambah-pengemudi-laporan/:id' element={<TambahPengemudiLaporanJasaRaharja />} />
         <Route path='jasa-raharja/tambah-korban-laporan/:id' element={<TambahKorbanLaporanJasaRaharja />} />
-        <Route path='jasa-raharja/laporan/add' element={<AddLaporanJasaRaharja/>} />
+        <Route path='jasa-raharja/edit-korban-laporan/:id' element={<EditKorbanLaporanJasaRaharja />} />
         <Route path='jasa-raharja/grafik' element={<AdminJasaRaharjaGrafik />} />
         </Route>
         <Route path="/unit" element = {<Board />}>
@@ -58,8 +54,8 @@ function App() {
         <Route path='polisi/laporan/add' element={<AddLaporanPolisi />} />
         <Route path='polisi/grafik' element={<AdminPolisiGrafik />} />
         <Route path='polisi/detail-laporan/:id' element={<DetailLaporanPolisi />} />
-        <Route path='polisi/tambah-pengemudi-laporan/:id' element={<TambahPengemudiLaporan />} />
-        <Route path='polisi/tambah-korban-laporan/:id' element={<TambahKorbanLaporan />} />
+        <Route path='polisi/tambah-pengemudi-laporan/:id' element={<TambahPengemudiLaporanPolisi />} />
+        <Route path='polisi/tambah-korban-laporan/:id' element={<TambahKorbanLaporanPolisi />} />
         </Route>
         <Route path="/unit" element = {<Board />}>
         <Route path='dinas-kesehatan' element={<AdminDinkes />} />

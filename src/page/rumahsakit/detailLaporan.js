@@ -18,7 +18,7 @@ import { useDispatch } from 'react-redux';
 import { routePageName } from '../../Redux/action';
 import { TabTitle } from '../../Utility/utility';
 import {
-  createDetailLaporanPolisi
+  createDetailLaporanPolisi,getAllSkala,getAllLuka
 } from '../../Utility/api.js';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import './input.css'
@@ -31,6 +31,32 @@ const DetailLaporanRS = () => {
   console.log(id);
   const [loading, setLoading] = useState(true);
   const role = useAuth('rumah-sakit')
+
+  const getSkala = async () => {
+    axios.get(getAllSkala)
+    .then(response => {
+      setSkala(response.data.skalaTriase)
+      setLoading(false)
+    })
+    .catch(error => {
+      console.log(error)
+    }
+    )
+  }
+  const [skala, setSkala] = useState([]);
+
+  const getLuka = async () => {
+    axios.get(getAllLuka)
+    .then(response => {
+      setLuka(response.data.luka)
+      setLoading(false)
+    })
+    .catch(error => {
+      console.log(error)
+    }
+    )
+  }
+  const [luka, setLuka] = useState([]);
  const [korbanList, setKorbanList] = useState([{
     nama: "",
     jenis_kelamin: "",
@@ -85,6 +111,8 @@ const DetailLaporanRS = () => {
   useEffect(() => {
     dispatch(routePageName("Laporkan Kejadian"));
     setLoading(true);
+    getSkala();
+    getLuka();
   }, []);
   return (
     <>
@@ -233,9 +261,9 @@ const DetailLaporanRS = () => {
                           onBlur={handleBlur}
                           value={korban.id_luka}
                         >
-                          <option value='1'>Luka Ringan</option>
-                          <option value='2'>Luka Berat</option>
-                          <option value='3'>Meninggal</option>
+                          {luka.map((luka) => (
+                            <option key={luka.id_luka} value={luka.id_luka}>{luka.keterangan_luka}</option>
+                          ))}
                         </Select>
                         <FormErrorMessage>{errors.id_luka}</FormErrorMessage>
                       </FormControl>
@@ -266,11 +294,12 @@ const DetailLaporanRS = () => {
                           onBlur={handleBlur}
                           value={korban.kode_ATS}
                         >
-                          <option value='ATS 1'>Resusitasi</option>
-                          <option value='ATS 2'>Emergency</option>
-                          <option value='ATS 3'>Urgent</option>
-                          <option value='ATS 4'>Semi Darurat</option>
-                          <option value="ATS 5">Tidak Darurat</option>
+                          {
+                            skala.map((item) => (
+                                <option value={item.kode_ATS}>{item.kode_ATS} - {item.keterangan}</option>
+                            )
+                            )
+                          }
                         </Select>
                         <FormErrorMessage>{errors.kode_ATS}</FormErrorMessage>
                       </FormControl>

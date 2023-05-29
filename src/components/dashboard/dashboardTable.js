@@ -63,7 +63,11 @@ const DashboardTable = () => {
                   Object.values(data).map((item,index, key) => (
                     <Tr>
                       <Td color={'black'}>{index+1}</Td>
-                      <Td color={'black'}>{item.Kecamatan.nama_kecamatan}</Td>
+                      <Td color={'black'}>
+                        {
+                          item.Kecamatan == null ? '-' : item.Kecamatan.nama_kecamatan
+                        }
+                      </Td>
                       <Td color={'black'}>{item.count}</Td>
                     </Tr>
                   ))

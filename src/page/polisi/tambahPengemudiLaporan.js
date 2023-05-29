@@ -23,7 +23,7 @@ import {
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import './detailInput.css'
 
-const TambahPengemudiLaporan = () => {
+const TambahPengemudiLaporanPolisi = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   TabTitle("Laporan - Sisporlaka");
@@ -267,4 +267,4 @@ const TambahPengemudiLaporan = () => {
     </>
   )
 }
-export default TambahPengemudiLaporan;
+export default TambahPengemudiLaporanPolisi;

@@ -129,7 +129,7 @@ const AddLaporanDinkes = () => {
                 submitedData.append("lokasi", values.lokasi);
                 submitedData.append("kerugian_materil", values.kerugian_materil);
                 submitedData.append("keterangan", values.keterangan);
-                submitedData.append("id_laporan_kategori", values.id_laporan_kategori);
+                submitedData.append("id_laporan_kategori",1);
                 submitedData.append("penyebab", values.penyebab);
                 submitedData.append("id_users", dataApi);
                 axios.post(postLaporanApi,{
@@ -343,6 +343,14 @@ const AddLaporanDinkes = () => {
                       onBlur={handleBlur}
                       variant="outline"
                       placeholder="ID User..."
+                    />
+                    <Input 
+                      color={'black'}
+                      type="hidden"
+                      value={1}
+                      onBlur={handleBlur}
+                      variant="outline"
+                      placeholder="Kategori..."
                     />
                   <Button
                     bg={"var(--color-primer)"}

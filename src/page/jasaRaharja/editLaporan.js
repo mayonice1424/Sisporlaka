@@ -18,47 +18,49 @@ import { useDispatch } from 'react-redux';
 import { routePageName } from '../../Redux/action';
 import { TabTitle } from '../../Utility/utility';
 import {
-  createDetailLaporanPolisi,getAllLuka,getAllSantunan
+  createDetailLaporanPolisi,deleteKorban,getAllLuka,getAllSantunan,postKorban
 } from '../../Utility/api.js';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import './detailInput.css'
 
-const TambahKorbanLaporanJasaRaharja = () => {
+const EditKorbanLaporanJasaRaharja = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   TabTitle("Laporan - Sisporlaka");
   const { id } = useParams();
+  const [id_identitas, setIdIdentitas] = useState();
   console.log(id);
   const [loading, setLoading] = useState(true);
   const role = useAuth('jasa-raharja')
-  const [data,set] = useState({
-    identitas_korban: [
-      {
-        nama: '',
-        jenis_kelamin: '',
-        umur: '',
-        alamat: '',
-        plat_ambulance: '',
-        NIK: '',
-        nama_rumah_sakit: '',
-        nomor_rekam_medis: '',
-        id_luka: '',
-        identitas_santunan: [{
-          nominal: '',
-          id_santunan: ''
-      }],
-      },
-    ],
-    id_laporan: id,
-  });
+
+    const [data,set] = useState({
+      identitas_korban: [
+        {
+          nama: '',
+          jenis_kelamin: '',
+          umur: '',
+          alamat: '',
+          plat_ambulance: '',
+          NIK: '',
+          nama_rumah_sakit: '',
+          nomor_rekam_medis: '',
+          id_luka: '',
+          identitas_santunan: [{
+            nominal: '',
+            id_santunan: ''
+        }],
+        },
+      ],
+      id_laporan: id,
+    });
   const handleKorbanChange = (e, index) => {
     const { name, value } = e.target;
     const korbanData = [...data.identitas_korban];
     korbanData[index] = { ...korbanData[index], [name]: value };
     set({ ...data, identitas_korban: korbanData });
   };
-
-    /* Fungsi formatRupiah */
+  
+  /* Fungsi formatRupiah */
     const formatRupiah = (angka, prefix) => {
       var number_string = angka.replace(/[^,\d]/g, '').toString(),
         split = number_string.split(','),
@@ -88,8 +90,7 @@ const TambahKorbanLaporanJasaRaharja = () => {
     }
     )
   }
-
-
+  
   const handleKorbanSantunanChange = (e, korbanIndex, santunanIndex) => {
     const { name } = e.target;
     const { value } = e.target;
@@ -138,9 +139,14 @@ const TambahKorbanLaporanJasaRaharja = () => {
         }],
         },
       ],
+      id_laporan: id,
     });
+axios.post(postKorban, data)
+.then(response => {
+  setIdIdentitas(response.data.id_identitas_korban)
+  console.log(response.data)
+})
   };
-
   const handleAddKorbanSantunan = (korbanIndex) => {
     const korbanData = [...data.identitas_korban];
     korbanData[korbanIndex].identitas_santunan.push({ nominal: '', id_santunan: '' });
@@ -151,6 +157,10 @@ const TambahKorbanLaporanJasaRaharja = () => {
     const korbanData = [...data.identitas_korban];
     korbanData.splice(korbanIndex, 1);
     set({ ...data, identitas_korban: korbanData });
+    axios.delete(deleteKorban + id_identitas)
+    .then(response => {
+      console.log(response)
+    })
   };
   
   const handleRemoveKorbanSantunan = (korbanIndex, santunanIndex) => {
@@ -161,11 +171,13 @@ const TambahKorbanLaporanJasaRaharja = () => {
     set({ ...data, identitas_korban: korbanData });
   };
 
+
+
   const schema = Yup.object().shape({
   
     identitas_korban: Yup.array().of(
       Yup.object().shape({
-        nama: Yup.string().required(),
+        nama: Yup.string().required('jarang sholat'),
         jenis_kelamin: Yup.string().required(),
         umur: Yup.number().required(),
         alamat: Yup.string().required(),
@@ -236,6 +248,7 @@ const TambahKorbanLaporanJasaRaharja = () => {
           validateOnChange={false}
           validateOnBlur={false}
           onSubmit={(values, {setSubmitting}) => {
+            console.log(values)
             setTimeout(() => {
               const submitedData = new FormData();
               console.log(values);
@@ -296,6 +309,7 @@ const TambahKorbanLaporanJasaRaharja = () => {
                           onChange={(e) => handleKorbanChange(e,korbanIndex)}
                           onBlur={handleBlur}
                           value={korban.nama}
+                          required
                         />
                         <FormErrorMessage>{errors.nama}</FormErrorMessage>
                       </FormControl>
@@ -368,7 +382,7 @@ const TambahKorbanLaporanJasaRaharja = () => {
                           value={korban.id_luka}
                         >
                           {luka.map((luka) => (
-                            <option key={luka.id_luka} value={luka.id_luka}>{luka.keterangan_luka}</option>
+                            <option key={luka.id} value={luka.id_luka}>{luka.keterangan_luka}</option>
                           ))}
                         </Select>
                         <FormErrorMessage>{errors.id_luka}</FormErrorMessage>
@@ -472,7 +486,7 @@ const TambahKorbanLaporanJasaRaharja = () => {
                       >
                       -
                       </Button>
-                      <Button fontSize={50} bg={"var(--color-primer)"} display={korbanIndex === data.identitas_korban.length - 1 ? 'flex' : 'none'} mt={4} size='md' onClick={handleAddKorban}>
+                      <Button bg={"var(--color-primer)"} display={korbanIndex === data.identitas_korban.length - 1 ? 'flex' : 'none'} mt={4} size='md' type='submit' onClick={handleAddKorban}>
                         +
                       </Button>
                       </Flex>
@@ -505,4 +519,4 @@ const TambahKorbanLaporanJasaRaharja = () => {
     </>
   )
 }
-export default TambahKorbanLaporanJasaRaharja;
+export default EditKorbanLaporanJasaRaharja;

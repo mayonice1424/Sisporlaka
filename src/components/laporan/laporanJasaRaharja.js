@@ -68,7 +68,6 @@ const getAllLaporanByQuery = async () => {
     console.log(error);
   }
 }
-
 const customModalSize = {
   maxWidth: "2000px",
   width: "80%",
@@ -76,17 +75,6 @@ const customModalSize = {
   maxHeight: "1500px",
 };
 
-const getAllLaporan  = async () => {
-  axios.get(getLaporanToCount)
-  .then(response => {
-    setDataLaporan(response.data.laporan)
-    }
-    )
-  .catch(error => {
-    console.log(error)
-  }
-  )
-}
 const changePage = ({ selected }) => {
   setPage(selected);
   if (selected === 9) {
@@ -104,7 +92,6 @@ const searchData = (e) => {
   setKeyword(query)
 }
 useEffect(() => {
-  getAllLaporan()
   dispatch(routePageName("Laporkan Kejadian"))
   getAllLaporanByQuery()
   setLoading(true)
@@ -189,7 +176,18 @@ moment.updateLocale('id', idLocale);
                       <Text fontWeight="bold">Skala Triase</Text>
                       <Text color='black'>{item.Skala_Triase && item.Skala_Triase.kode_ATS ? `${item.Skala_Triase.kode_ATS} - ${item.Skala_Triase.keterangan}` : '-'}</Text>
                       <Text fontWeight="bold">Santunan</Text>
-                      <Text>{item.Santunans == null ? '-' : item.Santunans}</Text>
+                      <Text>
+                      {item.santunans == null || !Array.isArray(item.santunans) || item.santunans.length === 0
+                      ? '-'
+                      : item.santunans.map((item) => (
+                          <span key={item.id}>
+                            {item.jenis_santunan} - <FormatRupiah value={item.Identitas_Santunan.nominal == null ? '-' : item.Identitas_Santunan.nominal} />
+                            <br />
+                          </span>
+                        ))}
+                      <br />
+                      Total: <FormatRupiah value={item.santunans.reduce((sum, item) => sum + (item.Identitas_Santunan.nominal || 0), 0)} />
+                      </Text>
                       <Text fontWeight="bold">------------------------------</Text>
                     </Flex>
                     </>
@@ -203,7 +201,7 @@ moment.updateLocale('id', idLocale);
             <Button
                 bg={'red'}
                 onClick={(e) => {
-                 navigate(`/unit/${role}/laporan/edit/${idLaporan}`)
+                 navigate(`/unit/${role}/edit-korban-laporan/${idLaporan}`)
               }}
               color={'white'}
               mr={3}
@@ -251,16 +249,19 @@ moment.updateLocale('id', idLocale);
                         {moment(item.tanggal).format('LL') == null ? '-' : moment(item.tanggal).format('LL')}</Td>
                       <Td color={'black'}>{moment(item.waktu, 'HH:mm:ss').format('h:mm A') == null ? '-' : moment(item.waktu, 'HH:mm:ss').format('h:mm A') }</Td>
                       <Td color={'black'}>
-                        {item.Kecamatan.nama_kecamatan == null ? '-' : item.Kecamatan.nama_kecamatan}</Td>
+                        {
+                          item.Kecamatan == null ? '-' : item.Kecamatan.nama_kecamatan
+                        }
+                      </Td>
                       <Td color={'black'}>
                         {
                           item.kerugian_materil == null ? '-': <FormatRupiah value={item.kerugian_materil == null ? '-': item.kerugian_materil}/>
                         }
                       </Td>
                       <Td color={'black'}>
-                        {
-                        item.Laporan_Kategori.nama_kategori == null ? '-' :  item.Laporan_Kategori.nama_kategori
-                        }
+                      {
+                        item.Laporan_Kategori == null ? '-' : item.Laporan_Kategori.nama_kategori
+                      }
                       </Td>
                       <Td color={'black'}>
                         {item.penyebab == null ? '-' : item.penyebab}
@@ -268,20 +269,6 @@ moment.updateLocale('id', idLocale);
                       <Td color={'black'}>
                         <Flex flexDir={'row'}>
                         <Flex flexDir={'column'}>
-                        <Button
-                         mb={3}
-                         mr={'10px'}
-                         ml={'10px'} 
-                         border={'solid 2px var(--color-primer)'}
-                         bg={'#FAFBFC'} 
-                         maxWidth={'160px'} type='submit'
-                        color={'#646464'}>
-                        <Link to={`/unit/${role}/tambah-pengemudi-laporan/${item.id_laporan}`}>
-                          <Text color={'black'} >
-                            Tambah Pengemudi
-                          </Text>
-                        </Link>
-                      </Button>
                       <Button mr={'10px'}
                          ml={'10px'} border={'solid 2px var(--color-primer) '} bg={'#FAFBFC'} maxWidth={'160px'} type='submit'
                         color={'#646464'}>
@@ -308,17 +295,6 @@ moment.updateLocale('id', idLocale);
                             <Text color={'black'} >
                             Detail Laporan
                             </Text>
-                        </Button>
-                        <Button
-                         mr={'10px'}
-                         ml={'10px'} border={'solid 2px var(--color-primer) '} bg={'#FAFBFC'} maxWidth={'150px'} type='submit'
-                        color={'#646464'}
-                         >
-                        <Link to={`/unit/${role}/laporan/edit/${item.id_laporan}`}>
-                          <Text color={'black'} >
-                            Edit
-                          </Text>
-                        </Link>
                         </Button>
                         </Flex>
                         </Flex>

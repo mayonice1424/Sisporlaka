@@ -15,7 +15,7 @@ const AdminJasaRaharjaGrafik = () => {
   return (
     <>
     <Flex>
-      <Text color={'red'}>Halaman Role {role}</Text>
+      <Text color={'red'}> Role {role}</Text>
     </Flex>
     </>
   )
