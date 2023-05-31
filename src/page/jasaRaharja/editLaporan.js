@@ -9,8 +9,15 @@ import {
   FormErrorMessage,
   FormLabel,
   Select,
-  list
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalFooter,
+  ModalBody,
+  ModalCloseButton
 } from '@chakra-ui/react';
+import { useDisclosure } from "@chakra-ui/react"
 import { Formik,Form } from 'formik';
 import * as Yup from 'yup';
 import axios from 'axios';
@@ -18,21 +25,29 @@ import { useDispatch } from 'react-redux';
 import { routePageName } from '../../Redux/action';
 import { TabTitle } from '../../Utility/utility';
 import {
-  createDetailLaporanPolisi,deleteKorban,getAllLuka,getAllSantunan,postKorban
+  createDetailLaporanPolisi,postSantunan,deleteKorbanById,getAllLuka,getAllSantunan,getAllIdentitasKorban,deleteSantunanById
 } from '../../Utility/api.js';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import './detailInput.css'
 
 const EditKorbanLaporanJasaRaharja = () => {
+  const { id } = useParams(); 
+  const deleteSantunan = useDisclosure()
+  const addSantunan = useDisclosure()
+  const deleteKorban = useDisclosure()
+  const [error, setError] = useState(null);
+  const [santunanList, setSantunan] = useState([]);
+  const [deleteKorbanIndex, setDeleteKorbanIndex] = useState([])
   const navigate = useNavigate();
+  const [deleteSantunanIndex, setDeleteSantunanIndex] = useState([])
   const dispatch = useDispatch();
-  TabTitle("Laporan - Sisporlaka");
-  const { id } = useParams();
-  const [id_identitas, setIdIdentitas] = useState();
-  console.log(id);
+  const [luka, setLuka] = useState([]);
+  const [identitas, setIdentitas] = useState([]);
+  const [id_identitas, setIdIdentitas] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [santunanId, setSantunanId] = useState([])
   const role = useAuth('jasa-raharja')
-
+  TabTitle("Laporan - Sisporlaka"); 
     const [data,set] = useState({
       identitas_korban: [
         {
@@ -53,44 +68,13 @@ const EditKorbanLaporanJasaRaharja = () => {
       ],
       id_laporan: id,
     });
+
   const handleKorbanChange = (e, index) => {
     const { name, value } = e.target;
     const korbanData = [...data.identitas_korban];
     korbanData[index] = { ...korbanData[index], [name]: value };
     set({ ...data, identitas_korban: korbanData });
   };
-  
-  /* Fungsi formatRupiah */
-    const formatRupiah = (angka, prefix) => {
-      var number_string = angka.replace(/[^,\d]/g, '').toString(),
-        split = number_string.split(','),
-        sisa = split[0].length % 3,
-        rupiah = split[0].substr(0, sisa),
-        ribuan = split[0].substr(sisa).match(/\d{3}/gi);
-  
-      // tambahkan titik jika yang di input sudah menjadi angka ribuan
-      if (ribuan) {
-        var separator = sisa ? '.' : '';
-        rupiah += separator + ribuan.join('.');
-      }
-  
-      rupiah = split[1] !== undefined ? rupiah + ',' + split[1] : rupiah;
-      return prefix === undefined ? rupiah : rupiah ? 'Rp. ' + rupiah : '';
-    };
-
-  const [santunanList, setSantunan] = useState([]);
-  const getSantunan = async () => {
-    axios.get(getAllSantunan)
-    .then(response => {
-      setSantunan(response.data.santunan)
-      setLoading(false)
-    })
-    .catch(error => {
-      console.log(error)
-    }
-    )
-  }
-  
   const handleKorbanSantunanChange = (e, korbanIndex, santunanIndex) => {
     const { name } = e.target;
     const { value } = e.target;
@@ -105,6 +89,60 @@ const EditKorbanLaporanJasaRaharja = () => {
       set({ ...data, identitas_korban: korbanData });
     }
   };
+  const handleAddKorbanSantunan = (Id_identitas) => {
+    setIdIdentitas(Id_identitas) 
+    addSantunan.onOpen()
+  };
+
+  const handleRemoveKorban = (korbanIndex) => {
+    setDeleteKorbanIndex(korbanIndex)
+    deleteKorban.onOpen()
+  };
+  
+  const handleRemoveKorbanSantunan = (santunanIndex) => {
+    console.log(santunanIndex.id_identitas_santunan);
+    setDeleteSantunanIndex(santunanIndex.id_identitas_santunan)
+     deleteSantunan.onOpen()
+  };
+  
+  /* Fungsi formatRupiah */
+    const formatRupiah = (angka, prefix) => {
+      var number_string = angka.replace(/[^,\d]/g, '').toString(),
+        split = number_string.split(','),
+        sisa = split[0].length % 3,
+        rupiah = split[0].substr(0, sisa),
+        ribuan = split[0].substr(sisa).match(/\d{3}/gi);
+      // tambahkan titik jika yang di input sudah menjadi angka ribuan
+      if (ribuan) {
+        var separator = sisa ? '.' : '';
+        rupiah += separator + ribuan.join('.');
+      }
+      rupiah = split[1] !== undefined ? rupiah + ',' + split[1] : rupiah;
+      return prefix === undefined ? rupiah : rupiah ? 'Rp. ' + rupiah : '';
+    };
+  const getAllIdentitas = async () => {
+    axios.get(`${getAllIdentitasKorban}${id}`)
+    .then(response => {
+      setIdentitas(response.data)
+      console.log(response.data)
+      setLoading(false)
+    })
+    .catch(error => {
+      console.log(error)
+    }
+    ) 
+  }
+  const getSantunan = async () => {
+    axios.get(getAllSantunan)
+    .then(response => {
+      setSantunan(response.data.santunan)
+      setLoading(false)
+    })
+    .catch(error => {
+      console.log(error)
+    }
+    )
+  }
   const getLuka = async () => {
     axios.get(getAllLuka)
     .then(response => {
@@ -116,68 +154,11 @@ const EditKorbanLaporanJasaRaharja = () => {
     }
     )
   }
-  const [luka, setLuka] = useState([]);
-
-  const handleAddKorban = () => {
-    set({
-      ...data,
-      identitas_korban: [
-        ...data.identitas_korban,
-        {
-          nama: '',
-          jenis_kelamin: '',
-          umur: '',
-          alamat: '',
-          plat_ambulance: '',
-          NIK: '',
-          nama_rumah_sakit: '',
-          nomor_rekam_medis: '',
-          id_luka: '',
-          identitas_santunan: [{
-            nominal: '',
-            id_santunan: '',
-        }],
-        },
-      ],
-      id_laporan: id,
-    });
-axios.post(postKorban, data)
-.then(response => {
-  setIdIdentitas(response.data.id_identitas_korban)
-  console.log(response.data)
-})
-  };
-  const handleAddKorbanSantunan = (korbanIndex) => {
-    const korbanData = [...data.identitas_korban];
-    korbanData[korbanIndex].identitas_santunan.push({ nominal: '', id_santunan: '' });
-    set({ ...data, identitas_korban: korbanData });
-  };
-
-  const handleRemoveKorban = (korbanIndex) => {
-    const korbanData = [...data.identitas_korban];
-    korbanData.splice(korbanIndex, 1);
-    set({ ...data, identitas_korban: korbanData });
-    axios.delete(deleteKorban + id_identitas)
-    .then(response => {
-      console.log(response)
-    })
-  };
-  
-  const handleRemoveKorbanSantunan = (korbanIndex, santunanIndex) => {
-    const korbanData = [...data.identitas_korban];
-    const santunanData = [...korbanData[korbanIndex].identitas_santunan];
-    santunanData.splice(santunanIndex, 1);
-    korbanData[korbanIndex] = { ...korbanData[korbanIndex], identitas_santunan: santunanData };
-    set({ ...data, identitas_korban: korbanData });
-  };
-
-
-
   const schema = Yup.object().shape({
   
     identitas_korban: Yup.array().of(
       Yup.object().shape({
-        nama: Yup.string().required('jarang sholat'),
+        nama: Yup.string().required(),
         jenis_kelamin: Yup.string().required(),
         umur: Yup.number().required(),
         alamat: Yup.string().required(),
@@ -197,24 +178,21 @@ axios.post(postKorban, data)
   
     id_laporan: Yup.number().required(),
   });
-
-
   useEffect(() => {
     dispatch(routePageName("Laporkan Kejadian"));
     setLoading(true);
     getLuka();
-    getSantunan();    const rupiah = document.getElementById("rupiah");
+    getAllIdentitas();
+    getSantunan();
+    const rupiah = document.getElementById("rupiah");
     if (rupiah) {
       rupiah.addEventListener('keyup', function(e) {
-        // tambahkan 'Rp.' pada saat form di ketik
-        // gunakan fungsi formatRupiah() untuk mengubah angka yang di ketik menjadi format angka
         rupiah.value = formatRupiah(this.value, 'Rp. ');
       });
     }
     return () => {
       if (rupiah) {
         rupiah.removeEventListener('keyup', function(e) {
-          // handler keyup
         });
       }
     };
@@ -222,7 +200,130 @@ axios.post(postKorban, data)
   return (
     <>
       <Flex flexDir={'column'} justify={'flex-start'} width={'100%'}>
-       
+      <Modal isOpen={addSantunan.isOpen} onClose={addSantunan.onClose}>
+          <ModalOverlay />
+          <ModalContent className="custom-modal-content" >
+            <ModalHeader>Tambah Input Santunan </ModalHeader>
+            <ModalCloseButton />
+            <ModalBody overflow={'auto'}>
+              <Flex flexDir={'column'} justify={'flex-start'} width={'100%'}>
+                <Text color={'red'}>
+                    {error}
+                </Text>
+                  <Text> Pilih Jenis Santunan</Text>
+              </Flex>
+            </ModalBody>
+            <ModalFooter>
+              <FormControl>
+                <Select
+                  placeholder="Pilih Santunan"
+                  onChange={(e) => {
+                    setSantunanId(e.target.value)
+                  }}
+                >
+                  {santunanList.map((santunan, index) => (
+                    <option key={index} value={santunan.id_santunan}>
+                      {santunan.jenis_santunan}
+                    </option>
+                  ))}
+                </Select>
+              </FormControl>
+            <Button
+                bg={'red'}
+                onClick={(e) => {
+                  e.preventDefault();
+                  axios.post(postSantunan, {
+                    id_identitas_korban: id_identitas,
+                    id_santunan: santunanId,
+                  })
+                  .then(response => {
+                    getLuka();
+                    getAllIdentitas();
+                    getSantunan();
+                    console.log(response.data)
+                    addSantunan.onClose()
+                  }
+                  ).catch(error => {
+                    if (error.response.status === 500) {
+                        setError('Data Santunan Sudah Ada')
+                    }
+                  }
+                  )
+                }}
+              color={'white'}
+              mr={3}
+              > Tambah
+              </Button>
+              <Button border={'solid 2px var(--color-primer)'} bg={'white'}  mr={3} onClick={addSantunan.onClose}>
+                Tutup
+              </Button>
+            </ModalFooter>
+          </ModalContent>
+        </Modal>
+       <Modal isOpen={deleteKorban.isOpen} onClose={deleteKorban.onClose}>
+          <ModalOverlay />
+          <ModalContent className="custom-modal-content" >
+            <ModalHeader> Hapus Korban </ModalHeader>
+            <ModalCloseButton />
+            <ModalBody overflow={'auto'}>
+              <Text> Apakah Anda yakin ingin menghapus data korban ini ?</Text>
+            </ModalBody>
+            <ModalFooter>
+            <Button
+                bg={'red'}
+                onClick={(e) => {
+                  e.preventDefault();
+                    axios.delete(deleteKorbanById + deleteKorbanIndex)
+                    .then(response => {
+                      getLuka();
+                      getAllIdentitas();
+                      getSantunan();
+                      console.log(response)
+                      deleteKorban.onClose()
+                    })
+                }}
+              color={'white'}
+              mr={3}
+              > Hapus
+              </Button>
+              <Button border={'solid 2px var(--color-primer)'} bg={'white'}  mr={3} onClick={deleteKorban.onClose}>
+                Tutup
+              </Button>
+            </ModalFooter>
+          </ModalContent>
+        </Modal> 
+        <Modal isOpen={deleteSantunan.isOpen} onClose={deleteSantunan.onClose}>
+          <ModalOverlay />
+          <ModalContent className="custom-modal-content" >
+            <ModalHeader>Hapus Input Santunan </ModalHeader>
+            <ModalCloseButton />
+            <ModalBody overflow={'auto'}>
+              <Text> Apakah Anda yakin ingin menghapus data santunan ini ?</Text>
+            </ModalBody>
+            <ModalFooter>
+            <Button
+                bg={'red'}
+                onClick={(e) => {
+                  e.preventDefault();
+                    axios.delete(deleteSantunanById + deleteSantunanIndex)
+                    .then(response => {
+                      console.log(response)
+                      getLuka();
+                      getAllIdentitas();
+                      getSantunan();
+                      deleteSantunan.onClose();
+                    })
+                }}
+              color={'white'}
+              mr={3}
+              > Hapus
+              </Button>
+              <Button border={'solid 2px var(--color-primer)'} bg={'white'}  mr={3} onClick={deleteSantunan.onClose}>
+                Tutup
+              </Button>
+            </ModalFooter>
+          </ModalContent>
+        </Modal>
         <Formik
           initialValues={{
             //identitas korban
@@ -244,9 +345,9 @@ axios.post(postKorban, data)
               },
             ],
           }}
-          // validationSchema={schema}
           validateOnChange={false}
           validateOnBlur={false}
+          enableReinitialize={true}
           onSubmit={(values, {setSubmitting}) => {
             console.log(values)
             setTimeout(() => {
@@ -295,7 +396,7 @@ axios.post(postKorban, data)
               <Flex width={1500}>
                 <Form className='formInput' size='xl' method='POST' onSubmit={handleSubmit}>
                  <Text fontSize={'var(--header-1)'} color={'black'}>Identitas Korban</Text>
-                  {Object.values(data.identitas_korban).map((korban, korbanIndex) => (
+                  {identitas.identitasSantunan && Object.values(identitas.identitasSantunan).map((korban, korbanIndex) => (
                     <React.Fragment key={korbanIndex} >
                       <Flex flexDir={'row'} alignItems={'center'} alignContent={'center'}>
                       <Flex flexDir={'column'} >
@@ -426,11 +527,11 @@ axios.post(postKorban, data)
                         />
                         <FormErrorMessage>{errors.nomor_rekam_medis}</FormErrorMessage>
                       </FormControl>
-                      <Button onClick={()=> handleAddKorbanSantunan(korbanIndex)}>
-                          Tambah Santunan
-                      </Button>
-                      {Object.values(korban.identitas_santunan).map((santunan, santunanIndex) => (
+                     {korban.santunans && Object.values(korban.santunans).map((santunan, santunanIndex) => (
                         <React.Fragment key={santunanIndex}>
+                          <Text color={'black'}>
+                              
+                          </Text>
                           <FormControl mt={4} isInvalid={errors.nominal && touched.nominal}>
                             <FormLabel color={"var(--color-primer)"}>Nominal Santunan</FormLabel>
                             <Input
@@ -470,29 +571,45 @@ axios.post(postKorban, data)
                             </Select>
                             <FormErrorMessage>{errors.id_santunan}</FormErrorMessage>
                           </FormControl>
-                          <Button onClick={()=> handleRemoveKorbanSantunan(korbanIndex, santunanIndex)}>
+                        <Button mt={4}
+                            size='md'
+                            mb={4}
+                            bg={"red"} 
+                            onClick={()=> handleRemoveKorbanSantunan(santunan.Identitas_Santunan)}
+                            >
                             Hapus Santunan
                           </Button>
                         </React.Fragment>
-                      ))}
+                      ))} 
+                          <Button bg={"var(--color-primer)"}
+                          size='md'
+                          onClick={()=> handleAddKorbanSantunan(korban.id_identitas_korban)}
+                          >
+                          Tambah Santunan
+                      </Button>
                       </Flex>
                       <Flex ml={20} flexDir={'column'}>
                       <Button
                         mt={4}
                         size='md'
+                        textAlign={'center'}
                         width={'100px'}
                         bg={"red"}
-                        disabled={data.identitas_korban.length === 1} onClick={() => handleRemoveKorban(korbanIndex)}
+                        fontSize={'30px'}
+                        onClick={()=> handleRemoveKorban(korban.id_identitas_korban)}
                       >
                       -
                       </Button>
-                      <Button bg={"var(--color-primer)"} display={korbanIndex === data.identitas_korban.length - 1 ? 'flex' : 'none'} mt={4} size='md' type='submit' onClick={handleAddKorban}>
-                        +
-                      </Button>
                       </Flex>
                       </Flex>
+                      <br />
+                     <Text color={'black'}>
+                      <b>-----------------------------------------------------------------------------------------</b>
+                     </Text>
+                      <br />
                     </React.Fragment>
-                  ))} 
+                  ))
+                  } 
               <Input
                         color={'black'}
                         type="hidden"
