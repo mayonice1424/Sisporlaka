@@ -25,7 +25,7 @@ import { useDispatch } from 'react-redux';
 import { routePageName } from '../../Redux/action';
 import { TabTitle } from '../../Utility/utility';
 import {
-  createDetailLaporanPolisi,postSantunan,deleteKorbanById,getAllLuka,getAllSantunan,getAllIdentitasKorban,deleteSantunanById
+  createDetailLaporanPolisi,postSantunan,deleteKorbanById,getAllLuka,getAllSantunan,getAllIdentitasKorban,deleteSantunanById,updateKorbanById,updateSantunanById
 } from '../../Utility/api.js';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import './detailInput.css'
@@ -124,7 +124,7 @@ const EditKorbanLaporanJasaRaharja = () => {
     axios.get(`${getAllIdentitasKorban}${id}`)
     .then(response => {
       setIdentitas(response.data)
-      console.log(response.data)
+      console.log("DATA IDENTITAS : ",response.data.identitasSantunan[0].nama)
       setLoading(false)
     })
     .catch(error => {
@@ -326,24 +326,7 @@ const EditKorbanLaporanJasaRaharja = () => {
         </Modal>
         <Formik
           initialValues={{
-            //identitas korban
-            identitas_korban: [
-              {
-                nama: '',
-                jenis_kelamin: '',
-                umur: '',
-                alamat: '',
-                plat_ambulance: '',
-                NIK: '',
-                nama_rumah_sakit: '',
-                nomor_rekam_medis: '',
-                id_luka: '',
-                identitas_santunan: [{
-                  nominal: '',
-                  id_santunan: '',
-              }],
-              },
-            ],
+            identitas_korban: identitas.identitasSantunan,
           }}
           validateOnChange={false}
           validateOnBlur={false}
@@ -351,37 +334,50 @@ const EditKorbanLaporanJasaRaharja = () => {
           onSubmit={(values, {setSubmitting}) => {
             console.log(values)
             setTimeout(() => {
-              const submitedData = new FormData();
-              console.log(values);
-            submitedData.append('nama', values.identitas_korban.nama);
-            submitedData.append('jenis_kelamin', values.identitas_korban.jenis_kelamin);
-            submitedData.append('umur', values.identitas_korban.umur);
-            submitedData.append('alamat', values.identitas_korban.alamat);
-            submitedData.append('NIK', values.identitas_korban.NIK);
-            submitedData.append('id_luka', values.identitas_korban.id_luka);
-            submitedData.append('plat_ambulance', values.identitas_korban.plat_ambulance);
-            submitedData.append('nama_rumah_sakit', values.identitas_korban.nama_rumah_sakit);
-            submitedData.append('nomor_rekam_medis', values.identitas_korban.nomor_rekam_medis);
-            if (Array.isArray(values.identitas_korban.identitas_santunan)) {
-              submitedData.append('nominal', JSON.stringify(values.identitas_korban.identitas_santunan.map(item => item.nominal)));
-              submitedData.append('id_santunan', JSON.stringify(values.identitas_korban.identitas_santunan.map(item => item.id_santunan)));
-            }
-            submitedData.append('id_laporan', id);
-              axios.post(createDetailLaporanPolisi, data).then((response) => {
-                if (response.status === 201) {
-                  navigate(`/unit/${role}/laporan`);
-                  console.log(response);
+              values.identitas_korban.map((korban, korbanIndex) => {
+                axios.patch(updateKorbanById + korban.id_identitas_korban, {
+                  nama: korban.nama,
+                  jenis_kelamin: korban.jenis_kelamin,
+                  umur: korban.umur,
+                  alamat: korban.alamat,
+                  NIK: korban.NIK,
+                  id_luka: korban.id_luka,
+                  plat_ambulance: korban.plat_ambulance,
+                  nama_rumah_sakit: korban.nama_rumah_sakit,
+                  nomor_rekam_medis: korban.nomor_rekam_medis,
+                })
+                .then(response => {
+                  console.log(response)
+                  if (Array.isArray(korban.santunans)) {
+                  korban.santunans && Object.values(korban.santunans).map((santunan, santunanIndex) => {
+                  console.log("NIH HAM : ",santunan.Identitas_Santunan.id_identitas_santunan)
+                    axios.patch(updateSantunanById + santunan.Identitas_Santunan.id_identitas_santunan, {
+                      id_santunan: santunan.Identitas_Santunan.id_santunan,
+                      nominal: santunan.Identitas_Santunan.nominal,
+                    })
+                    .then((response) => {
+                      console.log(response.status)
+                    if (response.status === 200) {
+                      navigate(`/unit/${role}/laporan`);
+                      console.log(response);
+                    }
+                    else {
+                      console.log(response);
+                    }
+                  }
+                  ).catch(error => {
+                    if (error.response.status === 500) {
+                        setError('Data Santunan Sudah Ada')
+                    }
+                  }
+                  )
+                  })
                 }
-                else {
-                  console.log(response);
-                }
+                })
               })
-              .catch((error) => {
-                console.log(error);
-              });
-              setSubmitting(false);
-            }, 400);
-          }}
+                setSubmitting(false);
+              }, 500);
+            }}
           >
             {({
               values,
@@ -394,7 +390,7 @@ const EditKorbanLaporanJasaRaharja = () => {
               setFieldValue,
             }) => (
               <Flex width={1500}>
-                <Form className='formInput' size='xl' method='POST' onSubmit={handleSubmit}>
+                <Form className='formInput' size='xl' method='PATCH' onSubmit={handleSubmit}>
                  <Text fontSize={'var(--header-1)'} color={'black'}>Identitas Korban</Text>
                   {identitas.identitasSantunan && Object.values(identitas.identitasSantunan).map((korban, korbanIndex) => (
                     <React.Fragment key={korbanIndex} >
@@ -407,9 +403,11 @@ const EditKorbanLaporanJasaRaharja = () => {
                           type='text'
                           color='black'
                           placeholder='Nama Korban'
-                          onChange={(e) => handleKorbanChange(e,korbanIndex)}
+                          onChange={(e) => {
+                            setFieldValue(`identitas_korban.${korbanIndex}.nama`, e.target.value);
+                          }}
                           onBlur={handleBlur}
-                          value={korban.nama}
+                          value={values.identitas_korban && values.identitas_korban[korbanIndex].nama}
                           required
                         />
                         <FormErrorMessage>{errors.nama}</FormErrorMessage>
@@ -420,9 +418,11 @@ const EditKorbanLaporanJasaRaharja = () => {
                           name='jenis_kelamin'
                           color='black'
                           placeholder="Pilih Jenis Kelamin"
-                          onChange={(e) => handleKorbanChange(e,korbanIndex)}
+                          onChange={(e) => {
+                            setFieldValue(`identitas_korban.${korbanIndex}.jenis_kelamin`, e.target.value);
+                          }}
                           onBlur={handleBlur}
-                          value={korban.jenis_kelamin}
+                          value={values.identitas_korban && values.identitas_korban[korbanIndex].jenis_kelamin}
                         >
                           <option value='Laki-laki'>Laki-laki</option>
                           <option value='Perempuan'>Perempuan</option>
@@ -436,9 +436,11 @@ const EditKorbanLaporanJasaRaharja = () => {
                           type='number'
                           color='black'
                           placeholder='Umur Korban'
-                          onChange={(e) => handleKorbanChange(e,korbanIndex)}
+                          onChange={(e) =>{
+                            setFieldValue(`identitas_korban.${korbanIndex}.umur`, e.target.value);
+                          }}
                           onBlur={handleBlur}
-                          value={korban.umur}
+                          value={values.identitas_korban && values.identitas_korban[korbanIndex].umur}
                         />
                         <FormErrorMessage>{errors.umur}</FormErrorMessage>
                       </FormControl>
@@ -449,9 +451,11 @@ const EditKorbanLaporanJasaRaharja = () => {
                           type='text'
                           color='black'
                           placeholder='Alamat Korban'
-                          onChange={(e) => handleKorbanChange(e,korbanIndex)}
+                          onChange={(e) => {
+                            setFieldValue(`identitas_korban.${korbanIndex}.alamat`, e.target.value);
+                          }}
                           onBlur={handleBlur}
-                          value={korban.alamat}
+                          value={values.identitas_korban && values.identitas_korban[korbanIndex].alamat}
                         />
                         <FormErrorMessage>{errors.alamat}</FormErrorMessage>
                       </FormControl>
@@ -462,9 +466,11 @@ const EditKorbanLaporanJasaRaharja = () => {
                           type='text'
                           color='black'
                           placeholder='NIK Korban'
-                          onChange={(e) => handleKorbanChange(e,korbanIndex)}
+                          onChange={(e) => {
+                            setFieldValue(`identitas_korban.${korbanIndex}.NIK`, e.target.value);
+                          }}
                           onBlur={handleBlur}
-                          value={korban.NIK}
+                          value={values.identitas_korban && values.identitas_korban[korbanIndex].NIK}
                         />
                         <FormErrorMessage>{errors.NIK}</FormErrorMessage>
                       </FormControl>
@@ -476,11 +482,10 @@ const EditKorbanLaporanJasaRaharja = () => {
                           color='black'
                           placeholder="Pilih Luka"
                           onChange={(e) => {
-                            handleKorbanChange(e,korbanIndex);
-                            console.log(e.target.value);
+                            setFieldValue(`identitas_korban.${korbanIndex}.id_luka`, e.target.value);
                           }}
                           onBlur={handleBlur}
-                          value={korban.id_luka}
+                          value={values.identitas_korban && values.identitas_korban[korbanIndex].id_luka}
                         >
                           {luka.map((luka) => (
                             <option key={luka.id} value={luka.id_luka}>{luka.keterangan_luka}</option>
@@ -495,9 +500,11 @@ const EditKorbanLaporanJasaRaharja = () => {
                           type='text'
                           color='black'
                           placeholder='Nomor Plat Ambulance'
-                          onChange={(e) => handleKorbanChange(e,korbanIndex)}
+                          onChange={(e) => {
+                            setFieldValue(`identitas_korban.${korbanIndex}.plat_ambulance`, e.target.value);
+                          }}
                           onBlur={handleBlur}
-                          value={korban.plat_ambulance}
+                          value={values.identitas_korban && values.identitas_korban[korbanIndex].plat_ambulance}
                         />
                         <FormErrorMessage>{errors.plat_ambulance}</FormErrorMessage>
                       </FormControl>
@@ -508,9 +515,11 @@ const EditKorbanLaporanJasaRaharja = () => {
                           type='text'
                           color='black'
                           placeholder='Nama Rumah Sakit'
-                          onChange={(e) => handleKorbanChange(e,korbanIndex)}
+                          onChange={(e) => {
+                            setFieldValue(`identitas_korban.${korbanIndex}.nama_rumah_sakit`, e.target.value);
+                          }}
                           onBlur={handleBlur}
-                          value={korban.nama_rumah_sakit}
+                          value={values.identitas_korban && values.identitas_korban[korbanIndex].nama_rumah_sakit}
                         />
                         <FormErrorMessage>{errors.nama_rumah_sakit}</FormErrorMessage>
                       </FormControl>
@@ -521,31 +530,30 @@ const EditKorbanLaporanJasaRaharja = () => {
                           type='text'
                           color='black'
                           placeholder='Nomor Rekam Medis'
-                          onChange={(e) => handleKorbanChange(e,korbanIndex)}
+                          onChange={(e) => {
+                            setFieldValue(`identitas_korban.${korbanIndex}.nomor_rekam_medis`, e.target.value);
+                          }}
                           onBlur={handleBlur}
-                          value={korban.nomor_rekam_medis}
+                          value={values.identitas_korban && values.identitas_korban[korbanIndex].nomor_rekam_medis}
                         />
                         <FormErrorMessage>{errors.nomor_rekam_medis}</FormErrorMessage>
                       </FormControl>
                      {korban.santunans && Object.values(korban.santunans).map((santunan, santunanIndex) => (
                         <React.Fragment key={santunanIndex}>
-                          <Text color={'black'}>
-                              
-                          </Text>
                           <FormControl mt={4} isInvalid={errors.nominal && touched.nominal}>
                             <FormLabel color={"var(--color-primer)"}>Nominal Santunan</FormLabel>
                             <Input
                               name='nominal'
-                              type='text'
+                              type='number'
                               id='rupiah'
                               color='black'
                               placeholder='Santunan'
                               onChange={(e) => {
-                                const formattedValue = e.target.value.replace(/\D/g, ''); // Remove all non-digit characters
-                                handleKorbanSantunanChange(e, korbanIndex, santunanIndex);
+                                setFieldValue(`identitas_korban.${korbanIndex}.santunans.${santunanIndex}.Identitas_Santunan.nominal`, e.target.value);
+                                console.log(e.target.value);
                             }}
                               onBlur={handleBlur}
-                              value={santunan.nominal}
+                              value={values.identitas_korban && values.identitas_korban[korbanIndex].santunans && values.identitas_korban[korbanIndex].santunans[santunanIndex].Identitas_Santunan.nominal}
                             />
                             <FormErrorMessage>{errors.nominal}</FormErrorMessage>
                           </FormControl>
@@ -557,11 +565,10 @@ const EditKorbanLaporanJasaRaharja = () => {
                               color='black'
                               placeholder="Pilih Jenis Santunan"
                               onChange={(e) => {
-                                handleKorbanSantunanChange(e, korbanIndex, santunanIndex);
-                              }
-                            }
+                                setFieldValue(`identitas_korban.${korbanIndex}.santunans.${santunanIndex}.Identitas_Santunan.id_santunan`, e.target.value);
+                            }}
                               onBlur={handleBlur}
-                              value={santunan.id_santunan}
+                              value={values.identitas_korban && values.identitas_korban[korbanIndex].santunans && values.identitas_korban[korbanIndex].santunans[santunanIndex].Identitas_Santunan.id_santunan}
                             >
                               {
                                 santunanList.map((item) => (
