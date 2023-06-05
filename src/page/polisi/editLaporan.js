@@ -19,99 +19,89 @@ import {
 } from '@chakra-ui/react';
 import { useDisclosure } from "@chakra-ui/react"
 import { Formik,Form } from 'formik';
-import * as Yup from 'yup';
 import axios from 'axios';
 import { useDispatch } from 'react-redux';
 import { routePageName } from '../../Redux/action';
 import { TabTitle } from '../../Utility/utility';
 import {
-  createDetailLaporanPolisi,postSantunan,deleteKorbanById,getAllLuka,getAllSantunan,getAllIdentitasKorban,deleteSantunanById,updateKorbanById,updateSantunanById,postKorban
+  deleteKorbanById,getAllLuka,getPengemudi,getAllIdentitasKorban,deletePengemudiById,updateKorbanById,updatePengemudiById
 } from '../../Utility/api.js';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import './detailInput.css'
 
-const EditKorbanLaporanJasaRaharja = () => {
+const EditKorbanLaporanPolisi = () => {
   const { id } = useParams(); 
-  const deleteSantunan = useDisclosure()
-  const addSantunan = useDisclosure()
   const deleteKorban = useDisclosure()
+  const deletePengemudi = useDisclosure()
   const [error, setError] = useState(null);
   const [santunanList, setSantunan] = useState([]);
   const [deleteKorbanIndex, setDeleteKorbanIndex] = useState([])
+
+
   const navigate = useNavigate();
-  const [deleteSantunanIndex, setDeleteSantunanIndex] = useState([])
   const dispatch = useDispatch();
   const [luka, setLuka] = useState([]);
   const [identitas, setIdentitas] = useState([]);
   const [id_identitas, setIdIdentitas] = useState([]);
   const [loading, setLoading] = useState(true);
   const [santunanId, setSantunanId] = useState([])
-  const role = useAuth('jasa-raharja')
+  const role = useAuth('polisi')
   TabTitle("Laporan - Sisporlaka"); 
     const [data,set] = useState({
+      identitas_pengemudi: [
+        {
+          nama_pengemudi: '',
+          jenis_kelamin_pengemudi: '',
+          umur_pengemudi: '',
+          alamat_pengemudi: '',
+          no_sim: '',
+          no_STNK: '',
+        },
+      ],
       identitas_korban: [
         {
           nama: '',
           jenis_kelamin: '',
           umur: '',
           alamat: '',
-          plat_ambulance: '',
           NIK: '',
           nama_rumah_sakit: '',
-          nomor_rekam_medis: '',
           id_luka: '',
-          identitas_santunan: [{
-            nominal: '',
-            id_santunan: ''
-        }],
         },
       ],
       id_laporan: id,
     });
-  // const handleKorbanSantunanChange = (e, korbanIndex, santunanIndex) => {
-  //   const { name } = e.target;
-  //   const { value } = e.target;
-  //   const korbanData = [...data.identitas_korban];
-  //   const santunanData = [...korbanData[korbanIndex].identitas_santunan];
-    
-  //   if (value) {
-  //     const replacedValue = value.replace(/\D/g, '');
-  //     console.log(replacedValue);
-  //     santunanData[santunanIndex] = { ...santunanData[santunanIndex], [name]: replacedValue };
-  //     korbanData[korbanIndex] = { ...korbanData[korbanIndex], identitas_santunan: santunanData };
-  //     set({ ...data, identitas_korban: korbanData });
-  //   }
-  // };
-  const handleAddKorbanSantunan = (Id_identitas) => {
-    setIdIdentitas(Id_identitas) 
-    addSantunan.onOpen()
+
+    const [deletePengemudiByIndex, setDeletePengemudi] = useState([])
+
+
+
+  const handleRemovePengemudi = (pengemudiIndex) => {
+    setDeletePengemudi(pengemudiIndex)
+    deletePengemudi.onOpen()
   };
+
 
   const handleRemoveKorban = (korbanIndex) => {
     setDeleteKorbanIndex(korbanIndex)
     deleteKorban.onOpen()
   };
-  
-  const handleRemoveKorbanSantunan = (santunanIndex) => {
-    console.log(santunanIndex.id_identitas_santunan);
-    setDeleteSantunanIndex(santunanIndex.id_identitas_santunan)
-     deleteSantunan.onOpen()
-  };
-  /* Fungsi formatRupiah */
-    const formatRupiah = (angka, prefix) => {
-      var number_string = angka.replace(/[^,\d]/g, '').toString(),
-        split = number_string.split(','),
-        sisa = split[0].length % 3,
-        rupiah = split[0].substr(0, sisa),
-        ribuan = split[0].substr(sisa).match(/\d{3}/gi);
-      // tambahkan titik jika yang di input sudah menjadi angka ribuan
-      if (ribuan) {
-        var separator = sisa ? '.' : '';
-        rupiah += separator + ribuan.join('.');
-      }
-      rupiah = split[1] !== undefined ? rupiah + ',' + split[1] : rupiah;
-      return prefix === undefined ? rupiah : rupiah ? 'Rp. ' + rupiah : '';
-    };
+  const getAllPengemudi = async () => {
+    axios.get(`${getPengemudi}${id}`)
+    .then(response => {
+      setPengemudi(response.data)
+      console.log("DATA IDENTITAS : ",response.data.identitasPengemudi[0].nama_pengemudi)
+      setLoading(false)
+    })
+    .catch(error => {
+      console.log(error)
+    }
+    )
+  }
+
+
+
+  const [pengemudi, setPengemudi] = useState([]);
   const getAllIdentitas = async () => {
     axios.get(`${getAllIdentitasKorban}${id}`)
     .then(response => {
@@ -123,17 +113,6 @@ const EditKorbanLaporanJasaRaharja = () => {
       console.log(error)
     }
     ) 
-  }
-  const getSantunan = async () => {
-    axios.get(getAllSantunan)
-    .then(response => {
-      setSantunan(response.data.santunan)
-      setLoading(false)
-    })
-    .catch(error => {
-      console.log(error)
-    }
-    )
   }
   const getLuka = async () => {
     axios.get(getAllLuka)
@@ -151,83 +130,11 @@ const EditKorbanLaporanJasaRaharja = () => {
     setLoading(true);
     getLuka();
     getAllIdentitas();
-    getSantunan();
-    const rupiah = document.getElementById("rupiah");
-    if (rupiah) {
-      rupiah.addEventListener('keyup', function(e) {
-        rupiah.value = formatRupiah(this.value, 'Rp. ');
-      });
-    }
-    return () => {
-      if (rupiah) {
-        rupiah.removeEventListener('keyup', function(e) {
-        });
-      }
-    };
+    getAllPengemudi();
   }, []);
   return (
     <>
       <Flex flexDir={'column'} justify={'flex-start'} width={'100%'}>
-      <Modal isOpen={addSantunan.isOpen} onClose={addSantunan.onClose}>
-          <ModalOverlay />
-          <ModalContent className="custom-modal-content" >
-            <ModalHeader>Tambah Input Santunan </ModalHeader>
-            <ModalCloseButton />
-            <ModalBody overflow={'auto'}>
-              <Flex flexDir={'column'} justify={'flex-start'} width={'100%'}>
-                <Text color={'red'}>
-                    {error}
-                </Text>
-                  <Text> Pilih Jenis Santunan</Text>
-              </Flex>
-            </ModalBody>
-            <ModalFooter>
-              <FormControl>
-                <Select
-                  placeholder="Pilih Santunan"
-                  onChange={(e) => {
-                    setSantunanId(e.target.value)
-                  }}
-                >
-                  {santunanList.map((santunan, index) => (
-                    <option key={index} value={santunan.id_santunan}>
-                      {santunan.jenis_santunan}
-                    </option>
-                  ))}
-                </Select>
-              </FormControl>
-            <Button
-                bg={'red'}
-                onClick={(e) => {
-                  e.preventDefault();
-                  axios.post(postSantunan, {
-                    id_identitas_korban: id_identitas,
-                    id_santunan: santunanId,
-                  })
-                  .then(response => {
-                    getLuka();
-                    getAllIdentitas();
-                    getSantunan();
-                    addSantunan.onClose()
-                    window.location.reload()
-                  }
-                  ).catch(error => {
-                    if (error.response.status === 500) {
-                        setError('Data Santunan Sudah Ada')
-                    }
-                  }
-                  )
-                }}
-              color={'white'}
-              mr={3}
-              > Tambah
-              </Button>
-              <Button border={'solid 2px var(--color-primer)'} bg={'white'}  mr={3} onClick={addSantunan.onClose}>
-                Tutup
-              </Button>
-            </ModalFooter>
-          </ModalContent>
-        </Modal>
        <Modal isOpen={deleteKorban.isOpen} onClose={deleteKorban.onClose}>
           <ModalOverlay />
           <ModalContent className="custom-modal-content" >
@@ -245,7 +152,7 @@ const EditKorbanLaporanJasaRaharja = () => {
                     .then(response => {
                       getLuka();
                       getAllIdentitas();
-                      getSantunan();
+                      getAllPengemudi();
                       console.log(response)
                       deleteKorban.onClose()
                     })
@@ -260,41 +167,42 @@ const EditKorbanLaporanJasaRaharja = () => {
             </ModalFooter>
           </ModalContent>
         </Modal> 
-        <Modal isOpen={deleteSantunan.isOpen} onClose={deleteSantunan.onClose}>
+        <Modal isOpen={deletePengemudi.isOpen} onClose={deletePengemudi.onClose}>
           <ModalOverlay />
           <ModalContent className="custom-modal-content" >
-            <ModalHeader>Hapus Input Santunan </ModalHeader>
+            <ModalHeader> Hapus Korban </ModalHeader>
             <ModalCloseButton />
             <ModalBody overflow={'auto'}>
-              <Text> Apakah Anda yakin ingin menghapus data santunan ini ?</Text>
+              <Text> Apakah Anda yakin ingin menghapus data pengemudi ini ?</Text>
             </ModalBody>
             <ModalFooter>
             <Button
                 bg={'red'}
                 onClick={(e) => {
                   e.preventDefault();
-                    axios.delete(deleteSantunanById + deleteSantunanIndex)
+                    axios.delete(deletePengemudiById + deletePengemudiByIndex)
                     .then(response => {
-                      console.log(response)
                       getLuka();
                       getAllIdentitas();
-                      getSantunan();
-                      deleteSantunan.onClose();
+                      getAllPengemudi();
+                      console.log(response)
+                      deletePengemudi.onClose()
                     })
                 }}
               color={'white'}
               mr={3}
               > Hapus
               </Button>
-              <Button border={'solid 2px var(--color-primer)'} bg={'white'}  mr={3} onClick={deleteSantunan.onClose}>
+              <Button border={'solid 2px var(--color-primer)'} bg={'white'}  mr={3} onClick={deleteKorban.onClose}>
                 Tutup
               </Button>
             </ModalFooter>
           </ModalContent>
-        </Modal>
+        </Modal> 
         <Formik
           initialValues={{
             identitas_korban: identitas.identitasSantunan,
+            identitas_pengemudi: pengemudi.identitasPengemudi,
           }}
           validateOnChange={false}
           validateOnBlur={false}
@@ -322,30 +230,25 @@ const EditKorbanLaporanJasaRaharja = () => {
                   else {
                     console.log(response);
                   }
-                  if (Array.isArray(korban.santunans)) {
-                  korban.santunans && Object.values(korban.santunans).map((santunan, santunanIndex) => {
-                    axios.patch(updateSantunanById + santunan.Identitas_Santunan.id_identitas_santunan, {
-                      id_santunan: santunan.Identitas_Santunan.id_santunan,
-                      nominal: santunan.Identitas_Santunan.nominal,
-                    })
-                    .then((response) => {
-                      console.log(response.status)
-                    if (response.status === 200) {
-                      navigate(`/unit/${role}/laporan`);
-                      console.log(response);
-                    }
-                    else {
-                      console.log(response);
-                    }
+                })
+              })
+              values.identitas_pengemudi.map((pengemudi, pengemudiIndex) => {
+                axios.patch(updatePengemudiById + pengemudi.id_laporan_pengemudi, {
+                  nama_pengemudi: pengemudi.nama_pengemudi,
+                  jenis_kelamin_pengemudi: pengemudi.jenis_kelamin_pengemudi,
+                  umur_pengemudi: pengemudi.umur_pengemudi,
+                  alamat_pengemudi: pengemudi.alamat_pengemudi,
+                  no_sim: pengemudi.no_sim,
+                  no_STNK: pengemudi.no_STNK,
+                })
+                .then(response => {
+                  console.log(response)
+                  if (response.status === 200) {
+                    navigate(`/unit/${role}/laporan`);
                   }
-                  ).catch(error => {
-                    if (error.response.status === 500) {
-                        setError('Data Santunan Sudah Ada')
-                    }
+                  else {
+                    console.log(response);
                   }
-                  )
-                  })
-                }
                 })
               })
                 setSubmitting(false);
@@ -364,6 +267,127 @@ const EditKorbanLaporanJasaRaharja = () => {
             }) => (
               <Flex width={1500}>
                 <Form className='formInput' size='xl' method='PATCH' onSubmit={handleSubmit}>
+                 <Text fontSize={'var(--header-1)'} color={'black'}>Identitas Pengemudi</Text>
+                  {
+                    pengemudi.identitasPengemudi && Object.values(pengemudi.identitasPengemudi).map((pengemudi, pengemudiIndex) => (
+                      <React.Fragment key={pengemudiIndex}>
+                        <Flex flexDir={'row'} alignItems={'center'} alignContent={'center'}>
+                        <Flex flexDir={'column'} >
+                        <FormControl mt={4} isInvalid={errors.nama_pengemudi && touched.nama_pengemudi}>
+                          <FormLabel color={"var(--color-primer)"}>Nama Pengemudi</FormLabel>
+                          <Input
+                            name='nama_pengemudi'
+                            type='text'
+                            color='black'
+                            placeholder='Nama Pengemudi'
+                            onChange={(e) => {
+                              setFieldValue(`identitas_pengemudi.${pengemudiIndex}.nama_pengemudi`, e.target.value);
+                            }}
+                           onBlur={handleBlur}
+                           value={values.identitas_pengemudi && values.identitas_pengemudi[pengemudiIndex].nama_pengemudi}
+                          />
+                          <FormErrorMessage>{errors.nama_pengemudi && touched.nama_pengemudi && errors.nama_pengemudi}</FormErrorMessage>
+                        </FormControl>
+                        <FormControl mt={4} isInvalid={errors.jenis_kelamin_pengemudi && touched.jenis_kelamin_pengemudi}>
+                          <FormLabel color={"var(--color-primer)"}>Jenis Kelamin Pengemudi</FormLabel>
+                          <Select
+                          name='jenis_kelamin_pengemudi'
+                          color='black'
+                          placeholder="Pilih Jenis Kelamin"
+                          onChange={(e) => {
+                            setFieldValue(`identitas_pengemudi.${pengemudiIndex}.jenis_kelamin_pengemudi`, e.target.value);
+                          }}
+                          onBlur={handleBlur}
+                          value={values.identitas_pengemudi && values.identitas_pengemudi[pengemudiIndex].jenis_kelamin_pengemudi}
+                        >
+                          <option value='Laki-laki'>Laki-laki</option>
+                          <option value='Perempuan'>Perempuan</option>
+                        </Select>
+                        <FormErrorMessage>{errors.jenis_kelamin_pengemudi}</FormErrorMessage>
+                      </FormControl>
+                      <FormControl mt={4} isInvalid={errors.umur_pengemudi && touched.umur_pengemudi}>
+                        <FormLabel color={"var(--color-primer)"}>Umur Pengemudi</FormLabel>
+                        <Input
+                          name='umur_pengemudi'
+                          type='number'
+                          color='black'
+                          placeholder='Umur Pengemudi'
+                          onChange={(e) => {
+                            setFieldValue(`identitas_pengemudi.${pengemudiIndex}.umur_pengemudi`, e.target.value);
+                          }}
+                          onBlur={handleBlur}
+                          value={values.identitas_pengemudi && values.identitas_pengemudi[pengemudiIndex].umur_pengemudi}
+                        />
+                        <FormErrorMessage>{errors.umur_pengemudi && touched.umur_pengemudi && errors.umur_pengemudi}</FormErrorMessage>
+                      </FormControl>
+                      <FormControl mt={4} isInvalid={errors.alamat_pengemudi && touched.alamat_pengemudi}>
+                        <FormLabel color={"var(--color-primer)"}>Alamat Pengemudi</FormLabel>
+                        <Input
+                          name='alamat_pengemudi'
+                          type='text'
+                          color='black'
+                          placeholder='Alamat Pengemudi'
+                          onChange={(e) => {
+                            setFieldValue(`identitas_pengemudi.${pengemudiIndex}.alamat_pengemudi`, e.target.value);
+                          }}
+                          onBlur={handleBlur}
+                          value={values.identitas_pengemudi && values.identitas_pengemudi[pengemudiIndex].alamat_pengemudi}
+                        />
+                        <FormErrorMessage>{errors.alamat_pengemudi && touched.alamat_pengemudi && errors.alamat_pengemudi}</FormErrorMessage>
+                      </FormControl>
+                      <FormControl mt={4} isInvalid={errors.no_sim && touched.no_sim}>
+                        <FormLabel color={"var(--color-primer)"}>No SIM</FormLabel>
+                        <Input
+                          name='no_sim'
+                          type='text'
+                          color='black'
+                          placeholder='No SIM'
+                          onChange={(e) => {
+                            setFieldValue(`identitas_pengemudi.${pengemudiIndex}.no_sim`, e.target.value);
+                          }}
+                          onBlur={handleBlur}
+                          value={values.identitas_pengemudi && values.identitas_pengemudi[pengemudiIndex].no_sim}
+                        />
+                        <FormErrorMessage>{errors.no_sim && touched.no_sim && errors.no_sim}</FormErrorMessage>
+                      </FormControl>
+                      <FormControl mt={4} isInvalid={errors.no_STNK && touched.no_STNK}>
+                        <FormLabel color={"var(--color-primer)"}>No STNK</FormLabel>
+                        <Input
+                          name='no_STNK'
+                          type='text'
+                          color='black'
+                          placeholder='No STNK'
+                          onChange={(e) => {
+                            setFieldValue(`identitas_pengemudi.${pengemudiIndex}.no_STNK`, e.target.value);
+                          }}
+                          onBlur={handleBlur}
+                          value={values.identitas_pengemudi && values.identitas_pengemudi[pengemudiIndex].no_STNK}
+                        />
+                        <FormErrorMessage>{errors.no_STNK && touched.no_STNK && errors.no_STNK}</FormErrorMessage>
+                      </FormControl>
+                      </Flex>
+                      <Flex ml={20} flexDir={'column'}>
+                      <Button
+                        mt={4}
+                        size='md'
+                        textAlign={'center'}
+                        width={'100px'}
+                        bg={"red"}
+                        fontSize={'30px'}
+                        onClick={()=> handleRemovePengemudi(pengemudi.id_laporan_pengemudi)}
+                      >
+                      -
+                      </Button>
+                      </Flex>
+                      </Flex>
+                      <br />
+                     <Text color={'black'}>
+                      <b>-----------------------------------------------------------------------------------------</b>
+                     </Text>
+                      <br />
+                        </React.Fragment>
+                        ))
+                  }
                  <Text fontSize={'var(--header-1)'} color={'black'}>Identitas Korban</Text>
                   {identitas.identitasSantunan && Object.values(identitas.identitasSantunan).map((korban, korbanIndex) => (
                     <React.Fragment key={korbanIndex} >
@@ -511,62 +535,6 @@ const EditKorbanLaporanJasaRaharja = () => {
                         />
                         <FormErrorMessage>{errors.nomor_rekam_medis}</FormErrorMessage>
                       </FormControl>
-                     {korban.santunans && Object.values(korban.santunans).map((santunan, santunanIndex) => (
-                        <React.Fragment key={santunanIndex}>
-                          <FormControl mt={4} isInvalid={errors.nominal && touched.nominal}>
-                            <FormLabel color={"var(--color-primer)"}>Nominal Santunan</FormLabel>
-                            <Input
-                              name='nominal'
-                              type='number'
-                              id='rupiah'
-                              color='black'
-                              placeholder='Santunan'
-                              onChange={(e) => {
-                                setFieldValue(`identitas_korban.${korbanIndex}.santunans.${santunanIndex}.Identitas_Santunan.nominal`, e.target.value);
-                                console.log(e.target.value);
-                            }}
-                              onBlur={handleBlur}
-                              value={values.identitas_korban && values.identitas_korban[korbanIndex].santunans && values.identitas_korban[korbanIndex].santunans[santunanIndex].Identitas_Santunan.nominal}
-                            />
-                            <FormErrorMessage>{errors.nominal}</FormErrorMessage>
-                          </FormControl>
-                          <FormControl mt={4} isInvalid={errors.id_santunan && touched.id_santunan}>
-                            <FormLabel color={"var(--color-primer)"}>Jenis Santunan</FormLabel>
-                            <Select 
-                              name='id_santunan'
-                              type='text'
-                              color='black'
-                              placeholder="Pilih Jenis Santunan"
-                              onChange={(e) => {
-                                setFieldValue(`identitas_korban.${korbanIndex}.santunans.${santunanIndex}.Identitas_Santunan.id_santunan`, e.target.value);
-                            }}
-                              onBlur={handleBlur}
-                              value={values.identitas_korban && values.identitas_korban[korbanIndex].santunans && values.identitas_korban[korbanIndex].santunans[santunanIndex].Identitas_Santunan.id_santunan}
-                            >
-                              {
-                                santunanList.map((item) => (
-                                  <option key={item.id_santunan} value={item.id_santunan}>{item.jenis_santunan}</option>
-                                ))
-                              }
-                            </Select>
-                            <FormErrorMessage>{errors.id_santunan}</FormErrorMessage>
-                          </FormControl>
-                        <Button mt={4}
-                            size='md'
-                            my={4}
-                            bg={"red"} 
-                            onClick={()=> handleRemoveKorbanSantunan(santunan.Identitas_Santunan)}
-                            >
-                            Hapus Santunan
-                          </Button>
-                        </React.Fragment>
-                      ))} 
-                          <Button bg={"var(--color-primer)"}
-                          size='md'
-                          onClick={()=> handleAddKorbanSantunan(korban.id_identitas_korban)}
-                          >
-                          Tambah Santunan
-                      </Button>
                       </Flex>
                       <Flex ml={20} flexDir={'column'}>
                       <Button
@@ -616,4 +584,4 @@ const EditKorbanLaporanJasaRaharja = () => {
     </>
   )
 }
-export default EditKorbanLaporanJasaRaharja;
+export default EditKorbanLaporanPolisi;

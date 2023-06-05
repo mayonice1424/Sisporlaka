@@ -21,7 +21,7 @@ import { Flex, Text, Input,
 import useAuth from '../../middleware/useAuth';
 import {IoAddCircleOutline} from 'react-icons/io5';
 import { TabTitle } from '../../Utility/utility'
-import {getLaporan, getLaporanToCount} from '../../Utility/api.js'
+import {getLaporan, getLaporanToCount,getJumlahKorban} from '../../Utility/api.js'
 import axios from 'axios';
 import { FormatRupiah } from "@arismun/format-rupiah";
 import Loading from '../loading/loading.js'
@@ -50,14 +50,24 @@ const LaporanDinkes = () => {
  const [keyword, setKeyword] = useState('')
  const [query, setQuery] = useState('')
  const [idLaporan, setIdLaporan] = useState('')
+ console.log(idLaporan)
  const [msg, setMsg] = useState("");
-const dispatch = useDispatch()
-const navigate  = useNavigate()
+ const dispatch = useDispatch()
+ const navigate  = useNavigate()
+
+ const [jumlahKorban, setJumlahKorban] = useState([]) 
 const getAllLaporanByQuery = async () => {
   try {
     const response = await axios.get(`${getLaporan}search_query=${keyword}&limit=${limit}&page=${page}`);
     setData(response.data.laporan);
-    console.log(response.data);
+
+    const korbanPromises = response.data.laporan.map((item) =>
+      axios.get(`${getJumlahKorban}${item.id_laporan}`).then((res) => res.data.jumlahKorban[0].jumlah_korban)
+    );
+
+    Promise.all(korbanPromises).then((jumlahKorbanArray) => {
+      setJumlahKorban(jumlahKorbanArray);
+    });
     setTotalPage(response.data.totalPages);
     setTotalData(response.data.totalRows);
     setPage(response.data.page);
@@ -77,6 +87,8 @@ const customModalSize = {
   maxHeight: "1500px",
 };
 
+
+// console.log(jumlahKorban[0].jumlah_korban)
 const changePage = ({ selected }) => {
   setPage(selected);
   if (selected === 9) {
@@ -129,28 +141,28 @@ moment.updateLocale('id', idLocale);
                   return (
                     <>
                     <Flex flexDir="column" mb="20px">
-                      <Text fontWeight="bold">Nama Korban</Text>
-                      <Text>{item.nama == null? '-' : item.nama}</Text>
+                     <Text fontWeight="bold">Nama Korban</Text>
+                      <Text>{item.nama == null || item.nama == '' ? '-' : item.nama}</Text>
                       <Text fontWeight="bold">Jenis Kelamin</Text>
-                      <Text>{item.jenis_kelamin == null? '-' : item.jenis_kelamin }</Text>
+                      <Text>{item.jenis_kelamin == null || item.jenis_kelamin == '' ? '-' : item.jenis_kelamin }</Text>
                       <Text fontWeight="bold">Umur</Text>
-                      <Text>{item.umur == null ? '-' : item.umur}</Text>
+                      <Text>{item.umur == null || item.umur == '' ? '-' : item.umur}</Text>
                       <Text fontWeight="bold">Alamat</Text>
-                      <Text>{item.alamat == null ? '-' : item.alamat }</Text>
+                      <Text>{item.alamat == null || item.alamat == '' ? '-' : item.alamat }</Text>
                       <Text fontWeight="bold">NIK</Text>
-                      <Text>{item.NIK  == null ? '-' : item.NIK }</Text>
+                      <Text>{item.NIK  == null || item.NIK == '' ? '-' : item.NIK }</Text>
                       <Text fontWeight="bold">Nomor Plat Ambulance</Text>
-                      <Text>{item.plat_ambulance == null ? '-' : item.plat_ambulance}</Text>
+                      <Text>{item.plat_ambulance == null || item.plat_ambulance == '' ? '-' : item.plat_ambulance}</Text>
                       <Text fontWeight="bold">Nama Rumah Sakit</Text>
-                      <Text>{item.nama_rumah_sakit == null ? '-' : item.nama_rumah_sakit}</Text>
+                      <Text>{item.nama_rumah_sakit == null || item.nama_rumah_sakit == ''? '-' : item.nama_rumah_sakit}</Text>
                       <Text fontWeight="bold">Kode ICD-10</Text>
-                      <Text>{item.kode_icd_10 == null ? '-' : `${item.kode_icd_10} : ${item['ICD-10'].insiden}`}</Text>
+                      <Text>{item.kode_icd_10 == null || item.kode_icd_10 == '' ? '-' : `${item.kode_icd_10} : ${item['ICD-10'].insiden}`}</Text>
                       <Text fontWeight="bold">Jenis Luka</Text>
-                      <Text>{item.wound.keterangan_luka == null ? '-' : item.wound.keterangan_luka }</Text>
+                      <Text>{item.wound && item.wound.id_luka === null ? '-' : item.wound.keterangan_luka }</Text>
                       <Text fontWeight="bold">Nomor Rekam Medis</Text>
-                      <Text>{item.nomor_rekam_medis == null ? '-' : item.nomor_rekam_medis}</Text>
-                      <Text fontWeight="bold">Skala Triase</Text>
-                      <Text>{item.kode_ATS == null ? '-' : `${item.kode_ATS} : ${item.Skala_Triase.keterangan}`}</Text>
+                      <Text>{item.nomor_rekam_medis == null || item.nomor_rekam_medis == ''  ? '-' : item.nomor_rekam_medis}</Text>
+                      <Text fontWeight="bold">Kode Skala Triase</Text>
+                      <Text>{item.kode_ATS == null || item.kode_ATS == '' ? '-' : `${item.kode_ATS} : ${item.Skala_Triase.keterangan}`}</Text>
                       <Text fontWeight="bold">------------------------------</Text>
                     </Flex>
                     </>
@@ -164,7 +176,7 @@ moment.updateLocale('id', idLocale);
             <Button
                 bg={'red'}
                 onClick={(e) => {
-                 navigate(`/unit/${role}/laporan/edit/${idLaporan}`)
+                 navigate(`/unit/${role}/edit-korban-laporan/${idLaporan}`)
               }}
               color={'white'}
               mr={3}
@@ -207,6 +219,8 @@ moment.updateLocale('id', idLocale);
               <Th color={'white'}>Kecamatan</Th>
               <Th color={'white'}>Kerugian Materil</Th>
               <Th color={'white'}>Kategori Kecelakaan</Th>
+              <Th color={'white'}>Keterangan</Th>
+              <Th color={'white'}>Jumlah Korban</Th>
               <Th color={'white'}>Penyebab</Th>
               <Th color={'white'}>
                 <Flex justify={'center'}>
@@ -232,16 +246,26 @@ moment.updateLocale('id', idLocale);
                       </Td>
                       <Td color={'black'}>
                         {
-                          item.kerugian_materil == null ? '-': <FormatRupiah value={item.kerugian_materil == null ? '-': item.kerugian_materil}/>
+                          item.kerugian_materil == null || item.kerugian_materil == '' ? '-': <FormatRupiah value={item.kerugian_materil == null || item.kerugian_materil =='' ? '-': item.kerugian_materil}/>
                         }
                       </Td>
                       <Td color={'black'}>
                       {
-                        item.Laporan_Kategori == null ? '-' : item.Laporan_Kategori.nama_kategori
+                        item.Laporan_Kategori == null || item.Laporan_Kategori == '' ? '-' : item.Laporan_Kategori.nama_kategori
                       }
                       </Td>
                       <Td color={'black'}>
-                        {item.penyebab == null ? '-' : item.penyebab}
+                      {
+                        item.keterangan == null || item.keterangan == '' ? '-' : item.Laporan_Kategori.nama_kategori
+                      }
+                      </Td>
+                      <Td color={'black'} textAlign={'center'}>
+                        {
+                           jumlahKorban[index]
+                        }
+                      </Td>                          
+                      <Td color={'black'}>
+                        {item.penyebab == null ||  item.penyebab == ''? '-' : item.penyebab}
                       </Td>
                       <Td color={'black'}>
                         <Flex flexDir={'row'}>
@@ -278,7 +302,7 @@ moment.updateLocale('id', idLocale);
                          ml={'10px'} border={'solid 2px var(--color-primer) '} bg={'#FAFBFC'} maxWidth={'150px'} type='submit'
                         color={'#646464'}
                          >
-                        <Link to={`/unit/${role}/laporan/edit/${item.id_laporan}`}>
+                        <Link to={`/unit/${role}/edit-laporan/${item.id_laporan}`}>
                           <Text color={'black'} >
                             Edit
                           </Text>

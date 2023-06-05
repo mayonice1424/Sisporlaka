@@ -33,6 +33,12 @@ import DetailLaporanRS from "./page/rumahsakit/detailLaporan";
 import DetailLaporanDinkes from "./page/dinkes/detailLaporan";
 import TambahKorbanLaporanJasaRaharja from "./page/jasaRaharja/tambahKorbanLaporan";
 import EditKorbanLaporanJasaRaharja from "./page/jasaRaharja/editLaporan";
+import EditKorbanLaporanDinkes from "./page/dinkes/editLaporan";
+import EditKorbanLaporanRS from "./page/rumahsakit/editLaporan";
+import EditKorbanLaporanPolisi from "./page/polisi/editLaporan";
+import EditLaporanPolisi from "./page/polisi/editFormLaporan";
+import EditLaporanRS from "./page/rumahsakit/editFormLaporan";
+import EditLaporanDinkes from "./page/dinkes/editFormLaporan copy";
 function App() {
   return (
     <>
@@ -56,11 +62,15 @@ function App() {
         <Route path='polisi/detail-laporan/:id' element={<DetailLaporanPolisi />} />
         <Route path='polisi/tambah-pengemudi-laporan/:id' element={<TambahPengemudiLaporanPolisi />} />
         <Route path='polisi/tambah-korban-laporan/:id' element={<TambahKorbanLaporanPolisi />} />
+        <Route path='polisi/edit-korban-laporan/:id' element={<EditKorbanLaporanPolisi />} />
+        <Route path='polisi/edit-laporan/:id' element={<EditLaporanPolisi />} />
         </Route>
         <Route path="/unit" element = {<Board />}>
         <Route path='dinas-kesehatan' element={<AdminDinkes />} />
         <Route path='dinas-kesehatan/laporan' element={<AdminDinkesLaporan />} />
         <Route path='dinas-kesehatan/laporan/add' element={<AddLaporanDinkes />} />
+        <Route path='dinas-kesehatan/edit-korban-laporan/:id' element={<EditKorbanLaporanDinkes />} />
+        <Route path='dinas-kesehatan/edit-laporan/:id' element={<EditLaporanDinkes />} />
         <Route path='dinas-kesehatan/detail-laporan/:id' element={<DetailLaporanDinkes />} />
         <Route path='dinas-kesehatan/grafik' element={<AdminDinkesGrafik />} />
         </Route>
@@ -75,6 +85,8 @@ function App() {
         <Route path='rumah-sakit/laporan' element={<AdminRSLaporan />} />
         <Route path='rumah-sakit/detail-laporan/:id' element={<DetailLaporanRS />} />
         <Route path='rumah-sakit/laporan/add' element={<AddLaporanRS />} />
+        <Route path='rumah-sakit/edit-korban-laporan/:id' element={<EditKorbanLaporanRS />} />
+        <Route path='rumah-sakit/edit-laporan/:id' element={<EditLaporanRS />} />
         <Route path='rumah-sakit/grafik' element={<AdminRSGrafik/>} />
         </Route>
         <Route path='*' element={<Notfound />} />

@@ -59,7 +59,6 @@ const DetailLaporanPolisi = () => {
     NIK: "",
     id_luka: "",
     nama_rumah_sakit: "",
-    nomor_rekam_medis: ""
   }]);
   const addKorbanInput = () => {
     setKorbanList([...korbanList, {
@@ -70,7 +69,6 @@ const DetailLaporanPolisi = () => {
       NIK: "",
       id_luka: "",
       nama_rumah_sakit: "",
-      nomor_rekam_medis: ""
     }]);
   };
   const handleKorbanChange = (index, field, value) => {
@@ -127,7 +125,6 @@ const DetailLaporanPolisi = () => {
     NIK: Yup.number(),
     id_luka: Yup.number(),
     nama_rumah_sakit: Yup.string(),
-    nomor_rekam_medis: Yup.string(),
   })
 
   useEffect(() => {
@@ -156,7 +153,6 @@ const DetailLaporanPolisi = () => {
             NIK: '',
             id_luka: '',
             nama_rumah_sakit: '',
-            nomor_rekam_medis: '',
           }}
           validationSchema={schema}
           validateOnChange={false}
@@ -177,7 +173,6 @@ const DetailLaporanPolisi = () => {
               submitedData.append('NIK', values.NIK);
               submitedData.append('id_luka', values.id_luka);
               submitedData.append('nama_rumah_sakit', values.nama_rumah_sakit);
-              submitedData.append('nomor_rekam_medis', values.nomor_rekam_medis);
               submitedData.append('id_laporan', id);
               axios.post(createDetailLaporanPolisi, data).then((response) => {
                 if (response.status === 201) {
@@ -416,19 +411,6 @@ const DetailLaporanPolisi = () => {
                           value={korban.nama_rumah_sakit}
                         />
                         <FormErrorMessage>{errors.nama_rumah_sakit}</FormErrorMessage>
-                      </FormControl>
-                      <FormControl mt={4} isInvalid={errors.nomor_rekam_medis && touched.nomor_rekam_medis}>
-                        <FormLabel color={"var(--color-primer)"}> Nomor Rekam Medis</FormLabel>
-                        <Input
-                          name='nomor_rekam_medis'
-                          type='text'
-                          color='black'
-                          placeholder='Nomor Rekam Medis'
-                          onChange={(e) => handleKorbanChange(index, 'nomor_rekam_medis', e.target.value)}
-                          onBlur={handleBlur}
-                          value={korban.nomor_rekam_medis}
-                        />
-                        <FormErrorMessage>{errors.nomor_rekam_medis}</FormErrorMessage>
                       </FormControl>
                       </Flex>
                       <Flex ml={20} flexDir={'column'}>

@@ -20,7 +20,7 @@ import { Flex, Text, Input,
  } from '@chakra-ui/react'
 import useAuth from '../../middleware/useAuth';
 import { TabTitle } from '../../Utility/utility'
-import {getLaporanValidation, getLaporanToCount,updateStatusApi,deleteLaporanApi} from '../../Utility/api.js'
+import {getLaporanValidation, getJumlahKorban,updateStatusApi,deleteLaporanApi} from '../../Utility/api.js'
 import axios from 'axios';
 import { FormatRupiah } from "@arismun/format-rupiah";
 import Loading from '../../components/loading/loading.js'
@@ -80,11 +80,19 @@ console.log(id)
 }
 )
 }
+const [jumlahKorban, setJumlahKorban] = useState([]) 
 const getAllLaporanByQuery = async () => {
   try {
     const response = await axios.get(`${getLaporanValidation}search_query=${keyword}&limit=${limit}&page=${page}`);
     setData(response.data.laporan);
-    console.log(response.data);
+
+    const korbanPromises = response.data.laporan.map((item) =>
+      axios.get(`${getJumlahKorban}${item.id_laporan}`).then((res) => res.data.jumlahKorban[0].jumlah_korban)
+    );
+
+    Promise.all(korbanPromises).then((jumlahKorbanArray) => {
+      setJumlahKorban(jumlahKorbanArray);
+    });
     setTotalPage(response.data.totalPages);
     setTotalData(response.data.totalRows);
     setPage(response.data.page);
@@ -156,18 +164,18 @@ moment.updateLocale('id', idLocale);
                     return (
                       <>
                       <Flex flexDir="column" mb="20px">
-                        <Text fontWeight="bold">Nama Pengemudi</Text>
-                        <Text>{item.nama_pengemudi == null? '-' : item.nama_pengemudi}</Text>
+                      <Text fontWeight="bold">Nama Pengemudi</Text>
+                        <Text>{item.nama_pengemudi == null || item.nama_pengemudi == '' ? '-' : item.nama_pengemudi}</Text>
                         <Text fontWeight="bold">Jenis Kelamin</Text>
-                        <Text>{item.jenis_kelamin_pengemudi == null? '-' : item.jenis_kelamin_pengemudi }</Text>
+                        <Text>{item.jenis_kelamin_pengemudi == null || item.jenis_kelamin_pengemudi == '' ? '-' : item.jenis_kelamin_pengemudi }</Text>
                         <Text fontWeight="bold">Umur</Text>
-                        <Text>{item.umur_pengemudi == null ? '-' : item.umur_pengemudi}</Text>
+                        <Text>{item.umur_pengemudi == null || item.umur_pengemudi? '-' : item.umur_pengemudi}</Text>
                         <Text fontWeight="bold">Alamat</Text>
-                        <Text>{item.alamat_pengemudi == null ? '-' : item.alamat_pengemudi }</Text>
+                        <Text>{item.alamat_pengemudi == null || item.alamat_pengemudi? '-' : item.alamat_pengemudi }</Text>
                         <Text fontWeight="bold">Nomor SIM</Text>
-                        <Text>{item.no_sim  == null ? '-' : item.no_sim }</Text>
+                        <Text>{item.no_sim  == null || item.no_sim ? '-' : item.no_sim }</Text>
                         <Text fontWeight="bold">Nomor STNK</Text>
-                        <Text>{item.no_STNK  == null ? '-' : item.no_STNK }</Text>
+                        <Text>{item.no_STNK  == null || item.no_STNK? '-' : item.no_STNK }</Text>
                         <Text fontWeight="bold">------------------------------</Text>
                       </Flex>
                       </>
@@ -184,26 +192,41 @@ moment.updateLocale('id', idLocale);
                   return (
                     <>
                     <Flex flexDir="column" mb="20px">
-                      <Text fontWeight="bold">Nama Korban</Text>
-                      <Text>{item.nama == null? '-' : item.nama}</Text>
+                    <Text fontWeight="bold">Nama Korban</Text>
+                      <Text>{item.nama == null || item.nama == '' ? '-' : item.nama}</Text>
                       <Text fontWeight="bold">Jenis Kelamin</Text>
-                      <Text>{item.jenis_kelamin == null? '-' : item.jenis_kelamin }</Text>
+                      <Text>{item.jenis_kelamin == null || item.jenis_kelamin == '' ? '-' : item.jenis_kelamin }</Text>
                       <Text fontWeight="bold">Umur</Text>
-                      <Text>{item.umur == null ? '-' : item.umur}</Text>
+                      <Text>{item.umur == null || item.umur == '' ? '-' : item.umur}</Text>
                       <Text fontWeight="bold">Alamat</Text>
-                      <Text>{item.alamat == null ? '-' : item.alamat }</Text>
+                      <Text>{item.alamat == null || item.alamat == '' ? '-' : item.alamat }</Text>
                       <Text fontWeight="bold">NIK</Text>
-                      <Text>{item.NIK  == null ? '-' : item.NIK }</Text>
+                      <Text>{item.NIK  == null || item.NIK == '' ? '-' : item.NIK }</Text>
                       <Text fontWeight="bold">Nomor Plat Ambulance</Text>
-                      <Text>{item.plat_ambulance == null ? '-' : item.plat_ambulance}</Text>
+                      <Text>{item.plat_ambulance == null || item.plat_ambulance == '' ? '-' : item.plat_ambulance}</Text>
                       <Text fontWeight="bold">Nama Rumah Sakit</Text>
-                      <Text>{item.nama_rumah_sakit == null ? '-' : item.nama_rumah_saki}</Text>
+                      <Text>{item.nama_rumah_sakit == null || item.nama_rumah_sakit == ''? '-' : item.nama_rumah_sakit}</Text>
                       <Text fontWeight="bold">Jenis Luka</Text>
-                      <Text>{item.wound.keterangan_luka == null ? '-' : item.wound.keterangan_luka }</Text>
+                      <Text>{item.wound && item.wound.id_luka === null ? '-' : item.wound.keterangan_luka }</Text>
                       <Text fontWeight="bold">Nomor Rekam Medis</Text>
-                      <Text>{item.nomor_rekam_medis == null ? '-' : item.nomor_rekam_medis}</Text>
-                      <Text fontWeight="bold">Skala Triase</Text>
-                      <Text>{item.kode_ATS == null ? '-' : `${item.kode_ATS} : ${item.Skala_Triase.keterangan}`}</Text>
+                      <Text>{item.nomor_rekam_medis == null || item.nomor_rekam_medis == '' ? '-' : item.nomor_rekam_medis}</Text>
+                      <Text fontWeight="bold">Kode ICD-10</Text>
+                      <Text>{item.kode_icd_10 == null || item.kode_icd_10 == '' ? '-' : `${item.kode_icd_10} : ${item['ICD-10'].insiden}`}</Text>
+                      <Text fontWeight="bold">Kode Skala Triase</Text>
+                      <Text>{item.kode_ATS == null || item.kode_ATS == '' ? '-' : `${item.kode_ATS} : ${item.Skala_Triase.keterangan}`}</Text>
+                      <Text fontWeight="bold">Santunan</Text>
+                      <Text>
+                      {item.santunans == null || !Array.isArray(item.santunans) || item.santunans.length === 0
+                      ? '-'
+                      : item.santunans.map((item) => (
+                          <span key={item.id}>
+                            {item.jenis_santunan} - <FormatRupiah value={item.Identitas_Santunan.nominal == null ? '-' : item.Identitas_Santunan.nominal} />
+                            <br />
+                          </span>
+                        ))}
+                      <br />
+                      Total: <FormatRupiah value={item.santunans.reduce((sum, item) => sum + (item.Identitas_Santunan.nominal || 0), 0)} />
+                      </Text>
                       <Text fontWeight="bold">------------------------------</Text>
                     </Flex>
                     </>
@@ -249,6 +272,8 @@ moment.updateLocale('id', idLocale);
               <Th color={'white'}>Kecamatan</Th>
               <Th color={'white'}>Kerugian Materil</Th>
               <Th color={'white'}>Kategori Kecelakaan</Th>
+              <Th color={'white'}>keterangan</Th>
+              <Th color={'white'}>Jumlah Korban</Th>
               <Th color={'white'}>Penyebab</Th>
               <Th color={'white'}>
                 <Flex justify={'center'}>
@@ -280,7 +305,15 @@ moment.updateLocale('id', idLocale);
                       }
                       </Td>
                       <Td color={'black'}>
-                        {item.penyebab == null ? '-' : item.penyebab}
+                        {item.keterangan == null || item.keterangan == "" ? '-' : item.keterangan}
+                      </Td>
+                      <Td color={'black'} textAlign={'center'}>
+                        {
+                           jumlahKorban[index]
+                        }
+                      </Td>
+                      <Td color={'black'}>
+                        {item.penyebab == null || item.penyebab == "" ? '-' : item.penyebab}
                       </Td>
                       <Td color={'black'}>
                       <Button onClick={(e) => patchLaporan(item.users[0].Users_Laporan.id_users_laporan,e)} bg={'#4AA8FF'} maxWidth={'100px'} type='submit' color={'white'} className='validasiButton'> Validasi</Button>

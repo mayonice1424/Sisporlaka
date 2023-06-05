@@ -412,9 +412,7 @@ const TambahKorbanLaporanJasaRaharja = () => {
                         />
                         <FormErrorMessage>{errors.nomor_rekam_medis}</FormErrorMessage>
                       </FormControl>
-                      <Button onClick={()=> handleAddKorbanSantunan(korbanIndex)}>
-                          Tambah Santunan
-                      </Button>
+                      
                       {Object.values(korban.identitas_santunan).map((santunan, santunanIndex) => (
                         <React.Fragment key={santunanIndex}>
                           <FormControl mt={4} isInvalid={errors.nominal && touched.nominal}>
@@ -456,11 +454,26 @@ const TambahKorbanLaporanJasaRaharja = () => {
                             </Select>
                             <FormErrorMessage>{errors.id_santunan}</FormErrorMessage>
                           </FormControl>
-                          <Button onClick={()=> handleRemoveKorbanSantunan(korbanIndex, santunanIndex)}>
+                          <Button
+                           size='md'
+                           my={4}
+                           bg={"red"} 
+                          onClick={()=> handleRemoveKorbanSantunan(korbanIndex, santunanIndex)}>
                             Hapus Santunan
                           </Button>
+                          <br />
+                          <Text color={'black'}>
+                            <b>---------------------------------------------------------------------------------------</b>
+                          </Text>
+                            <br />
                         </React.Fragment>
                       ))}
+                      <Button
+                      bg={"var(--color-primer)"}
+                      size='md' 
+                      onClick={()=> handleAddKorbanSantunan(korbanIndex)}>
+                          Tambah Santunan
+                      </Button>
                       </Flex>
                       <Flex ml={20} flexDir={'column'}>
                       <Button
@@ -472,11 +485,16 @@ const TambahKorbanLaporanJasaRaharja = () => {
                       >
                       -
                       </Button>
-                      <Button fontSize={50} bg={"var(--color-primer)"} display={korbanIndex === data.identitas_korban.length - 1 ? 'flex' : 'none'} mt={4} size='md' onClick={handleAddKorban}>
+                      <Button bg={"var(--color-primer)"} display={korbanIndex === data.identitas_korban.length - 1 ? 'flex' : 'none'} mt={4} size='md' onClick={handleAddKorban}>
                         +
                       </Button>
                       </Flex>
                       </Flex>
+                      <br />
+                     <Text color={'black'}>
+                      <b>---------------------------------------------------------------------------------------</b>
+                     </Text>
+                      <br />
                     </React.Fragment>
                   ))} 
               <Input
