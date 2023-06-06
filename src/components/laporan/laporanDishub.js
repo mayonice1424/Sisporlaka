@@ -19,8 +19,9 @@ import { Flex, Text, Input,
  } from '@chakra-ui/react'
 import useAuth from '../../middleware/useAuth';
 import { TabTitle } from '../../Utility/utility'
-import {getLaporan, getJumlahKorban,deleteLaporanApi} from '../../Utility/api.js'
+import {getLaporan, getJumlahKorban,deleteLaporanApi,getLaporanDownload} from '../../Utility/api.js'
 import axios from 'axios';
+import { CSVLink } from 'react-csv';
 import { FormatRupiah } from "@arismun/format-rupiah";
 import Loading from '../../components/loading/loading.js'
 import moment from 'moment';
@@ -30,6 +31,7 @@ import { Link,useNavigate } from 'react-router-dom';
 import { useDisclosure } from "@chakra-ui/react"
 import { routePageName } from '../../Redux/action';
 import { useDispatch } from 'react-redux';
+import { TbDownload }  from "react-icons/tb";
 
 const LaporanDishub = () => {
  const role = useAuth('dinas-perhubungan')
@@ -51,6 +53,26 @@ const LaporanDishub = () => {
  const [msg, setMsg] = useState("");
  const navigate = useNavigate();
  const dispatch = useDispatch();
+ const [allData, setAllData] = useState([])
+
+ const getAllDataDownload = async () => {
+  try {
+    const response = await axios.get(`${getLaporanDownload}search_query=${keyword}`);
+    setAllData(response.data.laporan);
+    const korbanPromises = response.data.laporan.map((item) =>
+    axios.get(`${getJumlahKorban}${item.id_laporan}`).then((res) => res.data.jumlahKorban[0].jumlah_korban)
+    );
+
+    Promise.all(korbanPromises).then((jumlahKorbanArray) => {
+    setJumlahKorban(jumlahKorbanArray);
+    });
+    console.log(response.data.laporan);
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+
 
 const deleteItem = (e,id) => {
 e.preventDefault();
@@ -118,6 +140,7 @@ useEffect(() => {
   dispatch(routePageName("Laporkan Kejadian"))
   getAllLaporanByQuery()
   setLoading(true)
+  getAllDataDownload()
 }, [page,keyword])
 var idLocale = require('moment/locale/id');
 moment.updateLocale('id', idLocale);
@@ -127,13 +150,44 @@ moment.updateLocale('id', idLocale);
       data === null ? <Loading/> : 
     <Flex flexDir={'column'} >
       <form onSubmit={searchData}>
-      <FormControl id="search" >
+      <FormControl id="search"  >
     <Flex justify={'space-between'} flexDir={'row'} mt={'20px'}>
           <Flex ml={'5%'}  width={'20%'} maxWidth={'1000px'}>
-            <Input variant={'filled'} color={'black'} type="text" value={query} onChange={(e)=> setQuery(e.target.value)} placeholder="Cari Data" />
-            <Button ml={'14px'} width={'50%'} bg={'#4AA8FF'} maxWidth={'80px'} type='submit' className='button'>
-              Cari
+            <Input variant={'filled'} color={'black'} type="text" value={query} onChange={(e)=> setQuery(e.target.value)} placeholder="Cari Data....." />
+            <Button paddingX={'50px'} mr={'3px'} ml={'14px'} width={'50%'} bg={'#4AA8FF'} maxWidth={'80px'} type='submit' className='button'>
+              Cari 
             </Button>
+        <CSVLink data={
+          allData.map((item, index) => ({
+            no: index + 1,
+            judul_kejadian: item.judul_kejadian,
+            tanggal: moment(item.tanggal).format('LL'),
+            Kecamatan: item.Kecamatan.nama_kecamatan,
+            kerugian_materil : item.kerugian_materil,
+            Laporan_Kategori: item.Laporan_Kategori.nama_kategori,
+            jumlah_korban: jumlahKorban[index],
+            keterangan: item.keterangan,
+            penyebab: item.penyebab,
+          }))
+        } filename={`Laporan ${role}.csv`} className="btn btn-primary"
+        headers={
+          [
+            { label: "No", key: "no" },
+            { label: "Judul Kejadian", key: "judul_kejadian" },
+            { label: "Tanggal", key: "tanggal" },
+            { label: "Kecamatan", key: "Kecamatan" },
+            { label: "Kerugian Materil", key: "kerugian_materil" },
+            { label: "Kategori", key: "Laporan_Kategori" },
+            { label: "Jumlah Korban", key: "jumlah_korban" },
+            { label: "Keterangan", key: "keterangan" },
+            { label: "Penyebab", key: "penyebab" },
+          ]
+        }
+        >
+      <Button  border={'solid 3px var(--color-primer)'} bg={'white'}>
+        < TbDownload size={'20px'} color='black' />
+      </Button>
+        </CSVLink>
           </Flex>
       <Flex mr={'6%'}>
       <Modal isOpen={isOpen} onClose={onClose}>
