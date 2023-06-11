@@ -59,7 +59,7 @@ const Navbar = () => {
       </DrawerOverlay>
     </Drawer>
     </Flex>
-    <Flex  display={{ base: "none", md: "none", lg:'flex' }} height={'15vh'} bgColor={'white'} position={'absolute'} zIndex={'1'} p={10} boxShadow={'lg'} blur={4} width={'100%'} justify={'flex-start'} alignItems={'center'} flexDir={'row'} alignContent={'center'} pl={'2%'} py={'2%'} pr={'2%'} background={'white'}> 
+    <Flex  display={{ base: "none", md: "none", lg:'flex' }} height={'15vh'} bgColor={'white'} position={'absolute'} zIndex={'1'} p={10}  blur={4} width={'100%'} justify={'flex-start'} alignItems={'center'} flexDir={'row'} alignContent={'center'} pl={'2%'} py={'2%'} pr={'2%'} background={'white'}> 
     <Flex float={'left'} mr={'50%'}>
         <Text color={'black'} fontWeight={'regular'} fontFamily={'var(--font-family-secondary)'} fontSize={'var(--header-1)'}>Sisporlaka</Text>
       </Flex>

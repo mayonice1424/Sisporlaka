@@ -227,7 +227,7 @@ moment.updateLocale('id', idLocale);
             </ModalBody>
             <ModalFooter>
             <Button
-                bg={'red'}
+                bg={'#4AA8FF'}
                 onClick={(e) => {
                  navigate(`/unit/${role}/edit-korban-laporan/${idLaporan}`)
               }}

@@ -58,7 +58,7 @@ const AdminDishubValidasi = () => {
  axios.patch(`${updateStatusApi}${id}`,{status: true
  }).then(response => {
    console.log(response)
-   navigate(window.location.reload(true))
+   getAllLaporanByQuery()
  })
  .catch(error => {
    console.log(error)

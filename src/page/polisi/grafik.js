@@ -4,6 +4,7 @@ import useAuth from '../../middleware/useAuth';
 import { TabTitle } from '../../Utility/utility'
 import { useDispatch } from "react-redux";
 import { routePageName } from "../../Redux/action";
+import GrafikComponent from '../../components/grafik/grafik';
 
 const AdminPolisiGrafik = () => {
   TabTitle("Grafik - Sisporlaka");
@@ -15,7 +16,7 @@ const AdminPolisiGrafik = () => {
   return (
     <>
     <Flex>
-      <Text color={'blue'}>Halaman Role {role}  </Text>
+      <GrafikComponent />
     </Flex>
     </>
   )
