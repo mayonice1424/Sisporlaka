@@ -1,11 +1,29 @@
 import { Box, Flex,Text,Image } from '@chakra-ui/react'
-import React from 'react'
+import {React,useState,useEffect} from 'react'
 import Navbar from '../components/publicNavbar/navbar'
 import './home.css'
 import { TabTitle } from '../Utility/utility'
+import { listData } from '../Utility/api'
+import axios from 'axios'
 import { Link } from 'react-router-dom'
-function Home() {
+import moment from 'moment';
+const Home = () => {
+  const [data, setData] = useState([]);
+  const getData = async () => {
+    try {
+      const response = await axios.get(listData);
+      setData(response.data.laporan);
+      console.log(response.data.laporan);
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
+  };
+  useEffect(() => {
+    getData();
+  }, []);
   TabTitle("Home - Sisporlaka");
+  var idLocale = require('moment/locale/id');
+  moment.updateLocale('id', idLocale);
   return (
     <>
     <Navbar />
@@ -29,7 +47,7 @@ function Home() {
         </Flex>
         <Flex mt={5} width={'35%'} justify={'space-between'}>
           <Flex>
-          <Text>
+          <Text fontSize={18} fontWeight={'semibold'}>
             Data Kecelakaan
           </Text>
           </Flex>
@@ -41,6 +59,39 @@ function Home() {
           </Link>
           </Flex>
         </Flex>
+        {
+          data == null ? (<></>):
+            data.map((item,index) => {
+              return(
+                <Flex
+                border={'3px solid #CECECE'}
+                borderRadius={10}
+                flexDir={'column'}
+                mt={5}
+                width={'35%'}
+              >
+                <Text
+                  color={'#529EE3'}
+                  fontSize={25}
+                  fontWeight={'semibold'}
+                  textAlign={'start'}
+                  alignContent={'flex-start'}
+                  alignItems={'flex-start'}
+                  alignSelf={'flex-start'}
+                  mx={'20px'}
+                  my={'5px'}
+                >
+                  Data Kecelakaan per {moment(item.data).format('MMMM YYYY')}
+                </Text>
+                <Text 
+                mx={'20px'}
+                my={'5px'}
+                >
+                  Sumber Data : Dirlantas, PT Jasa Raharja, Dinas Perhubungan Provinsi Lampung, dan Dinas Kesehatan Provinsi Lampung
+                </Text>
+              </Flex>
+        )})
+        }
     </Flex>
     </>
   )
