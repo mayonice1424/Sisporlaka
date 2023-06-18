@@ -2,6 +2,7 @@ import "./App.css";
 import React from 'react';
 import { BrowserRouter ,Routes, Route } from 'react-router-dom';
 import Home from './page/home';
+import PublicLaporan from "./page/laporan";
 import Informasi from './page/informasi';
 import Kontak from './page/kontak';
 import Login from './page/login';
@@ -47,6 +48,7 @@ function App() {
         <Route path='/informasi' element={<Informasi />} />
         <Route path='/kontak' element={<Kontak />} />
         <Route path='/login' element={<Login />} />
+        <Route path='/laporan/:id' element={<PublicLaporan />} />
         <Route path="/unit" element = {<Board />}>
         <Route path='jasa-raharja' element={<AdminJasaRaharja />} />
         <Route path='jasa-raharja/laporan' element={<AdminJasaRaharjaLaporan />} />

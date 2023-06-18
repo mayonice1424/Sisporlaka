@@ -328,7 +328,7 @@ moment.updateLocale('id', idLocale);
                       </Td>
                       <Td color={'black'}>
                       {
-                        item.keterangan == null || item.keterangan == '' ? '-' : item.Laporan_Kategori.nama_kategori
+                        item.keterangan == null || item.keterangan == '' ? '-' : item.keterangan
                       }
                       </Td>
                       <Td color={'black'} textAlign={'center'}>

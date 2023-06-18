@@ -42,7 +42,7 @@ const Home = () => {
         </Flex>
         <Flex mt={5} width={'35%'}>
           <Text fontSize={20} fontWeight={'normal'} textAlign={'start'} alignContent={'flex-start'} alignItems={'flex-start'} alignSelf={'flex-start'}>
-          Sistem informasi pelaporan lalu lintas merupakan sistem yang digunakan sebagai data terpusat yang terintegrasi berdasarkan pelaporan dari pilar pilar keselamatan lalu lintas dan angkutan jalan.
+          Sistem informasi pelaporan lalu lintas merupakan sistem yang digunakan sebagai data terpusat yang terintegrasi berdasarkan pelaporan dari pilar - pilar keselamatan lalu lintas dan angkutan jalan.
           </Text>
         </Flex>
         <Flex mt={5} width={'35%'} justify={'space-between'}>
@@ -69,10 +69,11 @@ const Home = () => {
                 flexDir={'column'}
                 mt={5}
                 width={'35%'}
-              >
+                >
+                <Link to={`/laporan/${item.data}`}>
                 <Text
                   color={'#529EE3'}
-                  fontSize={25}
+                  fontSize={20}
                   fontWeight={'semibold'}
                   textAlign={'start'}
                   alignContent={'flex-start'}
@@ -80,7 +81,7 @@ const Home = () => {
                   alignSelf={'flex-start'}
                   mx={'20px'}
                   my={'5px'}
-                >
+                  >
                   Data Kecelakaan per {moment(item.data).format('MMMM YYYY')}
                 </Text>
                 <Text 
@@ -89,6 +90,7 @@ const Home = () => {
                 >
                   Sumber Data : Dirlantas, PT Jasa Raharja, Dinas Perhubungan Provinsi Lampung, dan Dinas Kesehatan Provinsi Lampung
                 </Text>
+              </Link>
               </Flex>
         )})
         }
