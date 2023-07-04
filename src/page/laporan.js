@@ -10,7 +10,7 @@ import { Flex, Text, Input,
   TableContainer,
   Button
  } from '@chakra-ui/react'
-import {getLaporan, getJumlahKorban,getLaporanDownload,getPublicLaporan,selectDataGrafik} from '../Utility/api'
+import { getJumlahKorban,getLaporanDownload,getPublicLaporan,selectDataGrafik} from '../Utility/api'
 import axios from 'axios';
 import { CSVLink } from 'react-csv';
 import { FormatRupiah } from "@arismun/format-rupiah";
@@ -22,6 +22,8 @@ import Navbar from '../components/publicNavbar/navbar';
 import { useParams } from 'react-router-dom';
 import './laporan.css' 
 import GrafikData from '../components/grafikComponent/grafikComponent';
+import * as XLSX from 'xlsx';
+
 
 const PublicLaporan = () => {
  const [data , setData] = useState([])
@@ -85,6 +87,42 @@ const getAllLaporanByQuery = async () => {
   }
 }
 
+function exportToExcel(data, filename) {
+  const worksheet = XLSX.utils.json_to_sheet(data);
+
+  // Mengatur judul kolom
+  const headers = [
+    { label: "No", key: "no" },
+    { label: "Judul Kejadian", key: "judul_kejadian" },
+    { label: "Tanggal", key: "tanggal" },
+    { label: "Waktu", key: "waktu" },
+    { label: "Lokasi", key: "lokasi"},
+    { label: "Kecamatan", key: "Kecamatan" },
+    { label: "Kerugian Materil", key: "kerugian_materil" },
+    { label: "Kategori", key: "Laporan_Kategori" },
+    { label: "Jumlah Korban", key: "jumlah_korban" },
+    { label: "Keterangan", key: "keterangan" },
+    { label: "Penyebab", key: "penyebab" },
+  ];
+
+  headers.forEach((header, index) => {
+    const cellRef = XLSX.utils.encode_cell({ r: 0, c: index });
+    worksheet[cellRef].v = header.label;
+  });
+
+  const workbook = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(workbook, worksheet, 'Sheet 1');
+  
+  const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+  const excelData = new Blob([excelBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+  const url = URL.createObjectURL(excelData);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = `${filename}.xlsx`;
+  link.click();
+  URL.revokeObjectURL(url);
+}
+
 const changePage = ({ selected }) => {
   setPage(selected);
   if (selected === 9) {
@@ -95,17 +133,12 @@ const changePage = ({ selected }) => {
     setMsg("");
   }
 };
-const searchData = (e) => {
-  e.preventDefault()
-  setPage(0)
-  setMsg("")
-  setKeyword(query)
-}
+
 useEffect(() => {
   getAllLaporanByQuery()
   setLoading(true)
   getAllDataDownload()
-}, [page,keyword])
+}, [page])
 var idLocale = require('moment/locale/id');
 moment.updateLocale('id', idLocale);
 return (
@@ -113,12 +146,14 @@ return (
       <Navbar />
       <Flex width={'100%'} flexDir={'column'}  alignItems={'center'} marginTop={'15vh'} alignContent={'center'} height={'85vh'} bg={'white'} overflowY={'scroll'} position={'fixed'} zIndex={'-1'}>
     <Flex  flexDir={'row'} mt={'20px'}>
-    <Flex alignItems={'flex-start'}  width={'20%'} maxWidth={'1000px'}>
-        <CSVLink data={
+    <Flex  width={'35%'} maxWidth={'1500px'}>
+    <CSVLink data={
           allData.map((item, index) => ({
             no: index + 1,
             judul_kejadian: item.judul_kejadian,
             tanggal: moment(item.tanggal).format('LL'),
+            waktu: item.waktu,
+            lokasi: item.lokasi,
             Kecamatan: item.Kecamatan.nama_kecamatan,
             kerugian_materil : item.kerugian_materil,
             Laporan_Kategori: item.Laporan_Kategori.nama_kategori,
@@ -132,6 +167,8 @@ return (
             { label: "No", key: "no" },
             { label: "Judul Kejadian", key: "judul_kejadian" },
             { label: "Tanggal", key: "tanggal" },
+            { label: "Waktu", key: "waktu" },
+            { label: "Lokasi", key: "lokasi"},
             { label: "Kecamatan", key: "Kecamatan" },
             { label: "Kerugian Materil", key: "kerugian_materil" },
             { label: "Kategori", key: "Laporan_Kategori" },
@@ -141,20 +178,43 @@ return (
           ]
         }
         >
-      <Button  border={'solid 3px var(--color-primer)'} bg={'white'}>
-        <Flex>
-          <Flex mr={2}>
-            <Text>Download Laporan.csv</Text>
-          </Flex>
-          <Flex>
-            <TbDownload size={'20px'} color='black' />
-          </Flex>
-        </Flex>
+      <Button bg={`rgb(76, 175, 80)`} mr={'4px'}>
+        <Text color={'white'}>
+          Download To CSV
+        </Text> 
       </Button>
         </CSVLink>
-          </Flex>
+        </Flex>
+        <Flex ml={'38px'}>
+        <Button
+        type='submit' 
+        className="btn btn-primary"
+        fontWeights="bold"
+        bg={`rgb(76, 175, 80)`}
+        onClick={() => exportToExcel(
+          allData.map((item, index) => ({
+            no: index + 1,
+            judul_kejadian: item.judul_kejadian,
+            tanggal: moment(item.tanggal).format('LL'),
+            waktu: item.waktu,
+            lokasi: item.lokasi,
+            Kecamatan: item.Kecamatan.nama_kecamatan,
+            kerugian_materil: item.kerugian_materil,
+            Laporan_Kategori: item.Laporan_Kategori.nama_kategori,
+            jumlah_korban: jumlahKorban[index],
+            keterangan: item.keterangan,
+            penyebab: item.penyebab,
+          })),
+          `Laporan`,
+        )}
+        >
+          <Text color={'white'}>
+          Download To Excel
+        </Text>
+        </Button>
+            </Flex>
+        </Flex>
       <Flex mr={'6%'}>
-    </Flex>
     </Flex>
     <Flex justify={'center'} mt={'20px'}>
       <TableContainer width={'90%'} maxWidth={'2000px'} >
@@ -255,11 +315,21 @@ return (
       />
     </Flex>
     </Flex>
+    <Flex  
+                border={'3px solid #CECECE'}
+                borderRadius={10}
+                flexDir={'column'}
+                mt={5}
+                width={'85%'}
+                alignContent={'center'}
+                alignItems={'center'}
+                mb={5}
+                >
     {
-          id == ""? (
-            <></>
-            ):(
-              // console.log(dataGrafik),
+      id == ""? (
+        <></>
+        ):(
+          // console.log(dataGrafik),
               <GrafikData 
               size="lg"
               width="100%"
@@ -272,6 +342,7 @@ return (
               />
               )
             }
+    </Flex>
   </Flex>
     </>
   )

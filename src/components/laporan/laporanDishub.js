@@ -31,7 +31,8 @@ import { Link,useNavigate } from 'react-router-dom';
 import { useDisclosure } from "@chakra-ui/react"
 import { routePageName } from '../../Redux/action';
 import { useDispatch } from 'react-redux';
-import { TbDownload }  from "react-icons/tb";
+import * as XLSX from 'xlsx';
+
 
 const LaporanDishub = () => {
  const role = useAuth('dinas-perhubungan')
@@ -119,6 +120,42 @@ const customModalSize = {
   maxHeight: "1500px",
 };
 
+function exportToExcel(data, filename) {
+  const worksheet = XLSX.utils.json_to_sheet(data);
+
+  // Mengatur judul kolom
+  const headers = [
+    { label: "No", key: "no" },
+    { label: "Judul Kejadian", key: "judul_kejadian" },
+    { label: "Tanggal", key: "tanggal" },
+    { label: "Waktu", key: "waktu" },
+    { label: "Lokasi", key: "lokasi"},
+    { label: "Kecamatan", key: "Kecamatan" },
+    { label: "Kerugian Materil", key: "kerugian_materil" },
+    { label: "Kategori", key: "Laporan_Kategori" },
+    { label: "Jumlah Korban", key: "jumlah_korban" },
+    { label: "Keterangan", key: "keterangan" },
+    { label: "Penyebab", key: "penyebab" },
+  ];
+
+  headers.forEach((header, index) => {
+    const cellRef = XLSX.utils.encode_cell({ r: 0, c: index });
+    worksheet[cellRef].v = header.label;
+  });
+
+  const workbook = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(workbook, worksheet, 'Sheet 1');
+  
+  const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+  const excelData = new Blob([excelBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+  const url = URL.createObjectURL(excelData);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = `${filename}.xlsx`;
+  link.click();
+  URL.revokeObjectURL(url);
+}
+
 
 const changePage = ({ selected }) => {
   setPage(selected);
@@ -152,16 +189,18 @@ moment.updateLocale('id', idLocale);
       <form onSubmit={searchData}>
       <FormControl id="search"  >
     <Flex justify={'space-between'} flexDir={'row'} mt={'20px'}>
-          <Flex ml={'5%'}  width={'20%'} maxWidth={'1000px'}>
-            <Input variant={'filled'} color={'black'} type="text" value={query} onChange={(e)=> setQuery(e.target.value)} placeholder="Cari Data....." />
+    <Flex ml={'5%'}  width={'35%'} maxWidth={'1500px'}>
+            <Input variant={'filled'} color={'black'} type="text" value={query} onChange={(e)=> setQuery(e.target.value)} placeholder="Cari Data" />
             <Button paddingX={'50px'} mr={'3px'} ml={'14px'} width={'50%'} bg={'#4AA8FF'} maxWidth={'80px'} type='submit' className='button'>
-              Cari 
+              Cari
             </Button>
-        <CSVLink data={
+            <CSVLink data={
           allData.map((item, index) => ({
             no: index + 1,
             judul_kejadian: item.judul_kejadian,
             tanggal: moment(item.tanggal).format('LL'),
+            waktu: item.waktu,
+            lokasi: item.lokasi,
             Kecamatan: item.Kecamatan.nama_kecamatan,
             kerugian_materil : item.kerugian_materil,
             Laporan_Kategori: item.Laporan_Kategori.nama_kategori,
@@ -175,6 +214,8 @@ moment.updateLocale('id', idLocale);
             { label: "No", key: "no" },
             { label: "Judul Kejadian", key: "judul_kejadian" },
             { label: "Tanggal", key: "tanggal" },
+            { label: "Waktu", key: "waktu" },
+            { label: "Lokasi", key: "lokasi"},
             { label: "Kecamatan", key: "Kecamatan" },
             { label: "Kerugian Materil", key: "kerugian_materil" },
             { label: "Kategori", key: "Laporan_Kategori" },
@@ -184,11 +225,39 @@ moment.updateLocale('id', idLocale);
           ]
         }
         >
-      <Button  border={'solid 3px var(--color-primer)'} bg={'white'}>
-        < TbDownload size={'20px'} color='black' />
+      <Button bg={`rgb(76, 175, 80)`} mr={'3px'}>
+        <Text color={'white'}>
+          Download To CSV
+        </Text> 
       </Button>
         </CSVLink>
-          </Flex>
+        <Button
+        width={'50%'} maxWidth={'800px'} type='submit' 
+        className="btn btn-primary"
+        fontWeights="bold"
+        bg={`rgb(76, 175, 80)`}
+        onClick={() => exportToExcel(
+          allData.map((item, index) => ({
+            no: index + 1,
+            judul_kejadian: item.judul_kejadian,
+            tanggal: moment(item.tanggal).format('LL'),
+            waktu: item.waktu,
+            lokasi: item.lokasi,
+            Kecamatan: item.Kecamatan.nama_kecamatan,
+            kerugian_materil: item.kerugian_materil,
+            Laporan_Kategori: item.Laporan_Kategori.nama_kategori,
+            jumlah_korban: jumlahKorban[index],
+            keterangan: item.keterangan,
+            penyebab: item.penyebab,
+          })),
+          `Laporan ${role}`,
+        )}
+        >
+          <Text color={'white'}>
+          Download To Excel
+        </Text>
+        </Button>
+        </Flex>
       <Flex mr={'6%'}>
       <Modal isOpen={isOpen} onClose={onClose}>
           <ModalOverlay />
@@ -284,7 +353,6 @@ moment.updateLocale('id', idLocale);
                   const confirmed = confirm("Apakah Anda yakin ingin menghapus data ini?");
                   if (confirmed) {
                     deleteItem(e,idLaporan);
-                    window.location.reload();
                   }
               }}
               color={'white'}
@@ -310,6 +378,7 @@ moment.updateLocale('id', idLocale);
               <Th color={'white'}>Judul Kejadian</Th>
               <Th color={'white'}>Tanggal</Th>
               <Th color={'white'}>Waktu</Th>
+              <Th color={'white'}>Lokasi</Th>
               <Th color={'white'}>Kecamatan</Th>
               <Th color={'white'}>Kerugian Materil</Th>
               <Th color={'white'}>Kategori Kecelakaan</Th>
@@ -334,6 +403,8 @@ moment.updateLocale('id', idLocale);
                         {moment(item.tanggal).format('LL') == null ? '-' : moment(item.tanggal).format('LL')}</Td>
                       <Td color={'black'}>{moment(item.waktu, 'HH:mm:ss').format('h:mm A') == null ? '-' : moment(item.waktu, 'HH:mm:ss').format('h:mm A') }</Td>
                       <Td color={'black'}>
+                        {item.lokasi == null ? '-' : item.lokasi}</Td>
+                      <Td color={'black'}>
                         {
                           item.Kecamatan == null ? '-' : item.Kecamatan.nama_kecamatan
                         }
@@ -350,7 +421,7 @@ moment.updateLocale('id', idLocale);
                       </Td>
                       <Td color={'black'}>
                       {
-                        item.keterangan == null || item.keterangan == '' ? '-' : item.Laporan_Kategori.nama_kategori
+                        item.keterangan == null || item.keterangan == '' ? '-' : item.keterangan
                       }
                       </Td>
                       <Td color={'black'} textAlign={'center'}>

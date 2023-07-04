@@ -1,5 +1,5 @@
 import React,{useEffect} from 'react'
-import { Line } from 'react-chartjs-2';
+import { Bar } from 'react-chartjs-2';
 import moment from 'moment';
 
 const GrafikValue =(props) => {
@@ -15,32 +15,39 @@ const GrafikValue =(props) => {
   const labels = label2;
   
    const data = {
-    labels,
+    labels: [...labels],
     datasets: [
       {
-        label: `Data Kecelakaan Bulan ${moment({value}).format('MMMM YYYY')} `,
-        data: datasets,
-        borderColor:  'rgb(53, 162, 235,0.5)',
-        pointBorderColor:'#A4E0FF',
-        backgroundColor: 'rgb(53, 162, 235,0.1)',
-        pointBorderWidth: 4 ,
-        // tension: 0.5,
+        label: `Data Kecelakaan Bulan ${moment(value).format('MMMM YYYY')} `,
+        data: [...datasets],
 
-        fill: true,
-        pointStyle: 'circle',
-        pointRadius: 7,
-        pointHoverRadius: 15
+        backgroundColor: 'rgba(54, 162, 235, 0.2)',
+        borderColor: 'rgb(54, 162, 235)',
+        borderWidth: 2,
+        // tension: 0.5,
+        font: {
+          size: 40, // Atur ukuran font untuk label dataset
+          weight: 'bold',
+        },
+
       },
     ],
   };
   const options = {
     responsive: true,
+    layout: {
+      padding: 40,
+  },
     plugins: {
       legend: {
         position: 'top',
       },
       title: {
         display: true,
+        font:{
+          size: 14,
+          weight: 'bold'
+        },
       },
     },
     scales: {
@@ -48,16 +55,35 @@ const GrafikValue =(props) => {
         display: true,
         title: {
           display: true,
+          font:{
+            size: 22,
+            weight: 'normal',
+          },
           text: 'Jumlah Kecelakaan',
-      },
-
+        },
+        ticks: {
+          font: {
+            size: 16, // Atur ukuran font untuk sumbu y
+          },
+          precision: 0,
+        },
     },
       x: {
         display: true,
         title: {
           display: true,
+          font:{
+            size: 22,
+            weight: 'normal',
+            color: 'red'
+          },
           text: 'Kecamatan',
-    },
+        },
+        ticks: {
+          font: {
+            size: 18, // Atur ukuran font untuk sumbu y
+          },
+        },
 },
 }
 }
@@ -66,7 +92,7 @@ const GrafikValue =(props) => {
   }, [value]);
     return (
       <div widht={'300px'} height={'300px'} margin={'20px'} >
-    <Line size={'lg'} options={options} data={data} />
+    <Bar size={'lg'} options={options} data={data} />
       </div>
     )
   }

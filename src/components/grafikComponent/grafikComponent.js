@@ -10,7 +10,7 @@ import {
   CategoryScale,
   LinearScale,
   PointElement,
-  LineElement,
+  BarElement,
   Title,
   Tooltip,
   Filler,
@@ -22,7 +22,7 @@ ChartJS.register(
   CategoryScale,
   LinearScale,
   PointElement,
-  LineElement,
+  BarElement,
   Title,
   Tooltip,
   Filler,
@@ -48,8 +48,8 @@ const GrafikData= (props) => {
     return (
         <GrafikValue className='grafik' data={{
           value: value,
-          label: Object.values(data).map((item) => item.Kecamatan.nama_kecamatan),
-          data: Object.values(data).map((item) => item.count),
+          label: Object.values(data).map((item) => item.nama_kecamatan ),
+          data: Object.values(data).map((item) => item.laporans_count),
         }
         } />
         // <Flex>

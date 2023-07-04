@@ -41,7 +41,6 @@ const TambahKorbanLaporanJasaRaharja = () => {
         plat_ambulance: '',
         NIK: '',
         nama_rumah_sakit: '',
-        nomor_rekam_medis: '',
         id_luka: '',
         identitas_santunan: [{
           nominal: '',
@@ -130,7 +129,6 @@ const TambahKorbanLaporanJasaRaharja = () => {
           plat_ambulance: '',
           NIK: '',
           nama_rumah_sakit: '',
-          nomor_rekam_medis: '',
           id_luka: '',
           identitas_santunan: [{
             nominal: '',
@@ -173,7 +171,6 @@ const TambahKorbanLaporanJasaRaharja = () => {
         id_luka: Yup.number().required(),
         nama_rumah_sakit: Yup.string().required(),
         plat_ambulance: Yup.string().required(),
-        nomor_rekam_medis: Yup.string().required(),
         identitas_santunan: Yup.array().of(
           Yup.object().shape({
             id_santunan: Yup.number(),
@@ -223,7 +220,6 @@ const TambahKorbanLaporanJasaRaharja = () => {
                 plat_ambulance: '',
                 NIK: '',
                 nama_rumah_sakit: '',
-                nomor_rekam_medis: '',
                 id_luka: '',
                 identitas_santunan: [{
                   nominal: '',
@@ -247,7 +243,6 @@ const TambahKorbanLaporanJasaRaharja = () => {
             submitedData.append('id_luka', values.identitas_korban.id_luka);
             submitedData.append('plat_ambulance', values.identitas_korban.plat_ambulance);
             submitedData.append('nama_rumah_sakit', values.identitas_korban.nama_rumah_sakit);
-            submitedData.append('nomor_rekam_medis', values.identitas_korban.nomor_rekam_medis);
             if (Array.isArray(values.identitas_korban.identitas_santunan)) {
               submitedData.append('nominal', JSON.stringify(values.identitas_korban.identitas_santunan.map(item => item.nominal)));
               submitedData.append('id_santunan', JSON.stringify(values.identitas_korban.identitas_santunan.map(item => item.id_santunan)));
@@ -399,20 +394,6 @@ const TambahKorbanLaporanJasaRaharja = () => {
                         />
                         <FormErrorMessage>{errors.nama_rumah_sakit}</FormErrorMessage>
                       </FormControl>
-                      <FormControl mt={4} isInvalid={errors.nomor_rekam_medis && touched.nomor_rekam_medis}>
-                        <FormLabel color={"var(--color-primer)"}> Nomor Rekam Medis</FormLabel>
-                        <Input
-                          name='nomor_rekam_medis'
-                          type='text'
-                          color='black'
-                          placeholder='Nomor Rekam Medis'
-                          onChange={(e) => handleKorbanChange(e,korbanIndex)}
-                          onBlur={handleBlur}
-                          value={korban.nomor_rekam_medis}
-                        />
-                        <FormErrorMessage>{errors.nomor_rekam_medis}</FormErrorMessage>
-                      </FormControl>
-                      
                       {Object.values(korban.identitas_santunan).map((santunan, santunanIndex) => (
                         <React.Fragment key={santunanIndex}>
                           <FormControl mt={4} isInvalid={errors.nominal && touched.nominal}>

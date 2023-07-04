@@ -58,7 +58,6 @@ const EditKorbanLaporanJasaRaharja = () => {
           plat_ambulance: '',
           NIK: '',
           nama_rumah_sakit: '',
-          nomor_rekam_medis: '',
           id_luka: '',
           identitas_santunan: [{
             nominal: '',
@@ -68,20 +67,6 @@ const EditKorbanLaporanJasaRaharja = () => {
       ],
       id_laporan: id,
     });
-  // const handleKorbanSantunanChange = (e, korbanIndex, santunanIndex) => {
-  //   const { name } = e.target;
-  //   const { value } = e.target;
-  //   const korbanData = [...data.identitas_korban];
-  //   const santunanData = [...korbanData[korbanIndex].identitas_santunan];
-    
-  //   if (value) {
-  //     const replacedValue = value.replace(/\D/g, '');
-  //     console.log(replacedValue);
-  //     santunanData[santunanIndex] = { ...santunanData[santunanIndex], [name]: replacedValue };
-  //     korbanData[korbanIndex] = { ...korbanData[korbanIndex], identitas_santunan: santunanData };
-  //     set({ ...data, identitas_korban: korbanData });
-  //   }
-  // };
   const handleAddKorbanSantunan = (Id_identitas) => {
     setIdIdentitas(Id_identitas) 
     addSantunan.onOpen()
@@ -312,7 +297,6 @@ const EditKorbanLaporanJasaRaharja = () => {
                   id_luka: korban.id_luka,
                   plat_ambulance: korban.plat_ambulance,
                   nama_rumah_sakit: korban.nama_rumah_sakit,
-                  nomor_rekam_medis: korban.nomor_rekam_medis,
                 })
                 .then(response => {
                   console.log(response)
@@ -495,21 +479,6 @@ const EditKorbanLaporanJasaRaharja = () => {
                           value={values.identitas_korban && values.identitas_korban[korbanIndex].nama_rumah_sakit}
                         />
                         <FormErrorMessage>{errors.nama_rumah_sakit}</FormErrorMessage>
-                      </FormControl>
-                      <FormControl mt={4} isInvalid={errors.nomor_rekam_medis && touched.nomor_rekam_medis}>
-                        <FormLabel color={"var(--color-primer)"}> Nomor Rekam Medis</FormLabel>
-                        <Input
-                          name='nomor_rekam_medis'
-                          type='text'
-                          color='black'
-                          placeholder='Nomor Rekam Medis'
-                          onChange={(e) => {
-                            setFieldValue(`identitas_korban.${korbanIndex}.nomor_rekam_medis`, e.target.value);
-                          }}
-                          onBlur={handleBlur}
-                          value={values.identitas_korban && values.identitas_korban[korbanIndex].nomor_rekam_medis}
-                        />
-                        <FormErrorMessage>{errors.nomor_rekam_medis}</FormErrorMessage>
                       </FormControl>
                      {korban.santunans && Object.values(korban.santunans).map((santunan, santunanIndex) => (
                         <React.Fragment key={santunanIndex}>
