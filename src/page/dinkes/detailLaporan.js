@@ -40,18 +40,7 @@ const DetailLaporanDinkes = () => {
     }
     )
   }
-  const getICD10 = async () => {
-    axios.get(getAllICD10)
-    .then(response => {
-      setICD10(response.data.icd10)
-      setLoading(false)
-    })
-    .catch(error => {
-      console.log(error)
-    }
-    )
-  }
-  const [kodeIcd, setICD10] = useState([]);    
+  
   const [luka, setLuka] = useState([]);
   const [loading, setLoading] = useState(true);
   const role = useAuth('dinas-kesehatan')
@@ -63,7 +52,6 @@ const DetailLaporanDinkes = () => {
     NIK: "",
     plat_ambulance: "",
     nama_rumah_sakit: "",
-    kode_icd_10: "",
     id_luka: ""
   }]);
   const addKorbanInput = () => {
@@ -75,7 +63,6 @@ const DetailLaporanDinkes = () => {
       NIK: "",
       plat_ambulance: "",
       id_luka: "",
-      kode_icd_10: "",
       nama_rumah_sakit: "",
     }]);
   };
@@ -102,7 +89,6 @@ const DetailLaporanDinkes = () => {
     plat_ambulance: Yup.string(),
     NIK: Yup.number(),
     id_luka: Yup.number(),
-    kode_icd_10: Yup.string(),
     nama_rumah_sakit: Yup.string(),
   })
 
@@ -110,7 +96,6 @@ const DetailLaporanDinkes = () => {
     dispatch(routePageName("Laporkan Kejadian"));
     setLoading(true);
     getLuka();
-    getICD10();
   }, []);
   return (
     <>
@@ -127,7 +112,6 @@ const DetailLaporanDinkes = () => {
             plat_ambulance: '',
             id_luka: '',
             nama_rumah_sakit: '',
-            kode_icd_10 : ''
           }}
           validationSchema={schema}
           validateOnChange={false}
@@ -143,7 +127,6 @@ const DetailLaporanDinkes = () => {
               submitedData.append('plat_ambulance', values.plat_ambulance);
               submitedData.append('id_luka', values.id_luka);
               submitedData.append('nama_rumah_sakit', values.nama_rumah_sakit);
-              submitedData.append('kode_icd_10', values.kode_icd_10);
               submitedData.append('id_laporan', id);
               axios.post(createDetailLaporanPolisi, data).then((response) => {
                 if (response.status === 201) {
@@ -264,23 +247,6 @@ const DetailLaporanDinkes = () => {
                           ))}
                         </Select>
                         <FormErrorMessage>{errors.id_luka}</FormErrorMessage>
-                      </FormControl>
-                      <FormControl mt={4} isInvalid={errors.kode_icd_10 && touched.kode_icd_10}>
-                        <FormLabel color={"var(--color-primer)"}>Kode Insiden ICD-10</FormLabel>
-                        <Select
-                          name='kode_icd_10'
-                          color='black'
-                          placeholder="Pilih Kode Insiden ICD-10"
-                          onChange={(e) => handleKorbanChange(index, 'kode_icd_10', e.target.value)}
-                          onBlur={handleBlur}
-                          value={korban.kode_icd_10}
-                        >
-                         {
-                          kodeIcd.map((item) => (
-                            <option key={item.kode_icd_10} value={item.kode_icd_10}>{`${item.kode_icd_10} - ${item.insiden}`}</option>
-                          ))}
-                        </Select>
-                        <FormErrorMessage>{errors.kode_icd_10}</FormErrorMessage>
                       </FormControl>
                       <FormControl mt={4} isInvalid={errors.plat_ambulance && touched.plat_ambulance}>
                         <FormLabel color={"var(--color-primer)"}>Nomor Plat Ambulance</FormLabel>

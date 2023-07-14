@@ -35,11 +35,12 @@ const Login = ( ) => {
     try {
       const response = await axios.post(loginApi, {
         username: usernameValues,
-        password: passwordValues
+        password: passwordValues,
       })
       .then(response => {
         setToken(response.data.accessToken)
         const decoded = jwt_decode(response.data.accessToken);
+        // console.log(response.data)
         patchRoute('Dashboard')
         navigate(`/unit/${decoded.role}`)
         })

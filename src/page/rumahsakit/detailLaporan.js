@@ -18,7 +18,7 @@ import { useDispatch } from 'react-redux';
 import { routePageName } from '../../Redux/action';
 import { TabTitle } from '../../Utility/utility';
 import {
-  createDetailLaporanPolisi,getAllSkala,getAllLuka
+  createDetailLaporanPolisi,getAllSkala,getAllLuka,getAllICD10
 } from '../../Utility/api.js';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import './input.css'
@@ -57,6 +57,18 @@ const DetailLaporanRS = () => {
     )
   }
   const [luka, setLuka] = useState([]);
+  const [kodeIcd, setICD10] = useState([]);    
+  const getICD10 = async () => {
+    axios.get(getAllICD10)
+    .then(response => {
+      setICD10(response.data.icd10)
+      setLoading(false)
+    })
+    .catch(error => {
+      console.log(error)
+    }
+    )
+  }
  const [korbanList, setKorbanList] = useState([{
     nama: "",
     jenis_kelamin: "",
@@ -66,6 +78,7 @@ const DetailLaporanRS = () => {
     id_luka: "",
     nama_rumah_sakit: "",
     nomor_rekam_medis: "",
+    kode_icd_10: "",
     kode_ATS: ""
   }]);
   const addKorbanInput = () => {
@@ -78,6 +91,7 @@ const DetailLaporanRS = () => {
       id_luka: "",
       nama_rumah_sakit: "",
       nomor_rekam_medis: "",
+      kode_icd_10: "",
       kode_ATS: ""
     }]);
   };
@@ -105,6 +119,7 @@ const DetailLaporanRS = () => {
     id_luka: Yup.number(),
     nama_rumah_sakit: Yup.string(),
     nomor_rekam_medis: Yup.string(),
+    kode_icd_10: Yup.string(),
     kode_ATS: Yup.string(),
   })
 
@@ -112,6 +127,7 @@ const DetailLaporanRS = () => {
     dispatch(routePageName("Laporkan Kejadian"));
     setLoading(true);
     getSkala();
+    getICD10();
     getLuka();
   }, []);
   return (
@@ -130,6 +146,7 @@ const DetailLaporanRS = () => {
             nama_rumah_sakit: '',
             nomor_rekam_medis: '',
             kode_ATS: '',
+            kode_icd_10 : ''
           }}
           validationSchema={schema}
           validateOnChange={false}
@@ -145,6 +162,7 @@ const DetailLaporanRS = () => {
               submitedData.append('id_luka', values.id_luka);
               submitedData.append('nama_rumah_sakit', values.nama_rumah_sakit);
               submitedData.append('nomor_rekam_medis', values.nomor_rekam_medis);
+              submitedData.append('kode_icd_10', values.kode_icd_10);
               submitedData.append('kode_ATS', values.kode_ATS);
               submitedData.append('id_laporan', id);
               axios.post(createDetailLaporanPolisi, data).then((response) => {
@@ -279,6 +297,23 @@ const DetailLaporanRS = () => {
                           value={korban.nama_rumah_sakit}
                         />
                         <FormErrorMessage>{errors.nama_rumah_sakit}</FormErrorMessage>
+                      </FormControl>
+                      <FormControl mt={4} isInvalid={errors.kode_icd_10 && touched.kode_icd_10}>
+                        <FormLabel color={"var(--color-primer)"}>Kode Insiden ICD-10</FormLabel>
+                        <Select
+                          name='kode_icd_10'
+                          color='black'
+                          placeholder="Pilih Kode Insiden ICD-10"
+                          onChange={(e) => handleKorbanChange(index, 'kode_icd_10', e.target.value)}
+                          onBlur={handleBlur}
+                          value={korban.kode_icd_10}
+                        >
+                         {
+                          kodeIcd.map((item) => (
+                            <option key={item.kode_icd_10} value={item.kode_icd_10}>{`${item.kode_icd_10} - ${item.insiden}`}</option>
+                          ))}
+                        </Select>
+                        <FormErrorMessage>{errors.kode_icd_10}</FormErrorMessage>
                       </FormControl>
                       <FormControl mt={4} isInvalid={errors.kode_ATS && touched.kode_ATS}>
                         <FormLabel color={"var(--color-primer)"}> Skala Triase </FormLabel>
