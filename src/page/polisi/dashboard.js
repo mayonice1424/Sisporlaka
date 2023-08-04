@@ -5,6 +5,7 @@ import Dashboard from '../../components/dashboard/dashboard';
 import DashboardTable from '../../components/dashboard/dashboardTable';
 import { useDispatch } from "react-redux";
 import { routePageName } from "../../Redux/action";
+import Footer from '../../components/footer/footer';
 
 const AdminPolisi = () => {
   const dispatch = useDispatch();

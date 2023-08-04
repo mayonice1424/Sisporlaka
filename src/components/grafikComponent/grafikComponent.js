@@ -46,15 +46,14 @@ const GrafikData= (props) => {
     getDataGrafik()
   }, [value]);
     return (
+      <div style={{ width: '100%', position: 'relative' }}>
         <GrafikValue className='grafik' data={{
           value: value,
           label: Object.values(data).map((item) => item.nama_kecamatan ),
           data: Object.values(data).map((item) => item.laporans_count),
         }
         } />
-        // <Flex>
-
-        // </Flex>
+      </div>
     )
 }
 export default GrafikData

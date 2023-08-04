@@ -154,7 +154,6 @@ const DetailLaporanDinkes = () => {
               isSubmitting,
               setFieldValue,
             }) => (
-              <Flex width={1500}>
                 <Form className='formInput' size='xl' method='POST' onSubmit={handleSubmit}>
                 <Text fontSize={'var(--header-1)'} color={'black'}>Identitas Korban</Text>
                   {korbanList.map((korban, index) => (
@@ -313,7 +312,6 @@ const DetailLaporanDinkes = () => {
               Buat Laporan
             </Button>
           </Form>
-      </Flex>
         )}
       </Formik>
       </Flex>

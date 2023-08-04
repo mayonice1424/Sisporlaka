@@ -11,6 +11,8 @@ import Draw from '../draw/draw';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
 import { useEffect } from 'react';
+import {logoutUser} from '../../Utility/api.js'
+
 
 
 const Header = () => {
@@ -21,7 +23,7 @@ const Header = () => {
 
   const logout = async () => {
     try {
-        const response = await axios.delete("http://localhost:4000/logout");
+        const response = await axios.delete(`${logoutUser}`);
         console.log(response);
     } catch (error) {
     }
@@ -38,6 +40,7 @@ useEffect(() => {
   return (
       <Flex
           height={'80px'}
+          width={'100%'}
           bg={'#ffff'}
           padding={'20px'}
           justifyContent="space-between"
@@ -62,7 +65,11 @@ useEffect(() => {
               {routeName}
           </Text>
 
-          <Flex flexDirection={'row'}>
+          <Flex 
+          flexDirection={'row'}
+          mr={'2%'}
+          
+          >
               <Link to={'/login'}
               onClick={() => {
                     logout(

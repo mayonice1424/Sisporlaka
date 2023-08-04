@@ -4,10 +4,13 @@ import { Flex, Text, Input,
   Thead,
   Tbody,
   FormControl,
+  Image,
+  Box,
   Tr,
   Th,
   Td,
   TableContainer,
+  Divider,
   Button, 
   Modal,
   ModalOverlay,
@@ -47,7 +50,11 @@ const LaporanJasaRaharja = () => {
  const [totalPage, setTotalPage] = useState(0)
  const [totalData, setTotalData] = useState(0)
  const [dataLaporan, setDataLaporan] = useState('')
+ const [lokasi, setLokasi] = useState('')
+ const [tanggal, setTanggal] = useState('')
  const [judul_kejadian, setJudulKejadian] = useState('')
+ const [kecamatan, setKecamatan] = useState('')
+ const [korban,setKorban] = useState('')
  const [rows, setRows] = useState(0)
  const [limit, setLimit] = useState(10)
  const [keyword, setKeyword] = useState('')
@@ -170,17 +177,67 @@ moment.updateLocale('id', idLocale);
     <>
     {
       data === null ? <Loading/> : 
-    <Flex flexDir={'column'} >
+      <Flex flexDir="column" mt={30} overflowX={'none'}>
       <form onSubmit={searchData}>
       <FormControl id="search" >
-    <Flex justify={'space-between'} flexDir={'row'} mt={'20px'}>
-    <Flex ml={'5%'}  width={'35%'} maxWidth={'1500px'}>
-            <Input variant={'filled'} color={'black'} type="text" value={query} onChange={(e)=> setQuery(e.target.value)} placeholder="Cari Data" />
-            <Button paddingX={'50px'} mr={'3px'} ml={'14px'} width={'50%'} bg={'#4AA8FF'} maxWidth={'80px'} type='submit' className='button'>
-              Cari
-            </Button>
-            <CSVLink data={
+      <Flex>
+              <Flex mr={'3%'} flexDir={{ base: "column", md: "row", lg: "row" }}
+                width={{ base: "100%", md: "40%", lg: "30%" }}
+                maxWidth={{ base: "100%", md: "500px", lg: "500px" }}
+                >
+                <Input
+                  variant="filled"
+                  color="black"
+                  type="text"
+                  value={query}
+                  onChange={(e) => setQuery(e.target.value)}
+                  placeholder="Cari Data"
+                />
+                <Button
+                  paddingX={10}
+                  bg="#4AA8FF"
+                  maxWidth="80px"
+                  type="submit"
+                  className="button"
+                >
+                  Cari
+                </Button>
+              </Flex>
+              <Flex flexDir="row"
+                width={{ base: "100%", md: "100%", lg: "100%" }}
+                align={{ base: "center", md: "flex-start", lg: "flex-start" }}
+                mt={{ base: "20px", md: "0px", lg: "0px" }}
+                >
+              <Button
+                  mr={'0.5%'}
+       type='submit' 
+        className="btn btn-primary"
+        fontWeights="bold"
+        bg={`rgb(76, 175, 80)`}
+        onClick={() => exportToExcel(
           allData.map((item, index) => ({
+            no: index + 1,
+            judul_kejadian: item.judul_kejadian,
+            tanggal: moment(item.tanggal).format('LL'),
+            waktu: item.waktu,
+            lokasi: item.lokasi,
+            Kecamatan: item.Kecamatan.nama_kecamatan,
+            kerugian_materil: item.kerugian_materil,
+            Laporan_Kategori: item.Laporan_Kategori.nama_kategori,
+            jumlah_korban: jumlahKorban[index],
+            keterangan: item.keterangan,
+            penyebab: item.penyebab,
+          })),
+          `Laporan ${role}`,
+        )}
+        >
+        <Text color={'white'} fontSize={'100%'}>
+          Download To Excel
+        </Text>
+        </Button>
+            <CSVLink                  
+             data={
+              allData.map((item, index) => ({
             no: index + 1,
             judul_kejadian: item.judul_kejadian,
             tanggal: moment(item.tanggal).format('LL'),
@@ -210,67 +267,123 @@ moment.updateLocale('id', idLocale);
           ]
         }
         >
-      <Button bg={`rgb(76, 175, 80)`} mr={'3px'}>
+      <Button  bg={`rgb(76, 175, 80)`} >
         <Text color={'white'}>
           Download To CSV
         </Text> 
       </Button>
         </CSVLink>
-        <Button
-        width={'50%'} maxWidth={'800px'} type='submit' 
-        className="btn btn-primary"
-        fontWeights="bold"
-        bg={`rgb(76, 175, 80)`}
-        onClick={() => exportToExcel(
-          allData.map((item, index) => ({
-            no: index + 1,
-            judul_kejadian: item.judul_kejadian,
-            tanggal: moment(item.tanggal).format('LL'),
-            waktu: item.waktu,
-            lokasi: item.lokasi,
-            Kecamatan: item.Kecamatan.nama_kecamatan,
-            kerugian_materil: item.kerugian_materil,
-            Laporan_Kategori: item.Laporan_Kategori.nama_kategori,
-            jumlah_korban: jumlahKorban[index],
-            keterangan: item.keterangan,
-            penyebab: item.penyebab,
-          })),
-          `Laporan ${role}`,
-        )}
-        >
-          <Text color={'white'}>
-          Download To Excel
-        </Text>
-        </Button>
-        </Flex>
-      <Flex mr={'6%'}>
+      </Flex>
+      <Flex>
       <Modal isOpen={isOpen} onClose={onClose}>
           <ModalOverlay />
           <ModalContent className="custom-modal-content" style={customModalSize}>
             <ModalHeader>Detail Laporan {judul_kejadian}</ModalHeader>
             <ModalCloseButton />
             <ModalBody overflow={'auto'}>
-              <Text fontWeight="bold" fontSize={'35px'}>Identitas Pengemudi</Text>
-              <hr/>
+            <Flex>
+              <Image
+              width={"100%"}
+							position={'Relative'} maxWidth={'200px'} 
+              src={process.env.PUBLIC_URL + '/logojasaraharja.png'} />
+              <Flex flexDir={'column'} justify={'center'} textAlign={'center'} width={'100%'}>
+              <Text fontWeight='semibold' fontSize={'40px'}>
+                PT Jasa Raharja
+              </Text>
+              <Text  fontWeight='semibold' fontSize={'40px'}>
+                Daerah Kota Bandar Lampung
+              </Text>
+              <Text fontWeight='semibold' fontSize={'15px'}>
+              Jalan Wolter Monginsidi No.220A, Pahoman, Teluk Betung Utara, Sumur Putri, Kec. Tlk. Betung Utara, Kota Bandar Lampung, Lampung
+              </Text>
+              </Flex>
+              </Flex>
+              <Divider borderWidth="2px" borderColor="black" />
+              <Divider borderWidth="2px" borderColor="black" mt={1} />
+              <Flex mt={'5'}>
+                <TableContainer>
+                  <Table>
+                    <Thead>
+                      <Tr>
+                      <Th>Perihal</Th>
+                      <Th>:</Th>
+                      <Th>{judul_kejadian}</Th>
+                      </Tr>
+                      <Tr>
+                      <Th>Lokasi Kejadian</Th>
+                      <Th>:</Th>
+                      <Th>{lokasi}</Th>
+                      </Tr>
+                      <Tr>
+                      <Th>Tanggal</Th>
+                      <Th>:</Th>
+                      <Th>{tanggal}</Th>
+                      </Tr>
+                    </Thead>
+                  </Table>
+                </TableContainer>
+              </Flex>
+              <Flex my={10} width={'50%'}>
+              <Text> 
+                  Telah terjadi kecelakaan di kecamatan {kecamatan} dengan jumlah korban sebanyak {korban} dengan <b>identitas pengemudi dan korban</b> adalah sebagai berikut:
+                </Text>
+              </Flex>
               {
                 identitasPengemudi.map((item, index) => {
                   if (item.id_laporan === idLaporan) {
                     return (
                       <>
-                      <Flex flexDir="column" mb="20px">
-                      <Text fontWeight="bold">Nama Pengemudi</Text>
-                        <Text>{item.nama_pengemudi == null || item.nama_pengemudi == '' ? '-' : item.nama_pengemudi}</Text>
-                        <Text fontWeight="bold">Jenis Kelamin</Text>
-                        <Text>{item.jenis_kelamin_pengemudi == null || item.jenis_kelamin_pengemudi == '' ? '-' : item.jenis_kelamin_pengemudi }</Text>
-                        <Text fontWeight="bold">Umur</Text>
-                        <Text>{item.umur_pengemudi == null || item.umur_pengemudi? '-' : item.umur_pengemudi}</Text>
-                        <Text fontWeight="bold">Alamat</Text>
-                        <Text>{item.alamat_pengemudi == null || item.alamat_pengemudi? '-' : item.alamat_pengemudi }</Text>
-                        <Text fontWeight="bold">Nomor SIM</Text>
-                        <Text>{item.no_sim  == null || item.no_sim ? '-' : item.no_sim }</Text>
-                        <Text fontWeight="bold">Nomor STNK</Text>
-                        <Text>{item.no_STNK  == null || item.no_STNK? '-' : item.no_STNK }</Text>
-                        <Text fontWeight="bold">------------------------------</Text>
+                      <Flex flexDir="column" my={10}>
+                    <hr/>
+                    <Text fontWeight="bold">
+                        Identitas Pengemudi
+                      </Text>
+                      <TableContainer>
+                        <Table>
+                          <Tr>
+                            <Td fontWeight="bold">Nama Pengemudi</Td>
+                            <Td>:</Td>
+                            <Td>
+                              <Text>{item.nama_pengemudi == null || item.nama_pengemudi == '' ? '-' : item.nama_pengemudi}</Text>
+                            </Td>
+                          </Tr>
+                          <Tr>
+                            <Td fontWeight="bold">Jenis Kelamin</Td>
+                            <Td>:</Td>
+                            <Td>
+                            <Text>{item.jenis_kelamin_pengemudi == null || item.jenis_kelamin_pengemudi == '' ? '-' : item.jenis_kelamin_pengemudi }</Text>
+                            </Td>
+                          </Tr>
+                          <Tr>
+                            <Td fontWeight="bold">Umur</Td>
+                            <Td>:</Td>
+                            <Td>
+                              <Text>{item.umur_pengemudi == null || item.umur_pengemudi == ''? '-' : item.umur_pengemudi}</Text>
+                            </Td>
+                          </Tr>
+                          <Tr>
+                            <Td fontWeight="bold">Alamat</Td>
+                            <Td>:</Td>
+                            <Td>
+                              <Text>{item.alamat_pengemudi == null || item.alamat_pengemudi == ''? '-' : item.alamat_pengemudi }</Text>
+                            </Td>
+                          </Tr>
+                          <Tr>
+                            <Td fontWeight="bold">Nomor SIM</Td>
+                            <Td>:</Td>
+                            <Td>
+                              <Text>{item.no_sim  == null || item.no_sim == '' ? '-' : item.no_sim }</Text>
+                            </Td>
+                          </Tr>
+                          <Tr>
+                            <Td fontWeight="bold">Nomor STNK</Td>
+                            <Td>:</Td>
+                            <Td>
+                              <Text>{item.no_STNK  == null || item.no_STNK == ''? '-' : item.no_STNK }</Text>
+                            </Td>
+                          </Tr>
+                        </Table>
+                      </TableContainer>
                       </Flex>
                       </>
                   );
@@ -278,36 +391,93 @@ moment.updateLocale('id', idLocale);
                 return null;
               })
             }
-              <Text fontWeight="bold" fontSize={'35px'}>Identitas Korban</Text>
-              <hr/>
-            {
+               {
               identitasKorban.map((item, index) => {
                 if (item.laporan.id_laporan === idLaporan) {
                   return (
                     <>
-                    <Flex flexDir="column" mb="20px">
-                    <Text fontWeight="bold">Nama Korban</Text>
-                      <Text>{item.nama == null || item.nama == '' ? '-' : item.nama}</Text>
-                      <Text fontWeight="bold">Jenis Kelamin</Text>
-                      <Text>{item.jenis_kelamin == null || item.jenis_kelamin == '' ? '-' : item.jenis_kelamin }</Text>
-                      <Text fontWeight="bold">Umur</Text>
-                      <Text>{item.umur == null || item.umur == '' ? '-' : item.umur}</Text>
-                      <Text fontWeight="bold">Alamat</Text>
-                      <Text>{item.alamat == null || item.alamat == '' ? '-' : item.alamat }</Text>
-                      <Text fontWeight="bold">NIK</Text>
-                      <Text>{item.NIK  == null || item.NIK == '' ? '-' : item.NIK }</Text>
-                      <Text fontWeight="bold">Nomor Plat Ambulance</Text>
-                      <Text>{item.plat_ambulance == null || item.plat_ambulance == '' ? '-' : item.plat_ambulance}</Text>
-                      <Text fontWeight="bold">Nama Rumah Sakit</Text>
-                      <Text>{item.nama_rumah_sakit == null || item.nama_rumah_sakit == ''? '-' : item.nama_rumah_sakit}</Text>
-                      <Text fontWeight="bold">Jenis Luka</Text>
-                      <Text>{item.wound && item.wound.id_luka === null ? '-' : item.wound.keterangan_luka }</Text>
-                      <Text fontWeight="bold">Nomor Rekam Medis</Text>
-                      <Text>{item.nomor_rekam_medis == null || item.nomor_rekam_medis == ''  ? '-' : item.nomor_rekam_medis}</Text>
-                      <Text fontWeight="bold">Kode Skala Triase</Text>
-                      <Text color='black'>{item.Skala_Triase && item.Skala_Triase.kode_ATS ? `${item.Skala_Triase.kode_ATS} - ${item.Skala_Triase.keterangan}` : '-'}</Text>
-                      <Text fontWeight="bold">Santunan</Text>
-                      <Text>
+                    <Flex flexDir="column" my={10}>
+                    <hr/>
+                    <Text fontWeight="bold">
+                      Identitas Korban 
+                    </Text>
+                    <TableContainer>
+                        <Table>
+                          <Tr>
+                            <Td fontWeight="bold">Nama Korban</Td>
+                            <Td>:</Td>
+                            <Td>
+                              <Text>{item.nama == null || item.nama == '' ? '-' : item.nama}</Text>
+                            </Td>
+                          </Tr>
+                          <Tr>
+                            <Td fontWeight="bold">Jenis Kelamin</Td>
+                            <Td>:</Td>
+                            <Td>
+                              <Text>{item.jenis_kelamin == null || item.jenis_kelamin == '' ? '-' : item.jenis_kelamin }</Text>
+                            </Td>
+                          </Tr>
+                          <Tr>
+                            <Td fontWeight="bold">Umur</Td>
+                            <Td>:</Td>
+                            <Td>
+                              <Text>{item.umur == null || item.umur == '' ? '-' : item.umur}</Text>
+                            </Td>
+                          </Tr>
+                          <Tr>
+                            <Td fontWeight="bold">Alamat</Td>
+                            <Td>:</Td>
+                            <Td>
+                              <Text>{item.alamat == null || item.alamat == '' ? '-' : item.alamat }</Text>
+                            </Td>
+                          </Tr>
+                          <Tr>
+                            <Td fontWeight="bold">NIK</Td>
+                            <Td>:</Td>
+                            <Td>
+                              <Text>{item.NIK  == null || item.NIK == '' ? '-' : item.NIK }</Text>
+                            </Td>
+                          </Tr>
+                          <Tr>
+                            <Td fontWeight="bold">Nomor Plat Ambulance</Td>
+                            <Td>:</Td>
+                            <Td>
+                              <Text>{item.plat_ambulance == null || item.plat_ambulance == '' ? '-' : item.plat_ambulance}</Text>
+                            </Td>
+                          </Tr>
+                          <Tr>
+                            <Td fontWeight="bold">Nama Rumah Sakit</Td>
+                            <Td>:</Td>
+                            <Td>
+                              <Text>{item.nama_rumah_sakit == null || item.nama_rumah_sakit == ''? '-' : item.nama_rumah_sakit}</Text>
+                            </Td>
+                          </Tr>
+                          <Tr>
+                            <Td fontWeight="bold">Jenis Luka</Td>
+                            <Td>:</Td>
+                            <Td>
+                              <Text>{item.wound.keterangan_luka == null || item.wound.keterangan_luka == '' ? '-' : item.wound.keterangan_luka }</Text>
+                            </Td>
+                          </Tr>
+                          <Tr>
+                            <Td fontWeight="bold">Nomor Rekam Medis</Td>
+                            <Td>:</Td>
+                            <Td>
+                              <Text>{item.nomor_rekam_medis == null || item.nomor_rekam_medis == '' ? '-' : item.nomor_rekam_medis}</Text>
+                            </Td>
+                          </Tr>
+                          <Tr>
+                            <Td fontWeight="bold">Kode Skala Triase</Td>
+                            <Td>:</Td>
+                            <Td>
+                              <Text color='black'>{item.Skala_Triase && item.Skala_Triase.kode_ATS ? `${item.Skala_Triase.kode_ATS} - ${item.Skala_Triase.keterangan}` : '-'}</Text>
+                            </Td>
+                          </Tr>
+                          <Tr>
+                            <Td fontWeight="bold">Santunan</Td>
+                            <Td>:</Td>
+                            <Td>
+                            <Text>
                       {item.santunans == null || !Array.isArray(item.santunans) || item.santunans.length === 0
                       ? '-'
                       : item.santunans.map((item) => (
@@ -319,7 +489,10 @@ moment.updateLocale('id', idLocale);
                       <br />
                       Total: <FormatRupiah value={item.santunans.reduce((sum, item) => sum + (item.Identitas_Santunan.nominal || 0), 0)} />
                       </Text>
-                      <Text fontWeight="bold">------------------------------</Text>
+                            </Td>
+                          </Tr>
+                        </Table>
+                      </TableContainer>
                     </Flex>
                     </>
                   );
@@ -349,8 +522,23 @@ moment.updateLocale('id', idLocale);
     </Flex>
       </FormControl>
       </form>
-    <Flex justify={'center'} mt={'20px'}>
-      <TableContainer width={'90%'} maxWidth={'2000px'} >
+      <Box
+      width={{ base: "100%", md: "92vw", lg: "73vw", xl: "70vw",  }}
+      maxWidth={{ base: "600px", md: "1000px", lg: "680px", xl: "100%" }}
+      minWidth={{ xl: "850px" }}
+      borderRadius="md"
+      boxShadow="md"
+      bg="var(--color-on-primary)"
+      justify="flex-start"
+      mt={30}
+    >
+      <TableContainer
+        borderRadius="md"
+        boxShadow="md"
+        bg="var(--color-on-primary)"
+        justify="flex-start"
+        width="100%"
+      >
         <Table  size='md' variant="simple">
           <Thead bg={'var(--color-primer)'}>
             <Tr>
@@ -432,6 +620,10 @@ moment.updateLocale('id', idLocale);
                           onClick= {
                             () => {
                               setIdLaporan(item.id_laporan)
+                              setKecamatan(item.Kecamatan.nama_kecamatan)
+                              setLokasi(item.lokasi)
+                              setTanggal(item.tanggal)
+                              setKorban(jumlahKorban[index])
                               setJudulKejadian(item.judul_kejadian)
                               onOpen()
                             }
@@ -450,8 +642,8 @@ moment.updateLocale('id', idLocale);
             </Tbody>
         </Table>
       </TableContainer>
-    </Flex>
-    <Flex mx={'5%'} flexDir={'row'} mt={'20px'} justify={'space-between'}>
+    </Box>
+    <Flex mx={'2%'} flexDir={'row'} mt={'20px'} justify={'space-between'}>
     <Flex>
       <Text color={'black'} >Menampilkan {data.length} dari {totalData} Data</Text>
     </Flex>

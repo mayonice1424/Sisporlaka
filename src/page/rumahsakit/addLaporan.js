@@ -174,7 +174,6 @@ const AddLaporanRS = () => {
               isSubmitting,
               setFieldValue
             }) => (
-              <Flex width={1500}>
               <Form className='formInput' size='xl' method="POST" onSubmit={handleSubmit}>
                   <FormControl 
                     mt={4}
@@ -362,7 +361,6 @@ const AddLaporanRS = () => {
                     Buat Laporan
                   </Button>
               </Form>
-              </Flex>
             )}
           </Formik>
         </Flex>

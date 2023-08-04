@@ -1,5 +1,5 @@
 import React,{useEffect, useState} from 'react'
-import { Flex, Text, Input,
+import { Flex, Text, Input,Box,
   Table,
   Thead,
   Tbody,
@@ -23,6 +23,7 @@ import { useParams } from 'react-router-dom';
 import './laporan.css' 
 import GrafikData from '../components/grafikComponent/grafikComponent';
 import * as XLSX from 'xlsx';
+import Footer from '../components/footer/footer';
 
 
 const PublicLaporan = () => {
@@ -144,7 +145,17 @@ moment.updateLocale('id', idLocale);
 return (
       <>
       <Navbar />
-      <Flex width={'100%'} flexDir={'column'}  alignItems={'center'} marginTop={'15vh'} alignContent={'center'} height={'85vh'} bg={'white'} overflowY={'scroll'} position={'fixed'} zIndex={'-1'}>
+      <Box
+        width={'100%'}
+        display="flex"
+        flexDirection="column"
+        alignItems="center"
+        paddingTop="15vh"
+        paddingBottom="8vh"
+        minHeight="100vh" // Use minHeight to ensure the footer does not overlap content
+        bg="white"
+        overflowY="scroll"
+      >
     <Flex  flexDir={'row'} mt={'20px'}>
     <Flex  width={'35%'} maxWidth={'1500px'}>
     <CSVLink data={
@@ -214,23 +225,34 @@ return (
         </Button>
             </Flex>
         </Flex>
-      <Flex mr={'6%'}>
-    </Flex>
-    <Flex justify={'center'} mt={'20px'}>
-      <TableContainer width={'90%'} maxWidth={'2000px'} >
+        <Box
+          width={{ base: "92vw", lg: "73vw", xl: "78vw" }}
+          borderRadius={"md"}
+          boxShadow={"md"}
+          bg={"var(--color-on-primary)"}
+          justify="flex-start"
+          mt={30}
+        >
+      <TableContainer              
+            borderRadius={"md"}
+            boxShadow={"md"}
+            bg={"var(--color-on-primary)"}
+            justify="flex-start"
+            width={"100%"}
+        >
         <Table  size='md' variant="simple">
           <Thead bg={'var(--color-primer)'}>
             <Tr>
-              <Th color={'white'}>No</Th>
-              <Th color={'white'}>Judul Kejadian</Th>
-              <Th color={'white'}>Tanggal</Th>
-              <Th color={'white'}>Waktu</Th>
-              <Th color={'white'}>Kecamatan</Th>
-              <Th color={'white'}>Kerugian Materil</Th>
-              <Th color={'white'}>Kategori Kecelakaan</Th>
-              <Th color={'white'}>Keterangan</Th>
-              <Th color={'white'}>Jumlah Korban</Th>
-              <Th color={'white'}>Penyebab</Th>
+              <Th color={'white'} width="50px">No</Th>
+              <Th color={'white'} width="50px">Judul Kejadian</Th>
+              <Th color={'white'} width="50px">Tanggal</Th>
+              <Th color={'white'} width="50px">Waktu</Th>
+              <Th color={'white'} width="50px">Kecamatan</Th>
+              <Th color={'white'} width="50px">Kerugian Materil</Th>
+              <Th color={'white'} width="50px">Kategori Kecelakaan</Th>
+              <Th color={'white'} width="50px">Keterangan</Th>
+              <Th color={'white'} width="50px">Jumlah Korban</Th>
+              <Th color={'white'} width="50px">Penyebab</Th>
             </Tr>
           </Thead>
           <Tbody>
@@ -271,22 +293,14 @@ return (
                       <Td color={'black'}>
                         {item.penyebab == null ||  item.penyebab == ''? '-' : item.penyebab}
                       </Td>
-                      <Td color={'black'}>
-                        <Flex flexDir={'row'}>
-                        <Flex justify={'center'} alignContent={'center'} alignItems={'center'}>
-                        </Flex>
-                      <Flex flexDir={'column'}>
-                        </Flex>
-                        </Flex>
-                      </Td>
                     </Tr>
                   ))
                 }
             </Tbody>
         </Table>
       </TableContainer>
-    </Flex>
-    <Flex mx={'5%'} flexDir={'row'} mt={'20px'} justify={'space-between'}>
+    </Box>
+    <Flex mx={'5%'} flexDir={{ base: 'column', md: 'row' }} mt={'20px'} justify={'space-between'}>
     <Flex>
       <Text color={'black'} >Menampilkan {data.length} dari {totalData} Data</Text>
     </Flex>
@@ -320,7 +334,7 @@ return (
                 borderRadius={10}
                 flexDir={'column'}
                 mt={5}
-                width={'85%'}
+                width={{ base: '100%', md: '85%' }}
                 alignContent={'center'}
                 alignItems={'center'}
                 mb={5}
@@ -332,18 +346,19 @@ return (
           // console.log(dataGrafik),
               <GrafikData 
               size="lg"
-              width="100%"
+              width="100%" // Use the width prop here for responsiveness
               height="800px"
               maxWidth="100%"
               className="grafik"
               data={{
-                value: id
+                value: id,
               }}
               />
               )
             }
     </Flex>
-  </Flex>
+  </Box>
+  <Footer/>
     </>
   )
 }

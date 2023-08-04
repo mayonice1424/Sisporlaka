@@ -24,18 +24,16 @@ const Navbar = () => {
   // const btnRef = React.useRef()
   return (
     <>
-    <Flex height={'15vh'} bgColor={'white'} position={'absolute'} zIndex={'1'} p={10} boxShadow={'lg'} blur={4} width={'100%'} justify={'space-between'} alignItems={'center'} flexDir={'row'} alignContent={'center'} pl={'2%'} py={'2%'} pr={'2%'} background={'white'} display={{ base: "flex", md: "flex" }}  >
-    <Flex float={'left'} mr={'50%'}>
-        <Text color={'black'} fontWeight={'regular'} fontFamily={'var(--font-family-secondary)'} fontSize={'var(--header-1)'}>Sisporlaka</Text>
-    </Flex>
-    <Flex float={'right'} ml={30} mr={10} display={{ base: "flex", md: "flex" }} >
+    <Flex height={'15vh'} bgColor={'white'} position={'fixed'} zIndex={'1'} p={10} boxShadow={'lg'} blur={4} width={'100vw'} maxWidth={'100vw'} justify={'space-between'} alignItems={'center'} flexDir={'row'} alignContent={'center'} pl={'2%'} py={'2%'} pr={'2%'} background={'white'} display={{ base: "flex", md: "flex" }}  >
+    <Text color={'black'} fontWeight={'regular'} fontFamily={'var(--font-family-secondary'} fontSize={'var(--header-1)'}>Sisporlaka</Text>
+    <Flex float={'right'} display={{ base: "flex" }}>
     <Button onClick={onOpen}>
       <Icon>
         <GiHamburgerMenu  size={'30'}/>
       </Icon>
     </Button>
     </Flex>
-    <Drawer placement="right" onClose={onClose} isOpen={isOpen}>
+    <Drawer placement="right" onClose={onClose} isOpen={isOpen} display={{ base: 'block', md: 'none' }}>
       <DrawerOverlay>
         <DrawerContent>
           <DrawerCloseButton />
@@ -59,7 +57,7 @@ const Navbar = () => {
       </DrawerOverlay>
     </Drawer>
     </Flex>
-    <Flex  display={{ base: "none", md: "none", lg:'flex' }} height={'15vh'} bgColor={'white'} position={'absolute'} zIndex={'1'} p={10}  blur={4} width={'100%'} justify={'flex-start'} alignItems={'center'} flexDir={'row'} alignContent={'center'} pl={'2%'} py={'2%'} pr={'2%'} background={'white'}> 
+    <Flex  display={{ base: 'flex', md: 'flex' }} height={'15vh'} bgColor={'white'} position={'fixed'} zIndex={'1'} p={10}  blur={4} width={'100%'} justify={'flex-start'} alignItems={'center'} flexDir={'row'} alignContent={'center'} pl={'2%'} py={'2%'} pr={'2%'} background={'white'}> 
     <Flex float={'left'} mr={'50%'}>
         <Text color={'black'} fontWeight={'regular'} fontFamily={'var(--font-family-secondary)'} fontSize={'var(--header-1)'}>Sisporlaka</Text>
       </Flex>

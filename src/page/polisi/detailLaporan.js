@@ -200,7 +200,6 @@ const DetailLaporanPolisi = () => {
               isSubmitting,
               setFieldValue,
             }) => (
-              <Flex width={1500}>
                 <Form className='formInput' size='xl' method='POST' onSubmit={handleSubmit}>
                 <Text fontSize={'var(--header-1)'} color={'black'}>Identitas Pengemudi</Text>
                   {pengemudiList.map((pengemudi, index) => (
@@ -452,7 +451,6 @@ const DetailLaporanPolisi = () => {
               Buat Laporan
             </Button>
           </Form>
-      </Flex>
         )}
       </Formik>
       </Flex>

@@ -4,6 +4,7 @@ import { TabTitle } from '../../Utility/utility'
 import { useDispatch } from "react-redux";
 import { routePageName } from "../../Redux/action";
 import LaporanDinkes from '../../components/laporan/laporanDinkes';
+import { Flex } from '@chakra-ui/react';
 
 const AdminDinkesLaporan = () => {
   const dispatch = useDispatch();
@@ -14,9 +15,9 @@ const AdminDinkesLaporan = () => {
   const role = useAuth('dinas-kesehatan')
   return (
     <>
-    <div>
+    <Flex>
       <LaporanDinkes />
-    </div>
+    </Flex>
     </>
   )
 }
