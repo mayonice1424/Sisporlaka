@@ -35,6 +35,7 @@ const GrafikValue =(props) => {
   };
   const options = {
     responsive: true,
+    maintainAspectRatio: false,
     layout: {
       padding: 40,
   },
@@ -44,11 +45,16 @@ const GrafikValue =(props) => {
       },
       title: {
         display: true,
-        font:{
-          size: 14,
-          weight: 'bold'
+        text: `Data Kecelakaan Bulan ${moment(value).format('MMMM YYYY')}`,
+        padding: {
+            top: 10,
+            bottom: 30
         },
-      },
+        font: {
+          size: 25, // Set the title font size to 40px
+          weight: 'bold',
+        },
+    },
     },
     scales: {
       y: {

@@ -7,6 +7,7 @@ import { listData } from '../Utility/api'
 import axios from 'axios'
 import { Link } from 'react-router-dom'
 import moment from 'moment';
+import Footer from '../components/footer/footer'
 const Home = () => {
   const [data, setData] = useState([]);
   const getData = async () => {
@@ -27,7 +28,17 @@ const Home = () => {
   return (
     <>
     <Navbar />
-    <Flex width={'100%'} flexDir={'column'}  alignItems={'center'} marginTop={'15vh'} alignContent={'center'} height={'85vh'} bg={'white'} overflowY={'scroll'} position={'fixed'} zIndex={'-1'}>
+    <Box
+        width={'100%'}
+        display="flex"
+        flexDirection="column"
+        alignItems="center"
+        paddingTop="15vh"
+        paddingBottom="8vh"
+        minHeight="100vh" // Use minHeight to ensure the footer does not overlap content
+        bg="white"
+        overflowY="scroll"
+      >
         <Flex mt={50}>
         <Image
 						  width={"100%"}
@@ -35,17 +46,17 @@ const Home = () => {
 							src={process.env.PUBLIC_URL + '/logokolaborasi.png'}
 						/>
         </Flex>
-        <Flex mt={50}>
-          <Text fontSize={25} fontWeight={'semibold'} textAlign={'start'} alignContent={'flex-start'} alignItems={'flex-start'} alignSelf={'flex-start'}>
+        <Flex mt={50} textAlign={'center'}>
+          <Text fontSize={25} fontWeight={'semibold'}>
           Menuju 1 Data Informasi Kecelakaan Terpusat Lampung
           </Text>
         </Flex>
-        <Flex mt={5} width={'35%'}>
+        <Flex mt={5} width={'50%'}>
           <Text fontSize={20} fontWeight={'normal'} textAlign={'start'} alignContent={'flex-start'} alignItems={'flex-start'} alignSelf={'flex-start'}>
           Sistem informasi pelaporan lalu lintas merupakan sistem yang digunakan sebagai data terpusat yang terintegrasi berdasarkan pelaporan dari pilar - pilar keselamatan lalu lintas dan angkutan jalan.
           </Text>
         </Flex>
-        <Flex mt={5} width={'35%'} justify={'space-between'}>
+        <Flex mt={5} width={'50%'} textAlign={'center'} justify={'space-between'}>
           <Flex>
           <Text fontSize={18} fontWeight={'semibold'}>
             Data Kecelakaan
@@ -68,7 +79,7 @@ const Home = () => {
                 borderRadius={10}
                 flexDir={'column'}
                 mt={5}
-                width={'35%'}
+                width={'50%'}
                 >
                 <Link to={`/laporan/${item.data}`}>
                 <Text
@@ -85,16 +96,16 @@ const Home = () => {
                   Data Kecelakaan per {moment(item.data).format('MMMM YYYY')}
                 </Text>
                 <Text 
-                mx={'20px'}
-                my={'5px'}
+                mx={'20px'} my={'5px'} color={'#4C4C4C'}
                 >
-                  Sumber Data : Dirlantas, PT Jasa Raharja, Dinas Perhubungan Provinsi Lampung, dan Dinas Kesehatan Provinsi Lampung
+                  Sumber Data : Dirlantas, PT Jasa Raharja, Dinas Perhubungan Kota Bandar Lampung, dan Dinas Kesehatan Kota Bandar Lampung
                 </Text>
-              </Link>
+                </Link>
               </Flex>
         )})
         }
-    </Flex>
+    </Box>
+    <Footer />
     </>
   )
 }

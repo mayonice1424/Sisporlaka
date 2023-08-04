@@ -3,6 +3,7 @@ import useAuth from '../../middleware/useAuth';
 import { 
   Flex,
   Text,
+  Box,
   Input,
   Button,
   FormControl,
@@ -170,14 +171,12 @@ const AddLaporanDinkes = () => {
               isSubmitting,
               setFieldValue
             }) => (
-              <Flex width={1500}>
               <Form className='formInput' size='xl' method="POST" onSubmit={handleSubmit}>
                   <FormControl 
                     mt={4}
                     isInvalid={errors.judul_kejadian && touched.judul_kejadian}
                   >
                     <FormLabel color={"var(--color-primer)"}>Judul Kejadian</FormLabel>
-                    <Flex justify={'flex-start'} >
                     <Input
                       color={"black"}
                       type="text"
@@ -189,7 +188,6 @@ const AddLaporanDinkes = () => {
                       variant="outline"
                       placeholder="Judul Kejadian..."
                     />
-                    </Flex>
                     <FormErrorMessage>{errors.judul_kejadian}</FormErrorMessage>
                   </FormControl>
                   <FormControl
@@ -365,7 +363,6 @@ const AddLaporanDinkes = () => {
                     Buat Laporan
                   </Button>
               </Form>
-              </Flex>
             )}
           </Formik>
         </Flex>

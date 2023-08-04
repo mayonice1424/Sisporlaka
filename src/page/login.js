@@ -35,13 +35,24 @@ const Login = ( ) => {
     try {
       const response = await axios.post(loginApi, {
         username: usernameValues,
-        password: passwordValues
+        password: passwordValues,
       })
       .then(response => {
         setToken(response.data.accessToken)
+        console.log(response.data.accessToken)
         const decoded = jwt_decode(response.data.accessToken);
         patchRoute('Dashboard')
-        navigate(`/unit/${decoded.role}`)
+        if (decoded.role === 'polisi') {
+          navigate(`/unit/polisi`);
+        } else if (decoded.role === 'dinas-perhubungan') {
+          navigate(`/unit/dinas-perhubungan`);
+        } else if (decoded.role === 'rumah-sakit') {
+          navigate(`/unit/rumah-sakit`);
+        } else if (decoded.role === 'dinas-kesehatan'){
+          navigate(`/unit/dinas-kesehatan`);
+        } else if (decoded.role === 'jasa-raharja'){
+          navigate(`/unit/jasa-raharja`);
+        }
         })
     } catch (error) {
       if (error.response) {

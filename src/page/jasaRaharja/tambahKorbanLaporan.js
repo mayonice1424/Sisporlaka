@@ -274,7 +274,6 @@ const TambahKorbanLaporanJasaRaharja = () => {
               isSubmitting,
               setFieldValue,
             }) => (
-              <Flex width={1500}>
                 <Form className='formInput' size='xl' method='POST' onSubmit={handleSubmit}>
                  <Text fontSize={'var(--header-1)'} color={'black'}>Identitas Korban</Text>
                   {Object.values(data.identitas_korban).map((korban, korbanIndex) => (
@@ -497,7 +496,6 @@ const TambahKorbanLaporanJasaRaharja = () => {
               Buat Laporan
             </Button>
           </Form>
-      </Flex>
         )}
       </Formik>
       </Flex>

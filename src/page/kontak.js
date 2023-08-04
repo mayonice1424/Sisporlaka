@@ -4,6 +4,7 @@ import {SiGooglemaps} from 'react-icons/si'
 import {FiPhone} from 'react-icons/fi'
 import Navbar from '../components/publicNavbar/navbar'
 import { TabTitle } from '../Utility/utility'
+import Footer from '../components/footer/footer'
 
 function Kontak() {
   TabTitle("Kontak - Sisporlaka");
@@ -40,7 +41,7 @@ function Kontak() {
   return (
     <>
     <Navbar />
-    <Wrap width={'100%'} flexDir={'column'} mx={'5%'} alignItems={'center'} marginTop={'15vh'} alignContent={'center'} height={'85vh'} bg={'white'} overflowY={'scroll'} position={'fixed'} zIndex={'-1'}>
+    <Wrap width={'100%'} flexDir={'column'}  alignItems={'center'} marginTop={'15vh'} alignContent={'center'} minHeight={'77vh'} marginBottom={'8vh'} bg={'white'} overflowY={'scroll'} position={'relative'} zIndex={'-1'}>
        {
           data.map((item) => {
             data.id = item.id;
@@ -48,11 +49,11 @@ function Kontak() {
             <Flex width={'50%'} flexDir={'column'}>
               <Text pt={'10'} fontWeight={'medium'} paddingBottom={'5'}>{item.namaInstansi}</Text>
             <Flex py={'2%'} flexDir={'row'}>
-              <SiGooglemaps color={item.warna} size={'30'} />
+              <SiGooglemaps color={item.warna} size={'30px'} />
                 <Text fontWeight={'regular'} marginLeft={'2%'}>{item.alamat}</Text>
             </Flex>
             <Flex flexDir={'row'}>
-              <FiPhone color={item.warna} size={'30'} />
+              <FiPhone color={item.warna} size={'30px'} />
                 <Text marginLeft={'2%'}>{item.noTelp}</Text>
             </Flex>
           </Flex>
@@ -60,6 +61,7 @@ function Kontak() {
           })
        }
     </Wrap>
+    <Footer />
     </>
   )
 }

@@ -22,6 +22,7 @@ const DashboardTable = () => {
   const [loading, setLoading] = useState(true)
 
 
+  
   const getCountKecamatan = async () => {
     axios.get(countKecamatan)
     .then(response => {

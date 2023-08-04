@@ -214,7 +214,6 @@ const EditKorbanLaporanRS = () => {
               isSubmitting,
               setFieldValue,
             }) => (
-              <Flex width={1500}>
                 <Form className='formInput' size='xl' method='PATCH' onSubmit={handleSubmit}>
                  <Text fontSize={'var(--header-1)'} color={'black'}>Identitas Korban</Text>
                   {identitas.identitasSantunan && Object.values(identitas.identitasSantunan).map((korban, korbanIndex) => (
@@ -412,7 +411,6 @@ const EditKorbanLaporanRS = () => {
               Buat Laporan
             </Button>
           </Form>
-      </Flex>
         )}
       </Formik>
       </Flex>

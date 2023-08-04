@@ -1,4 +1,5 @@
 canvas {
-    width: 2120px !important;
-    height: auto !important;
+    width: 100% !important;
+    max-width: 2706px  !important;
+    height: 100% !important;
 }
